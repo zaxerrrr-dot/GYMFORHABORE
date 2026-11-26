@@ -59,3 +59,16 @@ if (!MOBILE && 'serviceWorker' in navigator && location.protocol === 'https:') {
   // It only fetches ahead while the page runs as the installed app; a tab keeps what it has shown.
   import('./lib/media-prefetch.js').then(m => m.startMediaPrefetch(useStore)).catch(() => {})
 }
+// Habcore Gym (kl6.3): a tab still running the previous build asks for one of its chunks after a
+// deploy; the server has only the new ones (404) and the new worker swept the old cache. Reload
+// once into the new build instead of a broken screen (at most once a minute, so a real outage
+// does not loop).
+if (!MOBILE) window.addEventListener('vite:preloadError', e => {
+  try {
+    const last = Number(sessionStorage.getItem('hc_chunk_reload') || 0)
+    if (Date.now() - last < 60000) return
+    sessionStorage.setItem('hc_chunk_reload', String(Date.now()))
+  } catch { return }
+  e.preventDefault()
+  location.reload()
+})

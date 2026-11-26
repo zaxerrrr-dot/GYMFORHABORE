@@ -168,6 +168,10 @@ test('a client reading their own change log does not see the group\'s name (othe
   assert.equal(JSON.stringify(own).includes('Bartek'), false);
   // The trainer sees it.
   assert.equal((await h.req('GET', '/api/gymv2/log?id=MEM', { jar: tr1 })).body.log.find(e => e.ev === 'group-create').group.name, 'Ola + Bartek');
+  // kl6.3: the same log at the ad-block-safe address (EasyPrivacy blocks "/log?id=").
+  assert.equal((await h.req('GET', '/api/gymv2/changes?u=MEM', { jar: tr1 })).body.log.find(e => e.ev === 'group-create').group.name, 'Ola + Bartek');
+  assert.equal((await h.req('GET', '/api/gymv2/changes', { jar: ola })).body.log.find(e => e.ev === 'group-create').group.name, undefined);
+  assert.equal((await h.req('GET', '/api/gymv2/changes?u=' + ids.Bartek, { jar: ola })).status, 404);
   // The client cannot read Bartek's log.
   assert.equal((await h.req('GET', '/api/gymv2/log?id=' + ids.Bartek, { jar: ola })).status, 404);
 });

@@ -73,6 +73,9 @@ const swStamp = {
     const html = join(outDir, 'index.html'), sw = join(outDir, 'sw.js')
     if (!existsSync(html) || !existsSync(sw)) return
     const stamp = createHash('sha256').update(readFileSync(html)).digest('hex').slice(0, 10)
+    // Habcore Gym (kl6.3): only files this build really wrote (a chunk the bundle named and a later
+    // step dropped, leaflet-*.js, was a 404 on every update).
+    lazy = lazy.filter(u => existsSync(join(outDir, u.replace(/^\.\//, ''))))
     writeFileSync(sw, stampSw(readFileSync(sw, 'utf8'), { stamp, lazy }))
   }
 }

@@ -666,10 +666,15 @@ export function gymV2({
     },
 
     // The change log of one client: for the trainers, and for the client themself.
+    // kl6.3: the app asks GET /api/gymv2/changes?u=<id>. The old address "/log?id=" is a rule of
+    // EasyPrivacy (uBlock Origin, AdBlock, Brave…), so in such a browser the request never left it
+    // ("Failed to fetch"); /log stays for app builds that still use it.
+    'GET /api/gymv2/changes': async (req, res) => routes['GET /api/gymv2/log'](req, res),
     'GET /api/gymv2/log': async (req, res) => {
       if (!on) return off(res);
       const m = me(req, res); if (!m) return;
-      const id = new URL(req.url, 'http://x').searchParams.get('id') || m.self.id;
+      const q = new URL(req.url, 'http://x').searchParams;
+      const id = q.get('u') || q.get('id') || m.self.id;
       const u = userById(id);
       if (!u) return json(res, 404, { error: 'not found' });
       if (u.id !== m.self.id && !(isStaff(m.self) && isMember(u))) return json(res, 404, { error: 'not found' });

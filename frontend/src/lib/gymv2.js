@@ -208,6 +208,7 @@ const W = {
   'e_group-size': ['Grupa to 2–5 osób.', 'A group is 2–5 people.'],
   'e_group-name': ['Wpisz nazwę grupy.', 'Enter the group\'s name.'],
   'e_group-not-client': ['W grupie mogą być tylko klienci siłowni.', 'Only the gym\'s clients can be in a group.'],
+  'e_no-answer': ['Brak odpowiedzi serwera. Sprawdź internet; jeśli działa – dodatek blokujący reklamy w przeglądarce mógł zablokować to okno (wyłącz go dla tej strony).', 'No answer from the server. Check the internet; if it works, an ad-blocking add-on may have stopped this (turn it off for this site).'],
   'e_not-found': ['Tego już nie ma (ktoś inny to usunął).', 'That is gone (someone else removed it).'],
   err: ['Nie udało się: {0}', 'That did not work: {0}'],
   e_name_taken: ['Ta nazwa jest już zajęta. Dodaj np. inicjał nazwiska.', 'That name is taken. Add an initial, for example.'],
@@ -231,6 +232,8 @@ export const gErr = e => {
   if (code === 'name-taken') return g('e_name_taken')
   if (code === 'code-invalid') return g('e_code_invalid')
   if (code && W['e_' + code]) return g('e_' + code)
+  // No answer at all (offline, or a browser add-on stopped the request): say so in words.
+  if (!e?.status && /failed to fetch|networkerror|load failed/i.test(String(e?.message || ''))) return g('e_no-answer')
   return g('err', e?.message || '?')
 }
 export const fmtDay = iso => { try { return new Date(iso.length === 10 ? iso + 'T12:00:00' : iso).toLocaleDateString(isPl() ? 'pl-PL' : undefined, { day: 'numeric', month: 'short', year: 'numeric' }) } catch { return String(iso) } }
@@ -250,7 +253,8 @@ export const leaveGym = () => post('/api/gymv2/leave')
 export const gymUsers = () => api('/api/gymv2/users')
 export const setTrainer = (id, trainer) => post('/api/gymv2/trainer', { id, trainer })
 export const setGymName = name => post('/api/gymv2/name', { name })
-export const clientLog = id => api('/api/gymv2/log?id=' + encodeURIComponent(id))
+// Not "/log?id=": ad blockers (EasyPrivacy) drop that address before it leaves the browser (kl6.3).
+export const clientLog = id => api('/api/gymv2/changes?u=' + encodeURIComponent(id))
 export const undoMerge = id => post('/api/gymv2/merge/undo', { id })
 // Saved groups (patch 0006.2): the gym's, every trainer's.
 export const gymGroups = () => api('/api/gymv2/groups')
