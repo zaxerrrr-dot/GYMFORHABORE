@@ -5722,6 +5722,7 @@ export default {
   "Your own code for this set": "Твой собственный код для этого подхода",
   "openGym dark": "Тёмный openGym",
   "openGym green": "Зелёный openGym",
+  "Habcore red": "Красный Habcore",
   // --- sub-connect-146: Use your subscription (Claude, ChatGPT, Gemini connectors) ---
   "A model on your network": "Модель в твоей сети",
   "A paid ChatGPT plan, on the web. Business and Enterprise workspaces decide whether members may add their own.": "Платный план ChatGPT, в браузере. В пространствах Business и Enterprise само пространство решает, можно ли участникам добавлять свои.",

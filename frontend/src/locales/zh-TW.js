@@ -5711,6 +5711,7 @@ export default {
   "Your own code for this set": "你為這組定的記號",
   "openGym dark": "openGym 深色",
   "openGym green": "openGym 綠色",
+  "Habcore red": "Habcore red",
   // --- sub-connect-146: Use your subscription (Claude, ChatGPT, Gemini connectors) ---
   "A model on your network": "你網路裡的模型",
   "A paid ChatGPT plan, on the web. Business and Enterprise workspaces decide whether members may add their own.": "付費的 ChatGPT 方案，網頁版。Business 和 Enterprise 工作區由工作區決定成員能否自行新增。",

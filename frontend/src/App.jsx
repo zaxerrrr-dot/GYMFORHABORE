@@ -54,6 +54,9 @@ import { useTourOffer } from './lib/tour-offer.js'
 import { exitWorkoutEdit, startFlow, beginWorkout, bwSheet, finishWorkoutNow, confirmSheet } from './sheets.jsx'
 import { BrandMark } from './components/BrandLogo.jsx'
 import ActingBar from './components/ActingBar.jsx'
+import LiveBanner from './components/LiveBanner.jsx'
+import InstallHint from './components/InstallHint.jsx'
+import { initGymLive } from './lib/gym-live-app.js'
 import TabBar from './components/TabBar.jsx'
 import { startOrPreview, startPickerSheet } from './components/StartSheets.jsx'
 import ScrollTopButton from './components/ScrollTopButton.jsx'
@@ -108,6 +111,8 @@ const Trainer = lazyView(() => import('./views/Trainer.jsx'))
 // Gym mode v2 (local patch 0003): the gym screen and the invite page a client takes an account over on.
 const Gym = lazyView(() => import('./views/Gym.jsx'))
 const GymClaim = lazyView(() => import('./views/GymClaim.jsx'))
+// Group training (local patch 0006): one trainer, several clients' workouts at once.
+const GroupWorkout = lazyView(() => import('./views/GroupWorkout.jsx'))
 // The tabs and screens past Home (Stats, History, the Library, Settings, ...) as well: a start
 // only needs Home, and these are fetched right behind it the same way.
 const CheckIn = lazyView(() => import('./views/CheckIn.jsx'))
@@ -160,6 +165,24 @@ function Shell() {
   // iOS: whether timer sounds get past the ring/silent switch (Settings → Sounds). Page-level,
   // so it is applied here on load and on change rather than at each beep.
   useEffect(() => { setPlayOnSilent(!!S.soundOnSilent) }, [S.soundOnSilent])
+  // "Trenuj jako klient" on Home's gym card (patch 0006): after the switch into the client's
+  // account, the start picker opens (once).
+  useEffect(() => {
+    if (!ready || !user?.acting) return
+    let want = false
+    try { want = sessionStorage.getItem('gymv2_start_after_switch') === '1'; sessionStorage.removeItem('gymv2_start_after_switch') } catch { /* none */ }
+    if (want && !useStore.getState().S.active) setTimeout(() => startPickerSheet(), 600)
+  }, [ready, !!user?.acting])
+  // Live joint training (local patch 0006, lib/gym-live.js): a gym client's running workout shared
+  // with the trainer leading them. Does nothing unless the server has it on for this account.
+  useEffect(() => {
+    if (DEMO) return
+    initGymLive({
+      useStore, useUI, finish: () => finishWorkoutNow(),
+      toWorkout: () => navToWorkout(),
+      toHome: () => { if (String(location.hash || '').startsWith('#/workout')) nav('/home', { replace: true }) }
+    })
+  }, [])
   // The band names the set lines read (lib/bands.js), in step before this render's set lines.
   setKnownBands(S.bands)
   // Settings → Vibrate, the same way: one page-level switch rather than a check at each buzz.
@@ -439,6 +462,7 @@ function Shell() {
       {user && <Route path="/trainer" element={<Trainer />} />}
       {user && <Route path="/trainer/m/:id" element={<Trainer />} />}
       {user && <Route path="/silownia" element={<Gym />} />}
+      {user && <Route path="/grupa" element={<GroupWorkout />} />}
       <Route path="*" element={<Navigate to="/home" replace />} />
     </Routes>
   ))
@@ -460,6 +484,8 @@ function Shell() {
           including on the sign-in screen, when the server has just ended the session. */}
       <SyncBanner />
       <ActingBar />
+      {!inWorkout && loc.pathname !== '/grupa' && <LiveBanner />}
+      {authed && !inWorkout && !needsMobileOnboarding && !permSteps && <InstallHint />}
       {!noTabs && <TabBar onStart={startOrPreview} onPick={startPickerSheet} />}
       {!noTabs && authed && <ScrollTopButton off={loc.pathname === '/workout'} path={loc.pathname} />}
       <RestTimer />

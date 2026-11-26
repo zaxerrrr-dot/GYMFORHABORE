@@ -5718,6 +5718,7 @@ export default {
   "Your own code for this set": "O teu código para esta série",
   "openGym dark": "Escuro openGym",
   "openGym green": "Verde openGym",
+  "Habcore red": "Vermelho Habcore",
   // --- sub-connect-146: Use your subscription (Claude, ChatGPT, Gemini connectors) ---
   "A model on your network": "Um modelo na tua rede",
   "A paid ChatGPT plan, on the web. Business and Enterprise workspaces decide whether members may add their own.": "Um plano pago do ChatGPT, na web. Nos espaços Business e Enterprise é o espaço que decide se os membros podem adicionar os seus.",

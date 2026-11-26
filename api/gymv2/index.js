@@ -15,6 +15,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { stampEntry } from '../sync-stamps.js';
 import { findPairs, joinWorkouts, entriesCore, placeJoin, WINDOW_MS } from './merge.js';
+import { createLive, liveRoutes } from './live.js';
 
 export const ACT_TTL_MS = 12 * 3600 * 1000;
 export const INVITE_TTL_MS = 7 * 86400 * 1000;
@@ -32,7 +33,9 @@ export const ACT_ALLOWED = new Set([
   'GET /api/data', 'GET /api/data/rev', 'PUT /api/data', 'GET /api/nudge-check',
   'GET /api/media/{hash}', 'PUT /api/media/{hash}', 'POST /api/media/missing',
   'POST /api/logout', 'POST /api/activity',
-  'GET /api/gymv2/status', 'POST /api/gymv2/act', 'POST /api/gymv2/act/end'
+  'GET /api/gymv2/status', 'POST /api/gymv2/act', 'POST /api/gymv2/act/end',
+  // Live joint training (patch 0006): the client's running workout, shared with the trainer.
+  'GET /api/live', 'GET /api/live/stream', 'POST /api/live/ops', 'POST /api/live/end'
 ]);
 
 const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -103,7 +106,9 @@ export function gymV2({
   passwordLogin, hashPassword, passwordProblem, policyError, setPassword, nameTaken, nameKey, normalizeEmail, emailTaken,
   sessionCookie, publicUser, limitAddress, readStateCached, readState,
   // Joint training (patch 0004, gymv2/merge.js): GYM_MERGE, and the server's own write into a profile.
-  merge: mergeOn = false, writeStateAs = null
+  merge: mergeOn = false, writeStateAs = null,
+  // Live joint training (patch 0006, gymv2/live.js): GYM_LIVE.
+  live: liveOn = false
 }) {
   const users = () => db().users;
   const userById = id => users().find(u => u.id === id) || null;
@@ -140,6 +145,11 @@ export function gymV2({
     return lines.slice(-limit).map(l => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean).reverse();
   }
   const who = u => ({ id: u.id, name: String(u.name || '').slice(0, 40) });
+  // Live joint training (patch 0006): the running workout of a gym client, on the server.
+  const live = on && liveOn ? createLive({ dataDir }) : null;
+  // A workout the client's own device and a trainer's both had live is one workout already: the
+  // join after the workout (0004) leaves it alone.
+  const liveShared = id => !!live && live.liveShared(id);
 
   /* roles */
   const isTrainer = u => !!u && !u.disabled && store.isTrainerId(u.id);
@@ -279,7 +289,7 @@ export function gymV2({
     // A cheap look first, on the cached document: anything to do at all?
     const ids = new Set(S0.workouts.filter(w => w && w.id != null).map(w => String(w.id)));
     const follow = live.filter(m => now - m.at < FOLLOW_MS && ids.has(String(m.base)));
-    const quick = findPairs(S0.workouts, new Set(tw.keys()), { now, skip: id => taken.has(id) });
+    const quick = findPairs(S0.workouts, new Set(tw.keys()), { now, skip: id => taken.has(id) || liveShared(id) });
     if (!quick.pairs.length && !quick.ambiguous.length && !follow.length) return null;
 
     const done = [];
@@ -307,7 +317,7 @@ export function gymV2({
         }
       }
       // 2. New pairs, on the document as it is now.
-      const { pairs, ambiguous } = findPairs(next.workouts, new Set(tw.keys()), { now, skip: id => taken.has(id) });
+      const { pairs, ambiguous } = findPairs(next.workouts, new Set(tw.keys()), { now, skip: id => taken.has(id) || liveShared(id) });
       for (const { trainer, client: cw } of pairs) {
         const by = tw.get(String(trainer.id)) || { id: '?', name: '?' };
         const id = crypto.randomBytes(9).toString('base64url');
@@ -413,7 +423,8 @@ export function gymV2({
         trainers: d.trainers.map(t => userById(t.userId)).filter(u => u && !u.disabled).map(who),
         consent: consentOut(),
         passwordLogin: !!passwordLogin,
-        merge: !!mergeOn
+        merge: !!mergeOn,
+        live: !!live
       });
     },
 
@@ -428,7 +439,8 @@ export function gymV2({
           return {
             ...who(u), since: x.since, via: x.via, virtual: !!u.gymVirtual,
             canLead: canLead(m.self, u), invite: inv ? { expires: inv.expires } : null, ...summary(u),
-            ...(mergeOn ? { merges: liveMerges(u.id) } : {})
+            ...(mergeOn ? { merges: liveMerges(u.id) } : {}),
+            ...(live ? { live: live.liveOf(u.id) } : {})
           };
         })
         .sort((a, b) => a.name.localeCompare(b.name, 'pl'));
@@ -688,8 +700,123 @@ export function gymV2({
     }
   };
 
+  // Live joint training (patch 0006): for a gym client's own session, or a trainer leading them.
+  if (live) {
+    Object.assign(routes, liveRoutes({
+      live, json, readBody, sessionOf, log,
+      resolve: (s, as) => {
+        if (!s?.user) return null;
+        // A trainer leading a client: that client.
+        if (s.actor) return canLead(s.actor, s.user) ? { uid: s.user.id, actor: s.actor, self: s.actor } : null;
+        // A trainer in their own account naming a client (group training): checked right now.
+        if (as) {
+          const c = userById(as);
+          return c && canLead(s.user, c) ? { uid: c.id, actor: s.user, self: s.user } : null;
+        }
+        // A gym client's own device.
+        return isMember(s.user) && !isStaff(s.user) ? { uid: s.user.id, actor: null, self: s.user } : null;
+      }
+    }));
+    // Group training (patch 0006): a trainer in their own account trains several clients at once.
+    // Every route names the client and is checked for that client on every request (canLead), like
+    // the live routes' `as`; nothing here works while leading one client (act token).
+    const groupStaff = (req, res) => {
+      const m = staffOnly(req, res); if (!m) return null;
+      if (m.acting) { json(res, 403, { error: 'not while leading a client', code: 'acting-forbidden' }); return null; }
+      return m;
+    };
+    const groupClient = (m, id, res) => {
+      const c = userById(str(id));
+      if (!c || !canLead(m.self, c)) { json(res, 403, { error: 'you cannot lead this account', code: 'not-allowed' }); return null; }
+      return c;
+    };
+    // One client's document (read only): their routines, history and units, for building their
+    // exercises and the weights they did last.
+    routes['GET /api/gymv2/group/client'] = async (req, res) => {
+      const m = groupStaff(req, res); if (!m) return;
+      const c = groupClient(m, new URL(req.url, 'http://x').searchParams.get('id'), res); if (!c) return;
+      const S = readStateCached(c.id) || {};
+      const { _unstamped, _prior, ...state } = S;
+      json(res, 200, { client: who(c), state, live: live.liveOf(c.id) });
+    };
+    // A workout a trainer finished for a client whose phone is not on it: into the client's
+    // document, logged with the trainer, as a write made while leading would be.
+    routes['POST /api/gymv2/group/save'] = async (req, res) => {
+      const m = groupStaff(req, res); if (!m) return;
+      const body = await readBody(req);
+      const c = groupClient(m, body.id, res); if (!c) return;
+      const w = body.workout;
+      if (!w || typeof w !== 'object' || Array.isArray(w) || typeof w.id !== 'string' || !/^[A-Za-z0-9_-]{1,40}$/.test(w.id) || !Array.isArray(w.entries)) return json(res, 400, { error: 'workout required', code: 'bad-workout' });
+      if (JSON.stringify(w).length > 512 * 1024) return json(res, 413, { error: 'workout too large', code: 'too-large' });
+      const before = readStateCached(c.id) || {};
+      let out;
+      try {
+        out = writeStateAs(c.id, (next, t) => {
+          if (!Array.isArray(next.workouts)) next.workouts = [];
+          if (next.workouts.some(x => x && String(x.id) === w.id)) return 'exists';
+          const x = JSON.parse(JSON.stringify(w));
+          delete x._ts; delete x._f; delete x._u;
+          stampEntry(null, x, t);
+          next.workouts.push(x);
+          return 'saved';
+        }, { skipIf: r => r === 'exists', create: true });
+      } catch (e) { return json(res, e.status || 500, { error: e.message, code: e.code || 'error' }); }
+      if (out === 'saved') {
+        const after = readStateCached(c.id) || {};
+        let d = null; try { d = diffStates(before, after); } catch { d = null; }
+        if (d) log(c.id, { ev: 'write', by: who(m.self), changes: d, via: 'group' });
+        live.savedInState(c.id, after);
+        if (mergeOn && writeStateAs) { try { reconcile(c); } catch (e) { console.error('gymv2 merge', c.id, e.message); } }
+      }
+      audit(req, 'gymv2.group.save', { user: m.self, target: c });
+      json(res, 200, { ok: true, saved: out === 'saved' });
+    };
+    // One long poll for the whole group: answers as soon as any of the clients' workouts changed.
+    // `c` = id:wid:seq,... (the workouts the trainer's device has, and how far it read each).
+    routes['GET /api/gymv2/group/poll'] = async (req, res) => {
+      const m = groupStaff(req, res); if (!m) return;
+      const p = new URL(req.url, 'http://x').searchParams;
+      const dev = str(p.get('dev'));
+      const want = [];
+      for (const part of str(p.get('c')).split(',').filter(Boolean).slice(0, 8)) {
+        const [id, wid = '', seq = ''] = part.split(':');
+        const c = userById(id);
+        if (!c || !canLead(m.self, c)) return json(res, 403, { error: 'you cannot lead this account', code: 'not-allowed', id });
+        want.push({ uid: c.id, wid, seq: seq === '' ? null : Number(seq) });
+      }
+      const waitS = Math.max(0, Math.min(25, Number(p.get('wait')) || 0));
+      const answerAll = () => {
+        const out = {};
+        for (const w of want) { live.seen(w.uid, dev, m.self); out[w.uid] = live.answer(w.uid, w.wid, Number.isInteger(w.seq) ? w.seq : null); }
+        return out;
+      };
+      const news = all => Object.values(all).some(a => !a.live ? false : !a.live.ops || a.live.ops.length > 0);
+      const first = answerAll();
+      if (!waitS || news(first)) return json(res, 200, { answers: first, now: Date.now() });
+      let done = false, timer = null;
+      const offs = [];
+      const finish = () => {
+        if (done) return; done = true;
+        offs.forEach(f => f()); clearTimeout(timer);
+        if (!res.writableEnded && !res.destroyed) json(res, 200, { answers: answerAll(), now: Date.now() });
+      };
+      for (const w of want) offs.push(live.wait(w.uid, finish));
+      timer = setTimeout(finish, waitS * 1000);
+      req.on('close', () => { if (!done) { done = true; offs.forEach(f => f()); clearTimeout(timer); } });
+    };
+    // Who of the gym's clients is training right now (live), for a trainer's banner.
+    routes['GET /api/gymv2/live-now'] = async (req, res) => {
+      const m = staffOnly(req, res); if (!m) return;
+      if (m.acting) return json(res, 200, { live: [] });
+      const list = store.get().members.map(x => userById(x.userId)).filter(u => u && !u.disabled && canLead(m.self, u))
+        .map(u => ({ ...who(u), live: live.liveOf(u.id) })).filter(x => x.live);
+      json(res, 200, { live: list });
+    };
+  }
+
   return {
     on: !!on,
+    live,
     routes,
     actOf,
     actAllowed,
@@ -704,6 +831,8 @@ export function gymV2({
     // After a write of a client's document (patch 0004): join a trainer's and the client's workout
     // of one session. Never throws into the request: the write itself is done.
     afterWrite(u) {
+      // The workout a live channel carried is in the document now: the channel is over (patch 0006).
+      if (live && u) { try { live.savedInState(u.id, readStateCached(u.id)); } catch (e) { console.error('gymv2 live', u.id, e.message); } }
       if (!on || !mergeOn || !writeStateAs || !u) return;
       if (!isMember(u) || isAdmin(u) || isTrainer(u)) return;
       try { reconcile(u); } catch (e) { console.error('gymv2 merge', u.id, e.message); }

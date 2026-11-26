@@ -126,8 +126,12 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           {
-            echo "Habcore Gym for iPhone (with the Apple Watch app), unsigned for SideStore."
-            echo "Download HabcoreGym.ipa and open it in SideStore (+, pick the file)."
+            echo "Habcore Gym for iPhone (with the Apple Watch app and all exercise images and animations)."
+            echo "- HabcoreGym-xcode.zip: the Xcode project (iPhone + Apple Watch) for a free Apple ID; README-XCODE.txt inside (Polish)."
+            echo "- HabcoreGym.ipa: unsigned, for SideStore (+, pick the file)."
+            echo "- HabcoreGym-debug.apk: Android (debug build)."
+            echo
+            echo "Live joint training with the trainer, group training, Habcore red accent (local patch 0006)."
             echo
             echo "Fork of openGym (https://github.com/DuarteSantos8/openGym), AGPL-3.0. Source: this repository at ${GITHUB_SHA}."
             echo
@@ -177,8 +181,9 @@ jobs:
           gh release upload "$TAG" HabcoreGym-debug.apk --repo "$GITHUB_REPOSITORY" --clobber > gh.log 2>&1 || { sed 's/^/::error::gh release upload: /' gh.log; exit 1; }
 
   # The iOS project itself, for Xcode on the owner's Mac (a free Personal Team signs it there):
-  # after `cap sync ios` (web assets in App/public, Pods installed), with the watch app target,
-  # and the Capacitor plugin folders the Pods point at. README-XCODE.txt (Polish) on top.
+  # after `cap sync ios` (web assets and all exercise media in App/public, Pods installed), with the
+  # Apple Watch app target (built and embedded with the iPhone app), and the Capacitor plugin
+  # folders the Pods point at. README-XCODE.txt (Polish, Xcode's menus in English) on top.
   xcode-project:
     needs: ios
     runs-on: macos-26
@@ -213,9 +218,19 @@ jobs:
           trap 'echo "::error::pack step failed at line $LINENO: $BASH_COMMAND"' ERR
           Z=HabcoreGym-xcode
           rm -rf "$Z" && mkdir -p "$Z/frontend/node_modules"
-          # the exercise animations stay out (size); the app shows placeholders for them
-          rm -rf frontend/ios/App/App/public/exercise-media
+          # Every exercise still and animation stays in (App/public/exercise-media, the 180 px media of
+          # catalogue/media with its NOTICE.md: licensed by Gym visual for openGym, kept unmodified in
+          # this non-commercial fork as NOTICE.md allows).
+          test -f frontend/ios/App/App/public/exercise-media/NOTICE.md || { echo "::error::no exercise media in App/public"; exit 1; }
+          n=$(ls frontend/ios/App/App/public/exercise-media/clip | wc -l); echo "exercise animations: $n"
+          [ "$n" -gt 1000 ] || { echo "::error::only $n exercise animations in App/public"; exit 1; }
           rm -rf frontend/ios/App/build frontend/ios/App/DerivedData
+          # A free Apple ID (Personal Team): no App Groups. They only serve the Home Screen widgets and
+          # the Live Activity, which this project leaves out; HealthKit stays (the owner's test: it works).
+          for f in frontend/ios/App/App/App.entitlements frontend/ios/App/Watch/OpenGymWatch.entitlements; do
+            /usr/libexec/PlistBuddy -c "Delete :com.apple.security.application-groups" "$f" 2>/dev/null || true
+            /usr/libexec/PlistBuddy -c "Print" "$f"
+          done
           cp -R frontend/ios "$Z/frontend/"
           # every plugin folder the Podfile points at (../../node_modules/...)
           grep -E ":path *=>" frontend/ios/App/Podfile | grep -oE "node_modules/[^']+" | sort -u | while read -r m; do
@@ -224,6 +239,7 @@ jobs:
           cp frontend/capacitor.config.json "$Z/frontend/"
           cp LICENSE NOTICE.md "$Z/"
           cp scripts/habcore/README-XCODE.txt "$Z/"
+          cp scripts/habcore/ustaw-identyfikator.command "$Z/" && chmod +x "$Z/ustaw-identyfikator.command"
           test -d "$Z/frontend/ios/App/Pods" || { echo "::error::no Pods folder after cap sync"; exit 1; }
           test -f "$Z/frontend/ios/App/App/public/index.html" || { echo "::error::no web assets in App/public"; exit 1; }
           # the project must build as it is packed (unsigned, generic device), from the packed copy
@@ -235,6 +251,10 @@ jobs:
           set -e
           if [ $st -ne 0 ]; then grep -E "error:" /tmp/xc-build.log | sort -u | head -40 | sed 's/^/::error::xcodebuild (packed project): /' || true; tail -60 /tmp/xc-build.log; exit 1; fi
           grep -E "\*\* BUILD" /tmp/xc-build.log || true
+          app=$(find /tmp/xc-dd/Build/Products -maxdepth 2 -name App.app -type d | head -1)
+          test -d "$app/Watch/OpenGymWatch.app" || { echo "::error::the packed project built no watch app (App.app/Watch/OpenGymWatch.app)"; exit 1; }
+          test -f "$app/public/exercise-media/NOTICE.md" || { echo "::error::the packed project built no exercise media into App.app"; exit 1; }
+          echo "watch app and exercise media in the built App.app: ok ($(du -sh "$app" | cut -f1))"
           zip -qry "$Z.zip" "$Z"
           ls -la "$Z.zip"
       - name: Add to the release

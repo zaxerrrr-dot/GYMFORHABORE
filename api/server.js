@@ -112,6 +112,9 @@ const GYM_V2 = /^(1|true|yes|on)$/i.test(process.env.GYM_V2 || '');
 // Joint training (local patch 0004, gymv2/merge.js): a trainer's workout logged while leading and the
 // client's own workout of the same session (phone + watch) are joined into one once both are in.
 const GYM_MERGE = GYM_V2 && /^(1|true|yes|on)$/i.test(process.env.GYM_MERGE || '');
+// Live joint training (local patch 0006, gymv2/live.js): the running workout of a gym client shared
+// with the trainer leading them, in real time. Needs GYM_V2.
+const GYM_LIVE = GYM_V2 && /^(1|true|yes|on)$/i.test(process.env.GYM_LIVE || '');
 // Whether the admin dashboard shows a member's workouts and weigh-ins (1.4.5: off by default).
 // Off, admins see counts only; on, every look is in the activity log and the member's sharing log.
 const ADMIN_DATA_VIEW = /^(1|true|yes|on)$/i.test(process.env.ADMIN_DATA_VIEW || '');
@@ -508,9 +511,12 @@ function readStateCached(uid) {
 // joins the records and the document goes in one revision further. The devices see the new revision
 // on their next check (every half minute) and merge it. `skipIf(result)` true leaves the file alone.
 // A profile with no document on the server yet is refused: there is nothing of theirs to merge into.
-function writeStateAs(uid, fn, { skipIf = null } = {}) {
-  const cur = readStateStrict(uid);
+function writeStateAs(uid, fn, { skipIf = null, create = false } = {}) {
+  let cur = readStateStrict(uid);
   if (cur === UNREADABLE) throw new OrgError(503, 'state-unreadable', 'that profile cannot be read right now');
+  // `create` (group training, gymv2 patch 0006): a client account a trainer made has no document
+  // until a device syncs it; the first workout a trainer saves for it starts one.
+  if (!cur && create) cur = { _rev: 0, workouts: [], routines: [] };
   if (!cur) throw new OrgError(409, 'not-synced', 'they have not synced this profile with the server yet');
   const next = JSON.parse(JSON.stringify(cur));
   const t = Math.max(Date.now(), highestStamp(cur) + 1);
@@ -1615,6 +1621,7 @@ function removeAccount(u) {
     shareLog.anonymize(members, u.id);
   } catch (e) { console.error('org: could not remove', u.id, e.message); }
   try { gym?.removeUser(u.id); } catch (e) { console.error('gymv2: could not remove', u.id, e.message); }
+  try { gym?.live?.drop(u.id); } catch (e) { console.error('gymv2 live: could not remove', u.id, e.message); }
   // What they shared with the server stops being shared; copies others took stay theirs.
   try { library.removeUser(u.id); } catch (e) { console.error('library: could not withdraw items of', u.id, e.message); }
   saveDb();
@@ -2378,7 +2385,7 @@ const gym = GYM_V2 ? gymV2({
   secure: !!SECURE, sameSite: SAME_SITE, passwordLogin: PASSWORD_LOGIN, hashPassword, passwordProblem, policyError,
   setPassword, nameTaken, nameKey, normalizeEmail, emailTaken, sessionCookie, publicUser,
   limitAddress: req => limitAddress(req), readStateCached: uid => readStateCached(uid), readState,
-  merge: GYM_MERGE, writeStateAs: (uid, fn, opts) => writeStateAs(uid, fn, opts)
+  merge: GYM_MERGE, writeStateAs: (uid, fn, opts) => writeStateAs(uid, fn, opts), live: GYM_LIVE
 }) : null;
 // The app names the account it believes it is syncing (X-OpenGym-As). When the session now
 // belongs to another one (a trainer started or stopped leading a client in another tab, a sign-in
@@ -2627,7 +2634,7 @@ const routes = {
       // `roles` decides whether the app shows the trainer dashboard; every route checks again anyway.
       ...(TRAINERS && readSession(req) ? { trainers: { on: true, leadAccess: org.leadMode, roles: trainerRolesOf(readSession(req).id) } } : {}),
       // Gym mode v2: the role of the person (the trainer, while leading a client).
-      ...(gym && sessionOf(req) ? { gymv2: { on: true, role: gym.roleOf(sessionOf(req).actor || sessionOf(req).user), acting: !!sessionOf(req).actor } } : {})
+      ...(gym && sessionOf(req) ? { gymv2: { on: true, role: gym.roleOf(sessionOf(req).actor || sessionOf(req).user), acting: !!sessionOf(req).actor, live: !!gym.live } } : {})
     });
   },
 

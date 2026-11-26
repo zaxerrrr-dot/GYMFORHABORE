@@ -32,7 +32,7 @@ import { RTL_LANGS } from '../lib/i18n-core.js'
 import { DEFAULT_TEMPLATE_ID } from '../lib/structuralBalanceTemplates.js'
 
 import { WC_DEFAULT } from '../lib/workout-controls.js'
-import { sanitizeAccent, NEW_ACCENT } from '../lib/accent.js'
+import { sanitizeAccent, NEW_ACCENT, DEFAULT_ACCENT } from '../lib/accent.js'
 import { registerExerciseAliases } from '../lib/exercise-aliases.js'
 
 const KEY = 'gym_state_v1'
@@ -93,10 +93,10 @@ const gainedWorkoutMedia = (prev, next) => {
 }
 export const DEF = {
   unit: 'kg', restSec: 90, restPauseSec: 15, sound: true, soundOnSilent: false, vibrateOnSilent: false, timerFlash: false, timedSetOvertime: false, keepAwake: true, lang: 'en',
-  // accent: the old iOS green on purpose. A loaded copy that never picked one (saved before accents,
-  // a server document, a backup) keeps the green it always had; a new profile starts on the
-  // brand's green instead (freshState, lib/accent.js NEW_ACCENT).
-  theme: 'dark', accent: 'lime', body: 'male', targetW: null,
+  // accent: Habcore Gym (local patch 0006): the brand (the Habcore red) for every copy that never
+  // picked one, as for a new profile (lib/accent.js DEFAULT_ACCENT, NEW_ACCENT). A picked colour,
+  // the old green included, stays.
+  theme: 'dark', accent: DEFAULT_ACCENT, body: 'male', targetW: null,
   // The weekly-rate corridor on the body-weight card (#759, lib/bodyweight.js rateCorridor).
   rateGoal: null,
   bodyweight: [], routines: [], week: {}, dayPlan: {},

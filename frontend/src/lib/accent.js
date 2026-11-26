@@ -25,7 +25,10 @@ import { ACCENTS, ACCENT_INK } from './format.js'
 //   iOS green it always had and nothing changes under anyone on an update (accent.migration.test.js).
 //   An older app reading 'brand' does not know it and draws its own default, this same green.
 export const NEW_ACCENT = 'brand'
-export const DEFAULT_ACCENT = 'lime'
+// Habcore Gym (local patch 0006): a copy with no usable choice draws the brand too (the Habcore
+// red), not the iOS green: on this fork 'brand' is what every profile wore until someone picked
+// another colour. A stored 'lime' (picked, or from an old copy) stays green.
+export const DEFAULT_ACCENT = 'brand'
 export const CUSTOM = 'custom'
 
 const HEX = /^#[0-9a-f]{6}$/i

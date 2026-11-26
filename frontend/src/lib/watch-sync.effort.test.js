@@ -10,7 +10,7 @@ afterEach(() => _resetWatchSync())
 describe('the accent on the watch', () => {
   it('sends a preset as the app draws it, and the user\'s own colour readable on black', () => {
     expect(watchExtras({ accent: 'sky' })).toMatchObject({ accent: '#0a84ff', onAccent: '#ffffff' })
-    expect(watchExtras({})).toMatchObject({ accent: '#30d158', onAccent: '#000000' })
+    expect(watchExtras({})).toMatchObject({ accent: '#ba1a18', onAccent: '#ffffff' })
     const own = watchExtras({ accent: 'custom', accentCustom: '#000080' })
     expect(own.accent).toMatch(/^#[0-9a-f]{6}$/)
     expect(own.accent).not.toBe('#000080')       // navy would vanish into the black screen

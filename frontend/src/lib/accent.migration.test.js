@@ -1,4 +1,7 @@
 // @vitest-environment happy-dom
+// Habcore Gym (local patch 0006): the brand accent is the Habcore red (#ba1a18), and it is also
+// what every copy that never picked a colour draws (DEF, DEFAULT_ACCENT). A picked accent stays,
+// the old green ('lime') included. Upstream's note, for the history:
 // 1.4.5: the app takes on the logo's green (#a3e635). A profile started from nothing wears it; a
 // profile that already exists keeps exactly the accent it had, whichever way its copy reaches the
 // app: the browser's saved copy, the phone's file mirror, a server pull, a sign-in, a backup, a
@@ -22,17 +25,17 @@ const blank = () => ({ workouts: [], routines: [], bodyweight: [], customEx: [] 
 const KEY = 'gym_state_v1'
 
 describe('the two defaults', () => {
-  it('a new profile gets the brand green, everything that never picked keeps the old one', () => {
+  it('a new profile and everything that never picked get the Habcore red', () => {
     expect(NEW_ACCENT).toBe('brand')
-    expect(DEFAULT_ACCENT).toBe('lime')
-    expect(ACCENTS.brand).toBe('#a3e635')
+    expect(DEFAULT_ACCENT).toBe('brand')
+    expect(ACCENTS.brand).toBe('#ba1a18')
     expect(ACCENTS.lime).toBe('#30d158')
-    expect(DEF.accent).toBe('lime')
+    expect(DEF.accent).toBe('brand')
   })
   it('the brand green comes first in the picker, the old one stays as Classic green', () => {
     expect(Object.keys(ACCENTS)[0]).toBe('brand')
     expect(Object.keys(ACCENTS)[1]).toBe('lime')
-    expect(ACCENT_NAMES.brand).toBe('openGym green')
+    expect(ACCENT_NAMES.brand).toBe('Habcore red')
     expect(ACCENT_NAMES.lime).toBe('Classic green')
     expect(Object.keys(ACCENT_NAMES)).toEqual(Object.keys(ACCENTS))
     expect(Object.keys(ACCENT_INK)).toEqual(Object.keys(ACCENTS))
@@ -55,11 +58,11 @@ describe('a copy saved on this device before 1.4.5', () => {
   it('nothing saved: the brand green', async () => {
     expect((await boot()).accent).toBe('brand')
   })
-  it('saved without an accent (from before accents existed): the old green', async () => {
+  it('saved without an accent (from before accents existed): the Habcore red', async () => {
     localStorage.setItem(KEY, JSON.stringify({ unit: 'kg', workouts: [{ id: 'w1' }], routines: [] }))
     const S = await boot()
-    expect(S.accent).toBe('lime')
-    expect(accentKey(S)).toBe('lime')
+    expect(S.accent).toBe('brand')
+    expect(accentKey(S)).toBe('brand')
   })
   it('saved on the old default ("lime", never picked): the old green', async () => {
     localStorage.setItem(KEY, JSON.stringify({ ...clone(DEF), accent: 'lime' }))
@@ -75,18 +78,18 @@ describe('a copy saved on this device before 1.4.5', () => {
   })
   it('an empty saved object (storage that held only {}) is a profile, not a fresh install', async () => {
     localStorage.setItem(KEY, '{}')
-    expect((await boot()).accent).toBe('lime')
+    expect((await boot()).accent).toBe('brand')
   })
-  it('junk in the accent field draws the old green, as it did before', async () => {
+  it('junk in the accent field draws the default (the Habcore red)', async () => {
     localStorage.setItem(KEY, JSON.stringify({ accent: '"><x>' }))
-    expect((await boot()).accent).toBe('lime')
+    expect((await boot()).accent).toBe('brand')
   })
 })
 
 describe('a copy that arrives from elsewhere', () => {
-  it('a server pull of a profile with no accent field: the old green', () => {
+  it('a server pull of a profile with no accent field: the Habcore red', () => {
     const S = restoredStateFor(freshState(), { workouts: [{ id: 'w1' }], routines: [] })
-    expect(S.accent).toBe('lime')
+    expect(S.accent).toBe('brand')
   })
   it('a server pull of a profile on the old default, a picked one, or the brand green: as it is', () => {
     expect(restoredStateFor(freshState(), { accent: 'lime' }).accent).toBe('lime')
@@ -102,16 +105,16 @@ describe('a copy that arrives from elsewhere', () => {
     expect(mergeStates(server, local, { prefer: 'a' }).accent).toBe('lime')
     // the same with a server copy that never had the field
     const old = { ...server }; delete old.accent
-    expect(Object.assign(clone(DEF), mergeStates(old, local, { prefer: 'a' })).accent).not.toBe('brand')
+    expect(Object.assign(clone(DEF), mergeStates(old, local, { prefer: 'a' })).accent).toBe('brand')
   })
-  it('a backup or a server document laid over DEF without the field: the old green', () => {
+  it('a backup or a server document laid over DEF without the field: the Habcore red', () => {
     const backup = { unit: 'kg', workouts: [{ id: 'w1' }] }
-    expect(sanitizeAccent(Object.assign(clone(DEF), backup)).accent).toBe('lime')
+    expect(sanitizeAccent(Object.assign(clone(DEF), backup)).accent).toBe('brand')
     expect(sanitizeAccent(Object.assign(clone(DEF), { ...backup, accent: 'brand' })).accent).toBe('brand')
   })
-  it('two devices of one profile that never picked: both stay on the old green', () => {
+  it('two devices of one profile that never picked: both on the Habcore red', () => {
     const a = { ...clone(DEF), _ts: 10 }, b = { ...clone(DEF), _ts: 20 }
-    expect(mergeStates(a, b).accent).toBe('lime')
+    expect(mergeStates(a, b).accent).toBe('brand')
   })
   it('an older app on the other end reads "brand" as a key it does not know and draws its own default', () => {
     const OLD = { lime: '#30d158', sky: '#0a84ff' }
@@ -124,10 +127,10 @@ describe('a copy that arrives from elsewhere', () => {
 
 describe('a backup imported on this device', () => {
   afterEach(() => { localStorage.clear(); useStore.setState({ S: clone(DEF), user: null, ready: false }) })
-  it('a backup from before 1.4.5 keeps its old green, a fresh one its brand green', () => {
+  it('a backup from before 1.4.5 (no accent) and a fresh one both draw the Habcore red', () => {
     useStore.setState({ S: freshState(), user: null, ready: true })
     useStore.getState().importBackup({ unit: 'kg', workouts: [{ id: 'w1', d: '2026-09-01', entries: [] }], routines: [] })
-    expect(useStore.getState().S.accent).toBe('lime')
+    expect(useStore.getState().S.accent).toBe('brand')
     useStore.getState().importBackup({ ...freshState(), workouts: [{ id: 'w2', d: '2026-09-02', entries: [] }] })
     expect(useStore.getState().S.accent).toBe('brand')
   })
@@ -140,19 +143,19 @@ describe('another account on this device', () => {
     useStore.setState({ S: { ...clone(DEF), accent: 'pink', workouts: [{ id: 'w1', d: '2026-09-01', entries: [] }] }, user: { id: 'user-1' } })
     useStore.getState().setUser({ id: 'user-2', name: 'Two' })
     expect(useStore.getState().S.accent).toBe('brand')
-    expect(restoredStateFor(useStore.getState().S, { workouts: [{ id: 'w9' }] }).accent).toBe('lime')
+    expect(restoredStateFor(useStore.getState().S, { workouts: [{ id: 'w9' }] }).accent).toBe('brand')
   })
 })
 
 describe('the brand green everywhere it is drawn', () => {
-  it('carries the brand’s near-black, readable well past the 4.5:1 text bar', () => {
-    expect(accentPair('brand')).toEqual({ accent: '#a3e635', ink: '#0c0e12' })
-    expect(contrast('#a3e635', '#0c0e12')).toBeGreaterThan(12)
+  it('carries white, readable past the 4.5:1 text bar', () => {
+    expect(accentPair('brand')).toEqual({ accent: '#ba1a18', ink: '#ffffff' })
+    expect(contrast('#ba1a18', '#ffffff')).toBeGreaterThan(6)
   })
   it('goes to the watches as it is, with its ink', () => {
-    expect(watchAccent({ accent: 'brand' })).toEqual({ accent: '#a3e635', onAccent: '#0c0e12' })
+    expect(watchAccent({ accent: 'brand' })).toEqual({ accent: '#ba1a18', onAccent: '#ffffff' })
     expect(watchAccent({ accent: 'lime' })).toEqual({ accent: '#30d158', onAccent: '#000000' })
-    expect(garminLook(watchAccent({ accent: 'brand' }))).toMatchObject({ accent: '#a3e635', onAccent: '#0c0e12' })
+    expect(garminLook(watchAccent({ accent: 'brand' }))).toMatchObject({ accent: '#ba1a18', onAccent: '#ffffff' })
   })
   it('the ink of every preset reads at 3:1 (button text, large) or better on its swatch', () => {
     for (const [k, c] of Object.entries(ACCENTS)) expect(contrast(c, ACCENT_INK[k]), k).toBeGreaterThanOrEqual(3)

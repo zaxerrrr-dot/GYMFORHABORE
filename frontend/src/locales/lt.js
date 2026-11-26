@@ -5714,6 +5714,7 @@ export default {
   "Your own code for this set": "Tavo paties kodas šiai serijai",
   "openGym dark": "openGym tamsi",
   "openGym green": "openGym žalia",
+  "Habcore red": "Habcore raudona",
   // --- sub-connect-146: Use your subscription (Claude, ChatGPT, Gemini connectors) ---
   "A model on your network": "Modelis jūsų tinkle",
   "A paid ChatGPT plan, on the web. Business and Enterprise workspaces decide whether members may add their own.": "Mokamas ChatGPT planas, naršyklėje. Business ir Enterprise darbo erdvėse pati erdvė sprendžia, ar nariai gali pridėti savo.",

@@ -20,7 +20,7 @@ export const toPng = canvas => new Promise(resolve => {
 
 /** The accent the app is showing right now, read off the root element. */
 export function currentAccent() {
-  try { return getComputedStyle(document.documentElement).getPropertyValue('--acc').trim() || '#a3e635' } catch (e) { return '#a3e635' }
+  try { return getComputedStyle(document.documentElement).getPropertyValue('--acc').trim() || '#ba1a18' } catch (e) { return '#ba1a18' }
 }
 // A card drawn in English (i18n-core inCardEnglish) is left to right whatever the app shows.
 export const isRtl = () => !isCardEnglish() && typeof document !== 'undefined' && document.documentElement.dir === 'rtl'

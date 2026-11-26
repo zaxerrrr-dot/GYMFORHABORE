@@ -1,7 +1,7 @@
 // Gym mode v2 (local patch 0003, api/gymv2/index.js): one gym, trainers lead every client.
 // The texts are Polish and English only, kept here rather than in the locale packs, so the patch
 // stays one self-contained piece on top of upstream.
-import { api } from './api.js'
+import { api, remoteAuth } from './api.js'
 import { getLang } from './i18n-core.js'
 import { MOBILE } from './mobile.js'
 import { appBase } from './app-base.js'
@@ -106,6 +106,61 @@ const W = {
   undoMergeMsg: ['Trening „{0}” ({1}) wróci do dwóch osobnych treningów: z zegarka klienta i wpisany przez trenera {2}.', 'The workout “{0}” ({1}) goes back to two workouts: the client\'s watch workout and the one trainer {2} logged.'],
   undoMergeDone: ['Scalenie cofnięte', 'Join undone'],
   mergedN: ['scalone: {0}', 'joined: {0}'],
+  // Live joint training (patch 0006)
+  liveNow: ['{0} trenuje teraz', '{0} is training now'],
+  liveJoinWorkout: ['Dołącz do treningu', 'Join the workout'],
+  // Group training (patch 0006)
+  groupTitle: ['Trening grupowy', 'Group workout'],
+  groupStart: ['Trenuj z grupą ({0})', 'Train the group ({0})'],
+  groupPickHint: ['Zaznacz 2–5 osób, żeby trenować je naraz.', 'Tick 2–5 people to train them at once.'],
+  groupResume: ['Wróć do treningu grupowego', 'Back to the group workout'],
+  groupStarting: ['Uruchamianie treningów…', 'Starting the workouts…'],
+  groupNone: ['Brak treningu grupowego. Wybierz klientów na ekranie Start.', 'No group workout. Pick clients on the Home screen.'],
+  addAlso: ['Dodaj też:', 'Add for:'],
+  addEx: ['Dodaj ćwiczenie', 'Add exercise'],
+  addSet: ['Dodaj serię', 'Add set'],
+  removeEx: ['Usuń ćwiczenie', 'Remove exercise'],
+  nextPerson: ['Dalej: {0}', 'Next: {0}'],
+  finishOne: ['Zakończ: {0}', 'Finish: {0}'],
+  finishAll: ['Zakończ wszystkie', 'Finish all'],
+  finishAllQ: ['Zakończyć treningi wszystkich?', 'Finish everyone\'s workout?'],
+  finishAllMsg: ['Każdy trening zapisze się na koncie swojej osoby (z telefonem klienta – na jego telefonie).', 'Each workout is saved in its own person\'s account (with the client\'s phone there, on that phone).'],
+  restLeft: ['przerwa {0}', 'rest {0}'],
+  restOver: ['przerwa minęła', 'rest over'],
+  lastHint: ['ostatnio {0} kg × {1}', 'last {0} kg × {1}'],
+  firstTime: ['pierwszy raz', 'first time'],
+  phoneHere: ['telefon klienta połączony', 'client\'s phone connected'],
+  phoneAway: ['bez telefonu klienta – zapisze trener', 'no client phone – the trainer saves it'],
+  savedPhone: ['{0}: zapisuje telefon klienta', '{0}: the client\'s phone saves it'],
+  savedServer: ['{0}: zapisano na koncie klienta', '{0}: saved in the client\'s account'],
+  endedTag: ['zakończony', 'finished'],
+  emptyWorkout: ['Dodaj pierwsze ćwiczenie.', 'Add the first exercise.'],
+  setN: ['Seria {0}', 'Set {0}'],
+  weightL: ['Ciężar', 'Weight'],
+  repsL: ['Powt.', 'Reps'],
+  doneL: ['zrobiona', 'done'],
+  more: ['Zwiększ', 'More'],
+  less: ['Zmniejsz', 'Less'],
+  remove: ['Usuń', 'Remove'],
+  trainAs: ['Trenuj jako klient', 'Train as client'],
+  allClients: ['Wszyscy klienci', 'All clients'],
+  liveJoin: ['Klient trenuje teraz – dołącz', 'Client is training now – join'],
+  liveJoinShort: ['Dołącz', 'Join'],
+  liveInfo: ['{0} · ćwiczeń: {1} · serie {2}/{3}', '{0} · exercises: {1} · sets {2}/{3}'],
+  liveJoined: ['Dołączono do treningu klienta na żywo', 'Joined the client\'s live workout'],
+  liveStarted: ['Trener rozpoczął trening na żywo', 'Your trainer started a live workout'],
+  liveEnded: ['Trening zakończony na drugim urządzeniu ({0})', 'The workout ended on the other device ({0})'],
+  liveEndedSaved: ['zapisany', 'saved'],
+  liveEndedDiscarded: ['odrzucony', 'discarded'],
+  liveLeft: ['Wyszedłeś z treningu klienta – trwa dalej u klienta', 'You left the client\'s workout – it goes on for the client'],
+  liveFinishSent: ['Klient zapisze trening na swoim telefonie (Apple Zdrowie)', 'The client\'s phone saves the workout (Apple Health)'],
+  liveOther: ['Na koncie trwa już inny trening na żywo – ten zostaje tylko na tym urządzeniu', 'Another live workout is running on this account – this one stays on this device only'],
+  liveBadge: ['NA ŻYWO', 'LIVE'],
+  liveWith: ['Na żywo z: {0}', 'Live with: {0}'],
+  liveClientAway: ['telefon klienta poza zasięgiem', 'client\'s phone out of reach'],
+  'ev_live-saved': ['{0}: trening na żywo zapisany', '{0}: live workout saved'],
+  'ev_live-discarded': ['{0}: trening na żywo odrzucony', '{0}: live workout discarded'],
+  'ev_live-finish-request': ['{0}: zakończył trening na żywo (zapis na telefonie klienta)', '{0}: finished the live workout (saved on the client\'s phone)'],
   err: ['Nie udało się: {0}', 'That did not work: {0}'],
   e_name_taken: ['Ta nazwa jest już zajęta. Dodaj np. inicjał nazwiska.', 'That name is taken. Add an initial, for example.'],
   e_code_invalid: ['Ten kod siłowni nie działa.', 'That gym code does not work.'],
@@ -151,7 +206,12 @@ export const clientLog = id => api('/api/gymv2/log?id=' + encodeURIComponent(id)
 export const undoMerge = id => post('/api/gymv2/merge/undo', { id })
 
 // The address of a page of this app, for a link sent to someone (hash router).
-export const appLink = hashPath => location.origin + appBase().replace(/\/?$/, '/') + '#' + hashPath
+// In the phone app the page is the app's own (capacitor://localhost): a link goes to the paired server.
+export const appLink = hashPath => {
+  const remote = MOBILE ? remoteAuth()?.base : null
+  if (remote) return remote.replace(/\/?$/, '/') + '#' + hashPath
+  return location.origin + appBase().replace(/\/?$/, '/') + '#' + hashPath
+}
 export const inviteLink = token => appLink('/zaproszenie?c=' + encodeURIComponent(token))
 export const joinLink = code => appLink('/silownia?kod=' + encodeURIComponent(code))
 
@@ -165,13 +225,17 @@ const keepAct = tok => { try { if (tok) localStorage.setItem(ACT_KEY, tok); else
 async function settleThenReload(store, hashPath) {
   try { await store.getState().pushState() } catch { /* still owed: kept aside by the switch */ }
 }
-export async function startLeading(store, clientId) {
+export async function startLeading(store, clientId, hashPath = '#/home') {
+  // Home's gym card puts the clients led last first (components/GymHomeCard.jsx).
+  try { const k = 'gymv2_recent'; const v = JSON.parse(localStorage.getItem(k) || '[]'); localStorage.setItem(k, JSON.stringify([clientId, ...(Array.isArray(v) ? v : []).filter(x => x !== clientId)].slice(0, 12))) } catch { /* order only */ }
   await settleThenReload(store)
   const r = await post('/api/gymv2/act', { id: clientId })
   if (MOBILE) keepAct(r.token)
-  location.hash = '#/home'
+  location.hash = hashPath
   location.reload()
 }
+// Live joint training (patch 0006): who of the gym's clients trains right now (a trainer's banner).
+export const liveNow = () => api('/api/gymv2/live-now')
 export async function stopLeading(store) {
   await settleThenReload(store)
   try { await post('/api/gymv2/act/end') } finally {

@@ -5718,6 +5718,7 @@ export default {
   "Your own code for this set": "Bu set için kendi kodun",
   "openGym dark": "openGym koyu",
   "openGym green": "openGym yeşili",
+  "Habcore red": "Habcore kırmızısı",
   // --- sub-connect-146: Use your subscription (Claude, ChatGPT, Gemini connectors) ---
   "A model on your network": "Ağındaki bir model",
   "A paid ChatGPT plan, on the web. Business and Enterprise workspaces decide whether members may add their own.": "Ücretli bir ChatGPT planı, web üzerinde. Business ve Enterprise çalışma alanlarında üyelerin kendi bağlayıcılarını ekleyip ekleyemeyeceğine çalışma alanı karar verir.",

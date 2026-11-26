@@ -5718,6 +5718,7 @@ export default {
   "Your own code for this set": "你给这组定的记号",
   "openGym dark": "openGym 深色",
   "openGym green": "openGym 绿色",
+  "Habcore red": "Habcore red",
   // --- sub-connect-146: Use your subscription (Claude, ChatGPT, Gemini connectors) ---
   "A model on your network": "你网络里的模型",
   "A paid ChatGPT plan, on the web. Business and Enterprise workspaces decide whether members may add their own.": "付费的 ChatGPT 方案，网页版。Business 和 Enterprise 工作区由工作区决定成员能否自行添加。",

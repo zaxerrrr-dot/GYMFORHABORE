@@ -1,3 +1,4 @@
+import LiveLine from '../components/LiveLine.jsx'
 import { Fragment, useEffect, useId, useRef, useState } from 'react'
 import SwipeCards from '../components/SwipeCards.jsx'
 import SwipeRow from '../components/SwipeRow.jsx'
@@ -2714,6 +2715,7 @@ function ActiveWorkout() {
     <div className={'whdr' + (listMode ? ' stick' : '')} ref={hdrRef}>
     {/* In season, a corner web under the header's own buttons (components/Seasonal.jsx). */}
     <SeasonDeco spot="workout-hdr" workout />
+    {!editing && !A.backfill && <LiveLine />}
     {/* ⌄ leaves the screen and keeps the session running (the tab bar's Resume brings it back);
         in the editor of a saved workout it is the ✕ that closes the editor. Finish is a labelled pill
         rather than a check that looked like a set tick: it opens the Finish sheet (Finish and save,

@@ -82,6 +82,30 @@ server {
         proxy_send_timeout 300s;
     }
 
+    # Live joint training (local patch 0006, api/gymv2/live.js): the stream of a running workout
+    # (Server-Sent Events) and its long poll. Nothing buffered here, and the API's
+    # X-Accel-Buffering: no is passed on, so a reverse proxy in front (nginx) does not buffer it
+    # either; the stream sends a comment every 15 s, well inside the read timeout.
+    # No trailing slash: with one, nginx answers /api/live itself with a 301 to /api/live/.
+    location ^~ ${BASE_PATH}/api/live {
+        client_max_body_size 5m;
+        resolver ${RESOLVER} valid=10s ipv6=off;
+        set $api_upstream http://${BACKEND}:${PORT};
+        proxy_pass $api_upstream$api_request_uri;
+        proxy_http_version 1.1;
+        proxy_buffering off;
+        proxy_cache off;
+        proxy_pass_header X-Accel-Buffering;
+        proxy_set_header Connection "";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header CF-Connecting-IP "${CF_CONNECTING_IP}";
+        proxy_read_timeout 300s;
+        proxy_send_timeout 300s;
+    }
+
     # MCP over HTTPS (docs/MCP_REMOTE.md): the optional mcp container. Same per-request resolve
     # as /api, so a stack without it starts and runs as before; then /mcp answers with a JSON
     # 503 saying so (an MCP client shows that, where nginx's HTML 502 page would read as junk).

@@ -1,3 +1,4 @@
+import { liveFinishGate } from './lib/gym-live-app.js'
 import { tempoSheet } from './components/Tempo.jsx'
 import { useCircuit } from './store/useCircuit.js'
 import { CircuitResults } from './components/CircuitCard.jsx'
@@ -4765,6 +4766,9 @@ function doFinishWorkout({ end: endAt, auto } = {}) {
   const st = S()
   const A = st.active
   if (!A) return
+  // Live joint training (patch 0006): a trainer's Finish on a client's live workout is the
+  // client's phone's to save (Apple Health, the watch) while that phone is there.
+  if (!A.backfill && !auto && liveFinishGate()) { useUI.getState().stopRest(); useUI.getState().stopWork(); return }
   const past = !!A.backfill
   // A workout logged into the past is held against the history before it, the way an edit of a
   // saved one is (rebuildPrHistory, below): it gains a badge it leads with, and a later session

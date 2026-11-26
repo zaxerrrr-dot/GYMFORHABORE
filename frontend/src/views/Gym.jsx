@@ -75,9 +75,9 @@ function MergesSheet({ c, close, reload }) {
 
 function ClientRow({ c, onInvite, onLog, onMerges }) {
   const [busy, setBusy] = useState(false)
-  const lead = async () => {
+  const lead = async (to) => {
     setBusy(true)
-    try { await startLeading(useStore, c.id) } catch (e) { setBusy(false); toast(gErr(e)) }
+    try { await startLeading(useStore, c.id, to) } catch (e) { setBusy(false); toast(gErr(e)) }
   }
   const sub = [
     c.virtual ? g('virtual') : g('own'),
@@ -86,10 +86,14 @@ function ClientRow({ c, onInvite, onLog, onMerges }) {
     c.virtual && c.invite ? g('inviteOpen', fmtDay(new Date(c.invite.expires).toISOString())) : null,
     c.merges?.length ? g('mergedN', c.merges.length) : null
   ].filter(Boolean).join(' · ')
-  return <div className="gv-client" data-testid="gym-client" data-name={c.name}>
+  // Live joint training (patch 0006): the client has a workout running right now.
+  const live = c.live
+  return <div className={'gv-client' + (live ? ' gl-live-row' : '')} data-testid="gym-client" data-name={c.name} data-live={live ? '1' : '0'}>
     <Row icon="person" iconTint={c.virtual ? 'var(--orange)' : 'var(--blue)'} title={c.name} subtitle={sub} />
+    {live && <div className="gv-actions"><span className="gl-live-tag"><span className="gl-dot" aria-hidden="true" />{g('liveBadge')} · {g('liveInfo', live.name || '–', live.exercises, live.setsDone, live.setsTotal)}</span></div>}
     <div className="gv-actions">
-      <Button variant="primary" size="sm" icon="play" disabled={busy || !c.canLead} onClick={lead}>{busy ? g('switching') : g('lead')}</Button>
+      {live && <Button variant="primary" size="sm" icon="play" disabled={busy || !c.canLead} onClick={() => lead('#/workout')} data-testid="gym-live-join">{busy ? g('switching') : g('liveJoin')}</Button>}
+      <Button variant={live ? undefined : 'primary'} size="sm" icon="play" disabled={busy || !c.canLead} onClick={() => lead()}>{busy ? g('switching') : g('lead')}</Button>
       {c.virtual && <Button size="sm" icon="envelope" onClick={() => onInvite(c)}>{g('invite')}</Button>}
       <Button size="sm" icon="history" onClick={() => onLog(c)}>{g('history')}</Button>
       {c.merges?.length > 0 && <Button size="sm" icon="reset" data-testid="gym-merges" onClick={() => onMerges(c)}>{g('undoMerge')}</Button>}
@@ -104,6 +108,14 @@ function StaffView({ st, reload }) {
   const [code, setCode] = useState(undefined)
   const load = () => gymClients().then(r => setClients(r.clients || [])).catch(e => toast(gErr(e)))
   useEffect(() => { load(); gymCode().then(r => setCode(r.code)).catch(() => setCode(null)) }, [])
+  // From Home's gym card, "Nowy klient": straight to the name field (patch 0006).
+  useEffect(() => {
+    if (!/[?&]nowy=1/.test(location.hash || '')) return
+    const t = setTimeout(() => { const el = document.querySelector('[data-testid=gym-new-name]'); if (el) { el.scrollIntoView({ block: 'center' }); el.focus() } }, 300)
+    return () => clearTimeout(t)
+  }, [])
+  // Who is training right now (patch 0006) changes by itself: the list is read again every 15 s.
+  useEffect(() => { const t = setInterval(() => { if (!document.hidden) load() }, 15000); return () => clearInterval(t) }, [])
   const add = async e => {
     e?.preventDefault?.()
     const n = name.trim(); if (!n) return

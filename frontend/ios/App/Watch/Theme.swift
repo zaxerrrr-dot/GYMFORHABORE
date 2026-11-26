@@ -14,7 +14,10 @@ enum Theme {
     /// The brand's green (#a3e635, the logo's and a new profile's accent since 1.4.5), until the
     /// phone has said which accent it wears. It is light, so the ink on it is near-black (onAccent).
     static let green = Color(red: 0xa3 / 255, green: 0xe6 / 255, blue: 0x35 / 255)
-    static let accent = green
+    /// Habcore Gym (local patch 0006): the Habcore logo's red (#ba1a18), the accent until the phone
+    /// has said which one it wears; white reads on it (6.5:1).
+    static let brand = Color(red: 0xba / 255, green: 0x1a / 255, blue: 0x18 / 255)
+    static let accent = brand
     /// The brand's near-black (#0c0e12): what reads on the green.
     static let onGreen = Color(red: 0x0c / 255, green: 0x0e / 255, blue: 0x12 / 255)
     static let orange = Color(red: 1, green: 0x9f / 255, blue: 0x0a / 255)
@@ -38,8 +41,8 @@ enum Theme {
     static let tap: CGFloat = 44
 }
 
-private struct AccentKey: EnvironmentKey { static let defaultValue: Color = Theme.green }
-private struct OnAccentKey: EnvironmentKey { static let defaultValue: Color = Theme.onGreen }
+private struct AccentKey: EnvironmentKey { static let defaultValue: Color = Theme.brand }
+private struct OnAccentKey: EnvironmentKey { static let defaultValue: Color = .white }
 
 extension EnvironmentValues {
     /// The app's accent, as the phone sends it.
