@@ -109,6 +109,9 @@ const TRAINERS = /^(1|true|yes|on)$/i.test(process.env.TRAINERS || '');
 const TRAINERS_LEAD_ACCESS = process.env.TRAINERS_LEAD_ACCESS || 'row';
 // Gym mode v2 (local patch 0003, gymv2/index.js): one gym, trainers lead every client of it.
 const GYM_V2 = /^(1|true|yes|on)$/i.test(process.env.GYM_V2 || '');
+// Joint training (local patch 0004, gymv2/merge.js): a trainer's workout logged while leading and the
+// client's own workout of the same session (phone + watch) are joined into one once both are in.
+const GYM_MERGE = GYM_V2 && /^(1|true|yes|on)$/i.test(process.env.GYM_MERGE || '');
 // Whether the admin dashboard shows a member's workouts and weigh-ins (1.4.5: off by default).
 // Off, admins see counts only; on, every look is in the activity log and the member's sharing log.
 const ADMIN_DATA_VIEW = /^(1|true|yes|on)$/i.test(process.env.ADMIN_DATA_VIEW || '');
@@ -2374,7 +2377,8 @@ const gym = GYM_V2 ? gymV2({
   on: true, dataDir: DATA, db: () => db, saveDb, json, readBody, sessionOf, isAdmin, sessionVersion, audit,
   secure: !!SECURE, sameSite: SAME_SITE, passwordLogin: PASSWORD_LOGIN, hashPassword, passwordProblem, policyError,
   setPassword, nameTaken, nameKey, normalizeEmail, emailTaken, sessionCookie, publicUser,
-  limitAddress: req => limitAddress(req), readStateCached: uid => readStateCached(uid), readState
+  limitAddress: req => limitAddress(req), readStateCached: uid => readStateCached(uid), readState,
+  merge: GYM_MERGE, writeStateAs: (uid, fn, opts) => writeStateAs(uid, fn, opts)
 }) : null;
 // The app names the account it believes it is syncing (X-OpenGym-As). When the session now
 // belongs to another one (a trainer started or stopped leading a client in another tab, a sign-in
@@ -3257,6 +3261,9 @@ const routes = {
     const done = commitState(user.id, cur, body.state, { overRead: body.baseRev != null && body.baseRev === curRev, stamped: body.stamped === true });
     // A trainer leading this client: what changed, and who changed it, in the client's log.
     if (sess.actor && done.status === 200) gym.logWrite(user, sess.actor, cur, body.state);
+    // Joint training (patch 0004): a pair of one session's workouts is joined in a revision of its
+    // own after this one; the device sees it on its next check, like any other device's write.
+    if (gym && done.status === 200) gym.afterWrite(user);
     json(res, done.status, done.body);
   },
 

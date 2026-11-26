@@ -95,6 +95,17 @@ const W = {
   bw: ['waga ciała', 'body weight'],
   ms: ['pomiary', 'measurements'],
   other: ['ustawienia ({0})', 'settings ({0})'],
+  // Joint training (patch 0004)
+  mergeHint: ['Gdy klient ma trening na zegarku/w aplikacji, wpisuj ćwiczenia przez Prowadź jako klient — po zakończeniu obu treningów zapisy połączą się w jeden.', 'When the client has a workout running on the watch/in the app, log the exercises through Lead as client — once both workouts are finished, they are joined into one.'],
+  ev_merge: ['scalono trening trenera {0} z treningiem z zegarka{1}', 'joined trainer {0}\'s workout with the watch workout{1}'],
+  'ev_merge-again': ['ponownie scalono trening trenera {0} (urządzenie przysłało starszą wersję)', 'joined trainer {0}\'s workout again (a device sent an older copy)'],
+  'ev_merge-skip': ['nie scalono treningu trenera {0}: kilka treningów pasuje czasem, scal ręcznie', 'trainer {0}\'s workout not joined: more than one workout fits the time'],
+  'ev_merge-undo': ['{0} cofnął scalenie treningów', '{0} undid a joint-training join'],
+  undoMerge: ['Cofnij scalenie', 'Undo the join'],
+  undoMergeQ: ['Cofnąć scalenie?', 'Undo the join?'],
+  undoMergeMsg: ['Trening „{0}” ({1}) wróci do dwóch osobnych treningów: z zegarka klienta i wpisany przez trenera {2}.', 'The workout “{0}” ({1}) goes back to two workouts: the client\'s watch workout and the one trainer {2} logged.'],
+  undoMergeDone: ['Scalenie cofnięte', 'Join undone'],
+  mergedN: ['scalone: {0}', 'joined: {0}'],
   err: ['Nie udało się: {0}', 'That did not work: {0}'],
   e_name_taken: ['Ta nazwa jest już zajęta. Dodaj np. inicjał nazwiska.', 'That name is taken. Add an initial, for example.'],
   e_code_invalid: ['Ten kod siłowni nie działa.', 'That gym code does not work.'],
@@ -137,6 +148,7 @@ export const gymUsers = () => api('/api/gymv2/users')
 export const setTrainer = (id, trainer) => post('/api/gymv2/trainer', { id, trainer })
 export const setGymName = name => post('/api/gymv2/name', { name })
 export const clientLog = id => api('/api/gymv2/log?id=' + encodeURIComponent(id))
+export const undoMerge = id => post('/api/gymv2/merge/undo', { id })
 
 // The address of a page of this app, for a link sent to someone (hash router).
 export const appLink = hashPath => location.origin + appBase().replace(/\/?$/, '/') + '#' + hashPath
@@ -172,6 +184,7 @@ export async function stopLeading(store) {
 // One line of the change log, in words.
 export function logLine(e) {
   const by = e.by?.name || '?'
+  if (e.ev === 'merge') return g('ev_merge', by, e.d ? ' (' + fmtDay(e.d) + ')' : '')
   if (e.ev !== 'write') return g('ev_' + e.ev, by)
   const c = e.changes || {}, parts = []
   const add = (k, list, label) => { for (const x of list || []) parts.push(g(k) + (label(x) ? ' ' + label(x) : '')) }

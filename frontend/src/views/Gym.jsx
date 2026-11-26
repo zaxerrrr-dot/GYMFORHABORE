@@ -14,7 +14,7 @@ import Icon from '../components/Icon.jsx'
 import { pathBefore } from '../lib/nav.js'
 import {
   g, gErr, fmtDay, fmtWhen, gymStatus, gymClients, createClient, makeInvite, gymCode, newGymCode, joinGym, leaveGym,
-  gymUsers, setTrainer, setGymName, clientLog, inviteLink, joinLink, startLeading, logLine
+  gymUsers, setTrainer, setGymName, clientLog, inviteLink, joinLink, startLeading, logLine, undoMerge
 } from '../lib/gymv2.js'
 
 const toast = m => useUI.getState().toast(m)
@@ -56,7 +56,24 @@ function LogSheet({ client, close }) {
   </>
 }
 
-function ClientRow({ c, onInvite, onLog }) {
+// Joint training (patch 0004): every join of this client from the last 30 days, each with Undo.
+function MergesSheet({ c, close, reload }) {
+  const [list, setList] = useState(c.merges || [])
+  const undo = m => confirmSheet({
+    title: g('undoMergeQ'), message: g('undoMergeMsg', m.name || '–', m.d ? fmtDay(m.d) : fmtWhen(m.at), m.by?.name || '?'), confirmText: g('undoMerge'),
+    onConfirm: () => undoMerge(m.id).then(r => { toast(g('undoMergeDone')); setList(r.merges || []); reload() }).catch(e => toast(gErr(e)))
+  })
+  return <>
+    <h3>{g('undoMerge')}: {c.name}</h3>
+    {!list.length ? <p className="muted">{g('noHistory')}</p>
+      : list.map(m => <Row key={m.id} icon="history" iconTint="var(--orange)" title={`${m.name || '–'} · ${m.d ? fmtDay(m.d) : fmtWhen(m.at)}`}
+        subtitle={g('ev_merge', m.by?.name || '?', '')}><Button size="sm" data-testid="gym-undo-merge" onClick={() => undo(m)}>{g('undoMerge')}</Button></Row>)}
+    <div style={{ height: 8 }} />
+    <Button variant="ghost" className="dim" onClick={close}>OK</Button>
+  </>
+}
+
+function ClientRow({ c, onInvite, onLog, onMerges }) {
   const [busy, setBusy] = useState(false)
   const lead = async () => {
     setBusy(true)
@@ -66,7 +83,8 @@ function ClientRow({ c, onInvite, onLog }) {
     c.virtual ? g('virtual') : g('own'),
     c.workouts ? g('workoutsN', c.workouts) : g('never'),
     c.lastWorkout ? g('lastW', fmtDay(c.lastWorkout)) : null,
-    c.virtual && c.invite ? g('inviteOpen', fmtDay(new Date(c.invite.expires).toISOString())) : null
+    c.virtual && c.invite ? g('inviteOpen', fmtDay(new Date(c.invite.expires).toISOString())) : null,
+    c.merges?.length ? g('mergedN', c.merges.length) : null
   ].filter(Boolean).join(' · ')
   return <div className="gv-client" data-testid="gym-client" data-name={c.name}>
     <Row icon="person" iconTint={c.virtual ? 'var(--orange)' : 'var(--blue)'} title={c.name} subtitle={sub} />
@@ -74,6 +92,7 @@ function ClientRow({ c, onInvite, onLog }) {
       <Button variant="primary" size="sm" icon="play" disabled={busy || !c.canLead} onClick={lead}>{busy ? g('switching') : g('lead')}</Button>
       {c.virtual && <Button size="sm" icon="envelope" onClick={() => onInvite(c)}>{g('invite')}</Button>}
       <Button size="sm" icon="history" onClick={() => onLog(c)}>{g('history')}</Button>
+      {c.merges?.length > 0 && <Button size="sm" icon="reset" data-testid="gym-merges" onClick={() => onMerges(c)}>{g('undoMerge')}</Button>}
     </div>
   </div>
 }
@@ -106,8 +125,10 @@ function StaffView({ st, reload }) {
   })
   return <>
     <Section title={g('clients') + (clients ? ` (${clients.length})` : '')} footer={g('clientsFoot')}>
+      {st.merge && <p className="muted small" data-testid="gym-merge-hint" style={{ margin: 0, padding: '12px 16px 4px', lineHeight: 1.45 }}>{g('mergeHint')}</p>}
       {!clients ? <Row title={g('loading')} /> : !clients.length ? <Row title={g('noClients')} />
-        : clients.map(c => <ClientRow key={c.id} c={c} onInvite={invite} onLog={c => openSheet(close => <LogSheet client={c} close={close} />)} />)}
+        : clients.map(c => <ClientRow key={c.id} c={c} onInvite={invite} onLog={c => openSheet(close => <LogSheet client={c} close={close} />)}
+          onMerges={c => openSheet(close => <MergesSheet c={c} close={close} reload={load} />)} />)}
     </Section>
     <Section title={g('newClient')} footer={g('newClientFoot')}>
       <form onSubmit={add} className="gv-form">

@@ -13,6 +13,8 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
+import { stampEntry } from '../sync-stamps.js';
+import { findPairs, joinWorkouts, entriesCore, placeJoin, WINDOW_MS } from './merge.js';
 
 export const ACT_TTL_MS = 12 * 3600 * 1000;
 export const INVITE_TTL_MS = 7 * 86400 * 1000;
@@ -99,7 +101,9 @@ export function diffStates(cur, next) {
 export function gymV2({
   on, dataDir, db, saveDb, json, readBody, sessionOf, isAdmin, sessionVersion, audit, secure, sameSite,
   passwordLogin, hashPassword, passwordProblem, policyError, setPassword, nameTaken, nameKey, normalizeEmail, emailTaken,
-  sessionCookie, publicUser, limitAddress, readStateCached, readState
+  sessionCookie, publicUser, limitAddress, readStateCached, readState,
+  // Joint training (patch 0004, gymv2/merge.js): GYM_MERGE, and the server's own write into a profile.
+  merge: mergeOn = false, writeStateAs = null
 }) {
   const users = () => db().users;
   const userById = id => users().find(u => u.id === id) || null;
@@ -224,6 +228,174 @@ export function gymV2({
     return d.members.length !== before;
   }
 
+  /* ---------- joint training (patch 0004, gymv2/merge.js) ---------- */
+  // Which workouts of a client a trainer added while leading: from the change log (every write made
+  // while leading names the workouts it added). Parsed again only when the log file changed.
+  const trainerLogCache = new Map();   // uid -> { size, mtimeMs, map }
+  function trainerWorkouts(uid) {
+    let st;
+    try { st = fs.statSync(logFile(uid)); } catch { return new Map(); }
+    const hit = trainerLogCache.get(uid);
+    if (hit && hit.size === st.size && hit.mtimeMs === st.mtimeMs) return hit.map;
+    const map = new Map();
+    let text = '';
+    try { text = fs.readFileSync(logFile(uid), 'utf8'); } catch { /* none */ }
+    for (const line of text.split('\n')) {
+      if (!line) continue;
+      let e; try { e = JSON.parse(line); } catch { continue; }
+      if (e?.ev !== 'write' || !e.by?.id) continue;
+      for (const w of e.changes?.workouts?.added || []) if (w?.id != null && !map.has(String(w.id))) map.set(String(w.id), { id: String(e.by.id), name: String(e.by.name || '') });
+    }
+    trainerLogCache.set(uid, { size: st.size, mtimeMs: st.mtimeMs, map });
+    return map;
+  }
+  const mergedDir = path.join(dataDir, 'gymv2-merged');
+  const mergedFile = id => path.join(mergedDir, String(id).replace(/[^a-zA-Z0-9_-]/g, '') + '.json');
+  function saveMerged(rec) {
+    fs.mkdirSync(mergedDir, { recursive: true, mode: 0o700 });
+    const f = mergedFile(rec.id), tmp = f + '.tmp';
+    fs.writeFileSync(tmp, JSON.stringify(rec, null, 1), { mode: 0o600 });
+    fs.renameSync(tmp, f);
+  }
+  const readMerged = id => { try { return JSON.parse(fs.readFileSync(mergedFile(id), 'utf8')); } catch { return null; } };
+  const mergesOf = uid => (store ? (store.get().merges || []).filter(m => m.client === uid) : []);
+  // How long after a join a device that had not seen it yet can still put the client's own sets
+  // back over it (it edited them, e.g. with the heart rate from Apple Health, before it pulled the
+  // join): within this, such a write is joined again.
+  const FOLLOW_MS = WINDOW_MS;
+  const wKey = w => (w?.id != null ? String(w.id) : `${w?.d}|${w?.start}`);
+
+  // After every write of a client's document (PUT /api/data, from any device): join what is a pair.
+  function reconcile(client) {
+    const uid = client.id;
+    const tw = trainerWorkouts(uid);
+    if (!tw.size) return null;
+    const S0 = readStateCached(uid);
+    if (!S0 || !Array.isArray(S0.workouts)) return null;
+    const now = Date.now();
+    const all = mergesOf(uid);
+    const live = all.filter(m => !m.undone);
+    const taken = new Set(all.flatMap(m => [String(m.base), String(m.from)]));
+    // A cheap look first, on the cached document: anything to do at all?
+    const ids = new Set(S0.workouts.filter(w => w && w.id != null).map(w => String(w.id)));
+    const follow = live.filter(m => now - m.at < FOLLOW_MS && ids.has(String(m.base)));
+    const quick = findPairs(S0.workouts, new Set(tw.keys()), { now, skip: id => taken.has(id) });
+    if (!quick.pairs.length && !quick.ambiguous.length && !follow.length) return null;
+
+    const done = [];
+    const notes = [];
+    writeStateAs(uid, (next, t) => {
+      const ws = Array.isArray(next.workouts) ? next.workouts : [];
+      const byId = id => ws.find(w => w && String(w.id) === String(id)) || null;
+      // 1. Joins already made: the trainer's workout came back (a device edited it before it saw the
+      //    join), or the client's own sets came back over the join. Joined again.
+      for (const m of follow) {
+        const rec = readMerged(m.id);
+        const base = byId(m.base);
+        if (!rec || !base) continue;
+        const back = byId(m.from);
+        if (back) {
+          const joined = joinWorkouts({ ...base, entries: rec.client.entries }, back, { id: m.id, by: m.by, at: m.at });
+          if (placeJoin(next, t, m.base, joined, back)) { rec.trainerLatest = back; notes.push({ m, rec, why: 'trainer-back' }); }
+          continue;
+        }
+        const core = entriesCore(base.entries);
+        if (core === entriesCore(rec.client.entries) && core !== entriesCore(rec.joined.entries)) {
+          const trainer = rec.trainerLatest || rec.trainer;
+          const joined = joinWorkouts(base, trainer, { id: m.id, by: m.by, at: m.at });
+          if (placeJoin(next, t, m.base, joined, trainer)) notes.push({ m, rec, why: 'client-back' });
+        }
+      }
+      // 2. New pairs, on the document as it is now.
+      const { pairs, ambiguous } = findPairs(next.workouts, new Set(tw.keys()), { now, skip: id => taken.has(id) });
+      for (const { trainer, client: cw } of pairs) {
+        const by = tw.get(String(trainer.id)) || { id: '?', name: '?' };
+        const id = crypto.randomBytes(9).toString('base64url');
+        const meta = { id, by, at: t };
+        const joined = joinWorkouts(cw, trainer, meta);
+        if (!placeJoin(next, t, cw.id, joined, trainer)) continue;
+        done.push({ id, by, base: String(cw.id), from: String(trainer.id), at: t, client: JSON.parse(JSON.stringify(cw)), trainer: JSON.parse(JSON.stringify(trainer)), joined });
+      }
+      for (const a of ambiguous) notes.push({ ambiguous: a });
+      return done.length || notes.some(n => n.m) ? 'write' : 'skip';
+    }, { skipIf: r => r === 'skip' });
+
+    const d = store.get();
+    d.merges = Array.isArray(d.merges) ? d.merges : [];
+    let dirty = false;
+    for (const x of done) {
+      // The originals of both (and the result), for "Undo the join".
+      saveMerged({ id: x.id, clientId: uid, at: x.at, by: x.by, base: x.base, from: x.from, client: x.client, trainer: x.trainer, joined: x.joined });
+      d.merges.push({ id: x.id, client: uid, base: x.base, from: x.from, by: x.by, at: x.at, d: x.client.d || null, name: String(x.joined.name || '').slice(0, 60), undone: null });
+      log(uid, { ev: 'merge', by: x.by, merge: x.id, base: x.base, from: x.from, d: x.client.d || null });
+      console.log('gymv2 merge', uid, x.id, x.from, '->', x.base);
+      dirty = true;
+    }
+    for (const n of notes) {
+      if (n.m) {
+        if (n.rec.trainerLatest) saveMerged(n.rec);
+        n.m.again = (n.m.again || 0) + 1;
+        log(uid, { ev: 'merge-again', by: n.m.by, merge: n.m.id, why: n.why });
+        dirty = true;
+      } else if (n.ambiguous) {
+        // Said once per situation, not on every push.
+        const sig = JSON.stringify(n.ambiguous);
+        d.mergeSkips = d.mergeSkips && typeof d.mergeSkips === 'object' ? d.mergeSkips : {};
+        const seen = Array.isArray(d.mergeSkips[uid]) ? d.mergeSkips[uid] : [];
+        if (!seen.includes(sig)) {
+          d.mergeSkips[uid] = [...seen, sig].slice(-20);
+          log(uid, { ev: 'merge-skip', by: tw.get(n.ambiguous.trainer) || null, why: 'ambiguous', trainer: n.ambiguous.trainer, clients: n.ambiguous.clients, trainers: n.ambiguous.trainers });
+          dirty = true;
+        }
+      }
+    }
+    if (d.merges.length > 1000) d.merges = d.merges.slice(-1000);
+    if (dirty) store.save();
+    return done.length;
+  }
+
+  // Undo a join: both workouts as they were before it, each stamped later than the join, the
+  // trainer's marked as added back. The heart rate and media the client's workout got after the
+  // join stay with it.
+  function undoMerge(m, actor) {
+    const rec = readMerged(m.id);
+    if (!rec) throw Object.assign(new Error('the originals of this join are missing'), { status: 410, code: 'merge-lost' });
+    writeStateAs(m.client, (next, t) => {
+      next.workouts = Array.isArray(next.workouts) ? next.workouts : [];
+      const ws = next.workouts;
+      const del = (next.deleted = next.deleted && typeof next.deleted === 'object' ? next.deleted : {});
+      const dw = (del.workouts = del.workouts && typeof del.workouts === 'object' ? del.workouts : {});
+      const i = ws.findIndex(w => w && String(w.id) === String(m.base));
+      const restored = JSON.parse(JSON.stringify(rec.client));
+      delete restored._f; delete restored._u;
+      if (i >= 0) {
+        const cur = ws[i];
+        for (const k of ['hr', 'media']) if (cur[k] !== undefined) restored[k] = JSON.parse(JSON.stringify(cur[k]));
+        restored._f = cur._f;
+        if (restored._f === undefined) delete restored._f;
+        stampEntry(cur, restored, t);
+        ws[i] = restored;
+      } else {
+        restored._ts = t;
+        ws.push(restored);
+        dw[wKey(restored)] = -t;
+      }
+      const tr = JSON.parse(JSON.stringify(rec.trainerLatest || rec.trainer));
+      delete tr._f; delete tr._u;
+      tr._ts = t;
+      const j = ws.findIndex(w => w && wKey(w) === wKey(tr));
+      if (j >= 0) ws[j] = tr; else ws.push(tr);
+      dw[wKey(tr)] = -t;
+      ws.sort((a, b) => String(a?.d || '').localeCompare(String(b?.d || '')) || (Number(a?.start) || 0) - (Number(b?.start) || 0));
+      return true;
+    });
+    m.undone = { at: Date.now(), by: who(actor) };
+    store.save();
+    log(m.client, { ev: 'merge-undo', by: who(actor), merge: m.id, base: m.base, from: m.from });
+  }
+  const mergeOut = m => ({ id: m.id, at: m.at, d: m.d, name: m.name, by: m.by });
+  const liveMerges = uid => mergesOf(uid).filter(m => !m.undone && Date.now() - m.at < 30 * 86400000).map(mergeOut).reverse();
+
   const routes = {
     // What the app needs to draw the gym screen for whoever asks.
     'GET /api/gymv2/status': async (req, res) => {
@@ -240,7 +412,8 @@ export function gymV2({
         acting: acting ? { client: who(acting), by: who(self), exp: m.s.actExp || null } : null,
         trainers: d.trainers.map(t => userById(t.userId)).filter(u => u && !u.disabled).map(who),
         consent: consentOut(),
-        passwordLogin: !!passwordLogin
+        passwordLogin: !!passwordLogin,
+        merge: !!mergeOn
       });
     },
 
@@ -254,7 +427,8 @@ export function gymV2({
           const inv = activeInvite(u.id);
           return {
             ...who(u), since: x.since, via: x.via, virtual: !!u.gymVirtual,
-            canLead: canLead(m.self, u), invite: inv ? { expires: inv.expires } : null, ...summary(u)
+            canLead: canLead(m.self, u), invite: inv ? { expires: inv.expires } : null, ...summary(u),
+            ...(mergeOn ? { merges: liveMerges(u.id) } : {})
           };
         })
         .sort((a, b) => a.name.localeCompare(b.name, 'pl'));
@@ -446,6 +620,22 @@ export function gymV2({
       json(res, 200, { ok: true });
     },
 
+    // Undo a joint-training join (patch 0004): a trainer or an admin, for a client of the gym.
+    'POST /api/gymv2/merge/undo': async (req, res) => {
+      if (!on || !mergeOn) return off(res);
+      const m = staffOnly(req, res); if (!m) return;
+      if (m.acting) return json(res, 403, { error: 'not while leading a client', code: 'acting-forbidden' });
+      const body = await readBody(req);
+      const rec = (store.get().merges || []).find(x => x.id === str(body.id));
+      const u = rec && userById(rec.client);
+      if (!rec || !u || !isMember(u)) return json(res, 404, { error: 'no such join', code: 'not-found' });
+      if (rec.undone) return json(res, 409, { error: 'this join was undone already', code: 'merge-undone' });
+      try { undoMerge(rec, m.self); }
+      catch (e) { return json(res, e.status || 500, { error: e.message, code: e.code || 'merge-undo-failed' }); }
+      audit(req, 'gymv2.merge.undo', { user: m.self, target: u });
+      json(res, 200, { ok: true, merges: liveMerges(u.id) });
+    },
+
     // Admins: everyone on the server with their gym role, to give or take the trainer role.
     'GET /api/gymv2/users': async (req, res) => {
       if (!on) return off(res);
@@ -510,6 +700,13 @@ export function gymV2({
       let d = null;
       try { d = diffStates(cur, next); } catch (e) { d = { error: String(e.message).slice(0, 80) }; }
       if (d) log(client.id, { ev: 'write', by: who(actor), changes: d });
+    },
+    // After a write of a client's document (patch 0004): join a trainer's and the client's workout
+    // of one session. Never throws into the request: the write itself is done.
+    afterWrite(u) {
+      if (!on || !mergeOn || !writeStateAs || !u) return;
+      if (!isMember(u) || isAdmin(u) || isTrainer(u)) return;
+      try { reconcile(u); } catch (e) { console.error('gymv2 merge', u.id, e.message); }
     },
     roleOf(u) { return !on || !u ? null : isAdmin(u) ? 'admin' : isTrainer(u) ? 'trainer' : isMember(u) ? 'member' : 'none'; },
     removeUser(uid) {
