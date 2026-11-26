@@ -4739,6 +4739,8 @@ button.wl-summary{width:100%;padding:0 0 10px;text-align:start;border-radius:var
 @media (max-width:359px){.gh-big{grid-template-columns:1fr}}
 /* Habcore Gym 0006.2: the client picker (whole list) and the saved groups */
 .gp h3{margin-bottom:10px}
+.gp-sticky{position:sticky;top:-8px;z-index:2;background:var(--bg-el);margin:0 -18px;padding:8px 18px 4px;border-bottom:1px solid var(--sep-op)}
+:root[data-theme="light"] .gp-sticky{background:var(--bg)}
 .gp-count{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:10px 2px 4px;font-size:15px}
 .gp-count strong{color:var(--acc-ink);font-size:17px}
 .gp-chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 2px}

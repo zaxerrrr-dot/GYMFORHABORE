@@ -134,6 +134,7 @@ export function GymPicker({ mode = 'group', group = null, preset = [], close, on
       <label className="small dim" htmlFor="gp-gname">{g('groupName')}</label>
       <TextField id="gp-gname" data-testid="gp-group-name" value={name} maxLength={40} placeholder={g('groupNameHint')} onChange={e => setName(e.target.value)} />
     </div>}
+    <div className="gp-sticky">
     <div className="picker-search">
       <SearchField value={q} onChange={e => setQ(e.target.value)} onClear={() => setQ('')} placeholder={g('searchName')} aria-label={g('searchName')} data-testid="gp-search" />
     </div>
@@ -142,6 +143,7 @@ export function GymPicker({ mode = 'group', group = null, preset = [], close, on
       <span className="dim">{full ? g('pickMax') : enough ? g('pickRange') : g('pickMin')}</span>
     </div>}
     {mode !== 'one' && picked.length > 0 && <div className="gp-chips">{picked.map(p => <button key={p.id} type="button" className="gp-chip" onClick={() => setPicked(x => x.filter(y => y.id !== p.id))} aria-label={g('remove') + ': ' + p.name}>{p.name} <Icon name="xmark" /></button>)}</div>}
+    </div>
     <div className="gp-list">
       {!clients ? <p className="muted">{g('loading')}</p>
         : !top.length && !rest.length ? <p className="muted">{g('noClients')}</p>
