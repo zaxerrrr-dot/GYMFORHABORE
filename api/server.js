@@ -64,6 +64,7 @@ import { currentConsent } from './consent.js';
 import { oidcConfig } from './oidc/config.js';
 import { createProvider } from './oidc/provider.js';
 import { oidcRoutes } from './oidc/routes.js';
+import { gymV2 } from './gymv2/index.js';
 
 const PORT = +(process.env.PORT || 3000);
 const DATA = process.env.DATA_DIR || '/data';
@@ -106,6 +107,8 @@ const TRAINERS = /^(1|true|yes|on)$/i.test(process.env.TRAINERS || '');
 // How a gym lead gets to see a member: 'row' (own consent row, default), 'mirror' or 'none'
 // (api/trainers/scopes.js LEAD_MODES).
 const TRAINERS_LEAD_ACCESS = process.env.TRAINERS_LEAD_ACCESS || 'row';
+// Gym mode v2 (local patch 0003, gymv2/index.js): one gym, trainers lead every client of it.
+const GYM_V2 = /^(1|true|yes|on)$/i.test(process.env.GYM_V2 || '');
 // Whether the admin dashboard shows a member's workouts and weigh-ins (1.4.5: off by default).
 // Off, admins see counts only; on, every look is in the activity log and the member's sharing log.
 const ADMIN_DATA_VIEW = /^(1|true|yes|on)$/i.test(process.env.ADMIN_DATA_VIEW || '');
@@ -770,7 +773,12 @@ function sessionOf(req) {
   const cookie = cookieToken(req);
   const tok = cookie || (auth.startsWith('Bearer ') ? auth.slice(7).trim() : null);
   const s = sessionUser(tok);
-  return s && { ...s, bearer: !cookie };
+  if (!s) return null;
+  // A trainer leading a client (gymv2/index.js): the act token beside the trainer's own session
+  // makes this request the client's, with the trainer as `actor`. Checked on every request.
+  const act = gym ? gym.actOf(req, s.user) : null;
+  if (act) return { ...s, bearer: !cookie, user: act.client, actor: s.user, actExp: act.exp };
+  return { ...s, bearer: !cookie };
 }
 // The session a token (a cookie value or a bearer) stands for — { user, exp } — or null. Split
 // out of sessionOf so the origin check can ask whether a bearer authenticates on its own.
@@ -1603,6 +1611,7 @@ function removeAccount(u) {
     shareLog.remove(u.id);
     shareLog.anonymize(members, u.id);
   } catch (e) { console.error('org: could not remove', u.id, e.message); }
+  try { gym?.removeUser(u.id); } catch (e) { console.error('gymv2: could not remove', u.id, e.message); }
   // What they shared with the server stops being shared; copies others took stay theirs.
   try { library.removeUser(u.id); } catch (e) { console.error('library: could not withdraw items of', u.id, e.message); }
   saveDb();
@@ -2360,6 +2369,22 @@ function dataWritable() {
 
 // The trainer feature's routes (docs/TRAINERS.md): roles and consent (trainers/routes.js) and the
 // dashboard on top of it (trainers/dashboard-routes.js), sharing one guard and one sharing log.
+// Gym mode v2 (local patch 0003): see gymv2/index.js. null while GYM_V2 is off.
+const gym = GYM_V2 ? gymV2({
+  on: true, dataDir: DATA, db: () => db, saveDb, json, readBody, sessionOf, isAdmin, sessionVersion, audit,
+  secure: !!SECURE, sameSite: SAME_SITE, passwordLogin: PASSWORD_LOGIN, hashPassword, passwordProblem, policyError,
+  setPassword, nameTaken, nameKey, normalizeEmail, emailTaken, sessionCookie, publicUser,
+  limitAddress: req => limitAddress(req), readStateCached: uid => readStateCached(uid), readState
+}) : null;
+// The app names the account it believes it is syncing (X-OpenGym-As). When the session now
+// belongs to another one (a trainer started or stopped leading a client in another tab, a sign-in
+// elsewhere in this browser), the document must not cross over: 412, and the app reloads.
+function accountMismatch(req, res, user) {
+  const as = req.headers['x-opengym-as'];
+  if (typeof as !== 'string' || !as || as === user.id) return false;
+  json(res, 412, { error: 'this session belongs to another profile now', code: 'account-mismatch' });
+  return true;
+}
 const NUTRITION = nutritionSourceFrom(process.env);
 const trainerNotify = createNotify({ log: shareLog, sendPush: (uid, p) => sendPush(uid, p), langOf: uid => readStateCached(uid)?.lang || 'en' });
 const trainerRolesOf = uid => {
@@ -2596,7 +2621,9 @@ const routes = {
       // Trainers and studios (docs/TRAINERS.md): only to a session and only when on, so the app
       // shows no trace of the feature anywhere else.
       // `roles` decides whether the app shows the trainer dashboard; every route checks again anyway.
-      ...(TRAINERS && readSession(req) ? { trainers: { on: true, leadAccess: org.leadMode, roles: trainerRolesOf(readSession(req).id) } } : {})
+      ...(TRAINERS && readSession(req) ? { trainers: { on: true, leadAccess: org.leadMode, roles: trainerRolesOf(readSession(req).id) } } : {}),
+      // Gym mode v2: the role of the person (the trainer, while leading a client).
+      ...(gym && sessionOf(req) ? { gymv2: { on: true, role: gym.roleOf(sessionOf(req).actor || sessionOf(req).user), acting: !!sessionOf(req).actor } } : {})
     });
   },
 
@@ -2611,8 +2638,10 @@ const routes = {
     const s = sessionOf(req);
     if (!s) return json(res, 401, { error: 'not signed in' });
     const { user } = s;
-    const renew = s.bearer && s.kind !== 'c' && s.exp - Date.now() < SESSION_DAYS * 86400000 / 2;
-    json(res, 200, { user: publicUser(user), ...(renew ? { token: makeSession(user) } : {}) });
+    // Never renewed while a trainer leads this account: the token would be the client's own.
+    const renew = !s.actor && s.bearer && s.kind !== 'c' && s.exp - Date.now() < SESSION_DAYS * 86400000 / 2;
+    const acting = s.actor ? { acting: { by: { id: s.actor.id, name: s.actor.name }, exp: s.actExp || null } } : {};
+    json(res, 200, { user: { ...publicUser(user), ...acting }, ...(renew ? { token: makeSession(user) } : {}) });
   },
 
   'POST /api/register/options': async (req, res) => {
@@ -2763,7 +2792,7 @@ const routes = {
     if (user) audit(req, 'auth.logout', { user });
     // OIDC_LOGOUT: where the browser goes next to end the provider's session too.
     const out = user && oidcApi ? oidcApi.logoutUrl(user) : null;
-    json(res, 200, { ok: true, ...(out ? { provider_logout: out } : {}) }, { 'Set-Cookie': clearCookie });
+    json(res, 200, { ok: true, ...(out ? { provider_logout: out } : {}) }, { 'Set-Cookie': gym ? [...clearCookie, gym.clearActCookie()] : clearCookie });
   },
 
   // "Sign out everywhere" — bumps this user's session version, which invalidates every cookie
@@ -3133,6 +3162,7 @@ const routes = {
   'GET /api/data': async (req, res) => {
     const user = readSession(req);
     if (!user) return json(res, 401, { error: 'not signed in' });
+    if (accountMismatch(req, res, user)) return;
     const state = readStateStrict(user.id);
     if (state === UNREADABLE) { console.error('state file unreadable for', user.id); return json(res, 503, { error: 'state unreadable' }); }
     notePull(user);
@@ -3147,6 +3177,7 @@ const routes = {
   'GET /api/data/rev': async (req, res) => {
     const user = readSession(req);
     if (!user) return json(res, 401, { error: 'not signed in' });
+    if (accountMismatch(req, res, user)) return;
     const doc = readStateCached(user.id);
     json(res, 200, { rev: doc?._rev || 0, ...(doc?._wid ? { wid: doc._wid } : {}) });
   },
@@ -3175,8 +3206,10 @@ const routes = {
   },
 
   'PUT /api/data': async (req, res) => {
-    const user = readSession(req);
+    const sess = sessionOf(req);
+    const user = sess?.user || null;
     if (!user) return json(res, 401, { error: 'not signed in' });
+    if (accountMismatch(req, res, user)) return;
     const body = await readBody(req);
     if (!body.state || typeof body.state !== 'object') return json(res, 400, { error: 'state required' });
     // An object with nothing of the profile in it empties the document with the counter left
@@ -3222,6 +3255,8 @@ const routes = {
       return json(res, 409, { error: 'conflict', rev: curRev, state: forClient(cur) });
     }
     const done = commitState(user.id, cur, body.state, { overRead: body.baseRev != null && body.baseRev === curRev, stamped: body.stamped === true });
+    // A trainer leading this client: what changed, and who changed it, in the client's log.
+    if (sess.actor && done.status === 200) gym.logWrite(user, sess.actor, cur, body.state);
     json(res, done.status, done.body);
   },
 
@@ -3621,6 +3656,9 @@ const routes = {
     media: MEDIA_ON ? { file: (uid, hash) => MEDIA.file(uid, hash), send: sendMediaFile } : null
   }),
 
+  /* ---------- gym mode v2 (local patch 0003) ---------- */
+  ...(gym ? gym.routes : {}),
+
   /* ---------- the community library ---------- */
   // library/routes.js and library/moderation.js; with LIBRARY off they answer 404 'sharing-off'.
   ...library.routes,
@@ -3695,7 +3733,7 @@ const server = http.createServer(async (req, res) => {
       // for an Access application that passes OPTIONS through to the origin.
       // X-OpenGym-Account: the account a media upload is meant for (GHSA-699c-6p5r-q574).
       // PATCH and If-Match: a new version of a shared item (library/routes.js).
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization, CF-Access-Client-Id, CF-Access-Client-Secret, X-OpenGym-Account, If-Match',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, CF-Access-Client-Id, CF-Access-Client-Secret, X-OpenGym-Account, X-OpenGym-As, X-OpenGym-Act, If-Match',
       'Access-Control-Max-Age': '86400',
       ...(pna ? { 'Access-Control-Allow-Private-Network': 'true' } : {})
     });
@@ -3744,6 +3782,11 @@ const server = http.createServer(async (req, res) => {
     // secret, and a hostile page cannot read a response CORS never allowed it.
     console.warn(originHint(key, req.headers.origin, ORIGIN, req.headers['sec-fetch-site']));
     return json(res, 403, { error: 'cross-origin request refused', code: 'origin-mismatch', expected: ORIGIN });
+  }
+  // A trainer leading a client reaches only the client's training data (gymv2 ACT_ALLOWED):
+  // never passwords, e-mail, passkeys, pairing, tokens, push or deleting the account.
+  if (gym && sessionOf(req)?.actor && !gym.actAllowed(key)) {
+    return json(res, 403, { error: 'not while leading a client', code: 'acting-forbidden' });
   }
   // After the origin check, so a forged request spends nobody's budget. The password routes only
   // (see the sign-in throttle above).

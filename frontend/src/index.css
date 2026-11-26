@@ -4651,13 +4651,30 @@ button.wl-summary{width:100%;padding:0 0 10px;text-align:start;border-radius:var
 .gl-strip-empty{margin:0;color:var(--label-2);font-size:var(--fs-footnote)}
 
 /* ---------------------------------------------------------- brand lockup -- */
-/* The openGym logo (components/BrandLogo.jsx, assets/logo): brand colours whatever the accent, the
-   type 700 with tight tracking, the mark 1.07em high with its middle 0.36em over the baseline. */
-.brand-lockup{display:inline-block;font-weight:700;letter-spacing:-.036em;line-height:1.1;white-space:nowrap;unicode-bidi:isolate;direction:ltr}
-.brand-lockup-mark{display:inline-block;height:1.07em;width:calc(1.07em * 352 / 174);vertical-align:-.175em;margin-inline-end:.2em;fill:#a3e635}
-.brand-lockup-open{color:#eef1f6}
-.brand-lockup-gym{color:#a3e635}
-:root[data-theme="light"] .brand-lockup-open{color:#12151b}
+/* Local patch (kinkylocked): the logo pictures of components/BrandLogo.jsx. With variant 'auto' both
+   are in the page: the white one on the dark theme, the dark one on the light theme. */
+.kl-brand{display:inline-flex;align-items:center;justify-content:center;line-height:0;direction:ltr;unicode-bidi:isolate}
+.kl-brand-img{display:block;max-width:100%;height:100%;width:auto;-webkit-user-select:none;user-select:none}
+:root[data-theme="light"] .kl-brand .kl-on-dark,:root:not([data-theme="light"]) .kl-brand .kl-on-light{display:none}
 
 /* Add set / Warm-up / Remove: 44px tall, the leading glyph on the card's content edge; wrapped siblings share the same edge */
 .wk-add{min-height:44px;margin-inline-start:-14px}
+
+/* ---------- gym mode v2 (local patch 0003): views/Gym.jsx, GymClaim.jsx, components/ActingBar.jsx ---------- */
+.gv-bar{position:fixed;inset-inline:0;top:0;z-index:60;display:flex;align-items:center;justify-content:center;gap:10px;
+  padding:var(--gv-sat0,0px) 12px 0;min-height:44px;box-sizing:content-box;
+  background:#c2410c;color:#fff;font-weight:600;font-size:14px;box-shadow:0 1px 6px rgba(0,0,0,.25)}
+.gv-bar-t{flex:1 1 auto;min-width:0;max-width:420px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gv-bar-b{flex:none;border:0;border-radius:999px;padding:6px 10px;background:#fff;color:#9a3412;font-weight:700;font-size:13px;cursor:pointer}
+.gv-bar-b:disabled{opacity:.6}
+.gv-client{border-bottom:1px solid var(--sep,rgba(127,127,127,.2))}
+.gv-client:last-child{border-bottom:0}
+.gv-actions{display:flex;flex-wrap:wrap;gap:8px;padding:0 14px 12px 58px}
+.gv-form{display:flex;flex-direction:column;gap:10px;padding:12px 14px}
+.gv-join{padding-top:4px}
+.gv-consent{padding:12px 14px 0;line-height:1.5}
+.gv-consent p{margin:6px 0}
+.gv-agree{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none}
+.gv-log{display:flex;flex-direction:column;gap:8px;max-height:60vh;overflow:auto;margin:8px 0}
+.gv-log-row{display:flex;flex-direction:column;gap:2px;padding:8px 0;border-bottom:1px solid var(--sep,rgba(127,127,127,.2))}
+.gv-claim-form{display:flex;flex-direction:column;gap:12px;margin-top:12px}

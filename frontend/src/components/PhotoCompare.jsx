@@ -9,6 +9,7 @@ import { MOBILE } from '../lib/mobile.js'
 import { useLayoutEffect, useRef, useState } from 'react'
 import { t, tn } from '../lib/i18n.js'
 import { fmtDate } from '../lib/format.js'
+import { inCardEnglish } from '../lib/i18n-core.js'
 import { compareRows, cellAspect, panBy, daysApart } from '../lib/photo-compare.js'
 import { useMediaUrl } from './CustomMedia.jsx'
 import { Segmented } from './ui.jsx'
@@ -107,9 +108,11 @@ export default function PhotoCompare({ photos, close, toast }) {
     setSharing(true)
     try {
       const [{ renderCompare }, { shareImage, saveImage }] = await Promise.all([import('../lib/compare-image.js'), import('../lib/share-image.js')])
-      const items = photos.map(p => ({ url: urls.current[p.key], label: fmtDate(p.d, true, true), pos: pos[p.key] }))
+      // The picture's dates and caption in English (local patch), whatever the app's language.
+      const items = inCardEnglish(() => photos.map(p => ({ url: urls.current[p.key], label: fmtDate(p.d, true, true), pos: pos[p.key] })))
+      const caption = inCardEnglish(() => (days > 0 ? tn('{0} day apart', '{0} days apart', days) : t('Same day')))
       if (items.some(it => !it.url)) { toast?.(t('Still loading the photos. Try again in a second.')); return }
-      const blob = await renderCompare({ items, rows: slider ? [1] : rows, aspect, mode: slider ? 'slider' : 'side', pct, caption: span })
+      const blob = await renderCompare({ items, rows: slider ? [1] : rows, aspect, mode: slider ? 'slider' : 'side', pct, caption })
       if (!blob) { toast?.(t('This device could not draw the picture.')); return }
       await (save ? saveImage : shareImage)(blob, `opengym-progress-${first.d}-${last.d}.png`, t('Progress photos'), toast)
     } finally { setSharing(false) }

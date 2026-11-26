@@ -1,30 +1,40 @@
-// The openGym logo, as in assets/logo: the mark (five plain rectangles on a 352×174 grid, square
-// corners, brand green) and the lockup (mark, then "open" plus "Gym" in brand green). Brand colours,
-// not the accent: the accent is the user's, the logo is not. Never mirrored in RTL.
+// Local patch (kinkylocked): the app shows the kinkylocked.com logo where upstream drew the openGym
+// mark and lockup. Pictures, not drawn shapes: src/brand/kinkylocked-{logo,mark}-{light,dark}.png,
+// "light" being the white artwork (for dark backgrounds) and "dark" the dark one (for light ones).
+// The mark is the logo without its "powered by" line, for the small places. With variant 'auto'
+// both pictures are in the page and the theme shows one (index.css .kl-brand). Never mirrored in RTL.
+import LOGO_LIGHT from '../brand/kinkylocked-logo-light.png'
+import LOGO_DARK from '../brand/kinkylocked-logo-dark.png'
+import MARK_LIGHT from '../brand/kinkylocked-mark-light.png'
+import MARK_DARK from '../brand/kinkylocked-mark-dark.png'
 
-const RECTS = [[80, 242, 352, 28], [80, 199, 36, 114], [131, 169, 47, 174], [334, 169, 47, 174], [396, 199, 36, 114]]
+const LOGO_ASPECT = 841 / 480
+const MARK_ASPECT = 841 / 391
 
-/** The mark alone, `height` px high (width follows, 352:174). `color` only for a one-colour use. */
-export function BrandMark({ height = 24, color = '#a3e635', className, style }) {
+function Pictures({ light, dark, width, height, variant, alt }) {
+  const img = (src, cls) => <img className={cls} src={src} width={width} height={height} alt={alt} draggable="false" decoding="async" />
+  if (variant === 'light') return img(light, 'kl-brand-img')
+  if (variant === 'dark') return img(dark, 'kl-brand-img')
+  return <>{img(light, 'kl-brand-img kl-on-dark')}{img(dark, 'kl-brand-img kl-on-light')}</>
+}
+
+/** The mark alone, `height` px high. `variant`: 'auto' (follows the theme), 'light' (white) or 'dark'. */
+export function BrandMark({ height = 24, variant = 'auto', className, style }) {
+  const width = Math.round(height * MARK_ASPECT)
   return (
-    <svg className={className} viewBox="80 169 352 174" width={height * 352 / 174} height={height}
-      fill={color} aria-hidden="true" focusable="false" style={{ flex: 'none', ...style }}>
-      {RECTS.map(([x, y, w, h]) => <rect key={x + '-' + y} x={x} y={y} width={w} height={h} />)}
-    </svg>
+    <span className={('kl-brand ' + (className || '')).trim()} dir="ltr" aria-hidden="true" style={{ flex: 'none', height, ...style }}>
+      <Pictures light={MARK_LIGHT} dark={MARK_DARK} width={width} height={height} variant={variant} alt="" />
+    </span>
   )
 }
 
-/**
- * The lockup at `size` px type: mark 1.07× the type high, a gap of 0.2×, the mark's middle at
- * 0.36× above the baseline (opengym-logo-dark.svg). "open" follows the theme (index.css .brand-lockup).
- */
-export default function BrandLogo({ size = 34, as: Tag = 'span', className = '', style }) {
+/** The whole logo ("powered by KINKY LOCKED"), sized from `size` as the openGym lockup's type was. */
+export default function BrandLogo({ size = 34, as: Tag = 'span', className = '', style, variant = 'auto' }) {
+  const height = Math.round(size * 2.6)
+  const width = Math.round(height * LOGO_ASPECT)
   return (
-    <Tag className={('brand-lockup ' + className).trim()} dir="ltr" style={{ fontSize: size, ...style }}>
-      <svg className="brand-lockup-mark" viewBox="80 169 352 174" aria-hidden="true" focusable="false">
-        {RECTS.map(([x, y, w, h]) => <rect key={x + '-' + y} x={x} y={y} width={w} height={h} />)}
-      </svg>
-      <span className="brand-lockup-open">open</span><span className="brand-lockup-gym">Gym</span>
+    <Tag className={('kl-brand kl-brand-logo ' + className).trim()} dir="ltr" style={{ height, ...style }}>
+      <Pictures light={LOGO_LIGHT} dark={LOGO_DARK} width={width} height={height} variant={variant} alt="powered by Kinky Locked" />
     </Tag>
   )
 }

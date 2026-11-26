@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { unlink as unlinkNutrition } from '../lib/sister-nutrition.js'
 import { api, setRemoteAuth } from '../lib/api.js'
+import { setExpectedAccount } from '../lib/account-guard.js'
 import { localTZ } from '../lib/format.js'
 import { t } from '../lib/i18n.js'
 import { registerCustom, healCustomEx } from '../lib/exercises.js'
@@ -1848,6 +1849,7 @@ export const useStore = create((set, get) => {
         // session and is already the right answer, Coach or no Coach.
         if (get().config && !('coach' in get().config)) get().refreshConfig()
       } else { rejoined = false; adoptHold = false; localStorage.removeItem('gym_user') }
+      setExpectedAccount(u?.id)   // gym mode v2: the document requests name this account (lib/api.js)
       set({ user: u })
       // Another account, or none: what is in flight was for the previous one (GHSA-656w-p99j-x8hf).
       if ((u?.id ?? null) !== was) newSession()

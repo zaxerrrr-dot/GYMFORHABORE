@@ -197,7 +197,7 @@ extension GarminLink: IQDeviceEventDelegate, IQAppMessageDelegate, IQUIOverrideD
         guard !started else { return }
         started = true
         ConnectIQ.sharedInstance()?.initialize(withUrlScheme: GarminLink.urlScheme, uiOverrideDelegate: self,
-                                               stateRestorationIdentifier: "ch.opengym.app.garmin")
+                                               stateRestorationIdentifier: "pl.habcore.gym.garmin")
     }
 
     private func app(for d: IQDevice) -> IQApp {

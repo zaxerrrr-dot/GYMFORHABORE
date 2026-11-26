@@ -4,6 +4,7 @@
 // the device, and handed to the share sheet (lib/share-image.js); nothing is uploaded.
 import { coverCrop } from './photo-compare.js'
 import { makeCanvas, toPng } from './share-image.js'
+import { brandReady, drawLogo } from './card-draw.js'
 
 const W = 1080, PAD = 36, GAP = 12, FOOT = 84
 const FAMILY = '-apple-system, system-ui, "Segoe UI", Roboto, sans-serif'
@@ -74,6 +75,7 @@ export async function renderCompare({ items, rows, aspect, mode = 'side', pct = 
   if (!made) return null
   const { canvas, ctx } = made
   const imgs = await Promise.all(items.map(it => loadImage(it.url).catch(() => null)))
+  await brandReady()
   ctx.fillStyle = '#000'
   ctx.fillRect(0, 0, L.width, L.height)
   if (mode === 'slider' && items.length === 2) {
@@ -100,11 +102,10 @@ export async function renderCompare({ items, rows, aspect, mode = 'side', pct = 
       pill(ctx, it.label, cell.x + 14, cell.y + cell.h - 14)
     })
   }
-  ctx.fillStyle = 'rgba(255,255,255,0.86)'
-  ctx.font = `600 30px ${FAMILY}`
+  // The kinkylocked.com logo (local patch; it was the word openGym), white on the black foot.
+  drawLogo(ctx, PAD, L.foot - 6, 56, 'light')
   ctx.textBaseline = 'middle'
   ctx.textAlign = 'left'
-  ctx.fillText('openGym', PAD, L.foot)
   if (caption) {
     ctx.fillStyle = 'rgba(255,255,255,0.6)'
     ctx.font = `500 26px ${FAMILY}`

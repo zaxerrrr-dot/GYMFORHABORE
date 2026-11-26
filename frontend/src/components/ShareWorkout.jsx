@@ -21,7 +21,8 @@ import { fetchToStore } from '../lib/media-sync.js'
 import { makeCanvas, toPng, currentAccent, isRtl, shareImage, saveImage } from '../lib/share-image.js'
 import { MOBILE } from '../lib/mobile.js'
 import { viewAspect, CARD_FONT } from '../lib/workout-card.js'
-import { BRAND } from '../lib/card-draw.js'
+import { BRAND, brandReady } from '../lib/card-draw.js'
+import { inCardEnglish } from '../lib/i18n-core.js'
 import {
   shareCardModel, layoutShareCard, drawShareCard, sharePalette, customPalette, pickedColor, shownElements, panBy, zoomTo, shadeFor,
   SHARE_TEMPLATES, SHARE_LOOKS, SHARE_FORMATS, SHARE_FORMAT_IDS, SHARE_BG_PRESETS, SHARE_INK_PRESETS, SHARE_HI_PRESETS, ZOOM_MAX,
@@ -150,10 +151,14 @@ export default function ShareWorkout({ w, close }) {
 
   const day = workoutDay(w) || todayISO()
   const warmups = countsWarmups(st)
-  const model = useMemo(() => shareCardModel(w, {
+  // The picture is always in English (local patch), whatever the app's language.
+  const model = useMemo(() => inCardEnglish(() => shareCardModel(w, {
     unit: st.unit, warmups, streak: streakInfo(st, day).current, state: st, speedUnit: speedUnitOf(st),
     nameOf: e => (EXIDX[e.id] ? exerciseNameFor(EXIDX[e.id]) : (e.n || e.id)),
-  }), [w, st.unit, warmups, st.workouts, st.weekStart, day]) // eslint-disable-line react-hooks/exhaustive-deps
+  })), [w, st.unit, warmups, st.workouts, st.weekStart, day]) // eslint-disable-line react-hooks/exhaustive-deps
+  // The logo is a picture: once it has loaded, the preview is drawn again with it.
+  const [, setLogo] = useState(false)
+  useEffect(() => { let alive = true; brandReady().then(() => { if (alive) setLogo(true) }); return () => { alive = false } }, [])
   const hidden = hiddenOf(st)
   const show = shownElements(hidden)
   const photos = useMemo(() => workoutPhotos(w), [w])
@@ -167,7 +172,8 @@ export default function ShareWorkout({ w, close }) {
   }, [model.levels, show.map, body])
 
   const shape = body && model.levels ? (body[st.body] || body.male) : null
-  const draw = () => {
+  const draw = () => inCardEnglish(drawNow)
+  const drawNow = () => {
     const canvas = canvasRef.current
     if (!canvas) return null
     const ctx = canvas.getContext?.('2d')
@@ -265,6 +271,7 @@ export default function ShareWorkout({ w, close }) {
 
   // Share hands the card to another app; Save puts it straight into Photos / the gallery.
   const share = async (how = shareImage) => {
+    await brandReady()
     const layout = draw()
     if (!layout) return
     setBusy(true)
@@ -379,12 +386,16 @@ export default function ShareWorkout({ w, close }) {
 
 // Kept for a test that wants a picture without the sheet: the card for a template as a PNG blob.
 export async function shareCardPng(model, { template, format, look, show, photo = null, body = null, acc = '#a3e635', bg = 'auto', ink = 'auto', hi = 'auto' }) {
+  await brandReady()
   const probe = makeCanvas(1, 1, CARD_FONT)
   if (!probe) return null
   const shape = body && model.levels ? body : null
-  const layout = layoutShareCard(model, { template, format, show, measure: probe.measure, rtl: isRtl(), map: shape ? { aspect: viewAspect(shape.front) } : null, photo: !!photo })
-  const c = makeCanvas(layout.width, layout.height, CARD_FONT)
+  const c = inCardEnglish(() => {
+    const layout = layoutShareCard(model, { template, format, show, measure: probe.measure, rtl: isRtl(), map: shape ? { aspect: viewAspect(shape.front) } : null, photo: !!photo })
+    const c = makeCanvas(layout.width, layout.height, CARD_FONT)
+    if (c) drawShareCard(c.ctx, layout, paletteOf({ template, look, bg, ink, hi }, acc), { map: shape ? { body: shape, levels: model.levels } : null, photo })
+    return c
+  })
   if (!c) return null
-  drawShareCard(c.ctx, layout, paletteOf({ template, look, bg, ink, hi }, acc), { map: shape ? { body: shape, levels: model.levels } : null, photo })
   return toPng(c.canvas)
 }

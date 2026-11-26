@@ -17,7 +17,8 @@ import { monthStats, monthCards, monthLabel, monthExtras, monthRange } from '../
 import { useNutritionLink } from './SisterApps.jsx'
 import { daysIn } from '../lib/sister-nutrition.js'
 import { todayISO } from '../lib/format.js'
-import { cardPalette } from '../lib/card-draw.js'
+import { cardPalette, brandReady } from '../lib/card-draw.js'
+import { inCardEnglish } from '../lib/i18n-core.js'
 import { makeCanvas, toPng, currentAccent, isRtl } from '../lib/share-image.js'
 import { viewAspect, CARD_FONT } from '../lib/workout-card.js'
 import { reducedMotion } from '../lib/seasonal.js'
@@ -32,12 +33,17 @@ export async function wrappedCardImage(card, { format, style, year, body }) {
   const colors = cardPalette(style, currentAccent())
   const geometry = card.map ? (await import('../lib/body-geometry.js')).default : null
   const shape = geometry && (geometry[body] || geometry.male)
+  await brandReady()
   const probe = makeCanvas(1, 1, CARD_FONT)
   if (!probe) return null
-  const layout = layoutWrappedCard(card, { measure: probe.measure, format, rtl: isRtl(), year, map: shape ? { aspect: viewAspect(shape.front) } : null })
-  const c = makeCanvas(layout.width, layout.height, CARD_FONT)
+  // In English (local patch): `card` and `year` come in English from share() below.
+  const c = inCardEnglish(() => {
+    const layout = layoutWrappedCard(card, { measure: probe.measure, format, rtl: isRtl(), year, map: shape ? { aspect: viewAspect(shape.front) } : null })
+    const c = makeCanvas(layout.width, layout.height, CARD_FONT)
+    if (c) drawWrappedCard(c.ctx, layout, colors, shape ? { body: shape, levels: card.map } : null)
+    return c
+  })
   if (!c) return null
-  drawWrappedCard(c.ctx, layout, colors, shape ? { body: shape, levels: card.map } : null)
   return toPng(c.canvas)
 }
 
@@ -187,9 +193,12 @@ export default function Wrapped() {
   if (!open || !st || !card) return null
   const share = c => {
     const body = S.body
+    // The picture is in English (local patch): the same card and label, built again in English.
+    const enCard = inCardEnglish(() => (month ? monthCards(st, S, extras) : wrappedCards(st, S))).find(x => x.id === c.id) || c
+    const enLabel = inCardEnglish(() => (month ? monthLabel(month) : String(year)))
     useUI.getState().openSheet(closeSheet => <ShareCardSheet title={t('Share this card')} close={closeSheet} toast={m => useUI.getState().toast(m)}
       name={`opengym-${month || year}-${c.id}.png`} shareTitle={t('Your {0} in openGym', month ? monthLabel(month) : String(year))}
-      render={pref => wrappedCardImage(c, { ...pref, year: label, body })} />)
+      render={pref => wrappedCardImage(enCard, { ...pref, year: enLabel, body })} />)
   }
   const hideBody = () => update(s => { s.wrappedBody = false })
   const last = idx === cards.length - 1

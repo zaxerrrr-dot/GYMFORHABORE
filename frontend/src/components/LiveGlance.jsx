@@ -155,7 +155,7 @@ export function GlanceIsland ({ view, pill, live, now = Date.now(), stillSrc }) 
   return <div className="gl-island-wrap" aria-hidden="true">
     <span className="gl-cap">{t('While you use other apps')}</span>
     <div className="gl-pill">
-      <span className="gl-pill-side">{stillSrc ? <Still src={stillSrc} size={24} /> : <BrandMark height={11} />}</span>
+      <span className="gl-pill-side">{stillSrc ? <Still src={stillSrc} size={24} /> : <BrandMark height={13} variant="light" />}</span>
       <span className="gl-cam" />
       <span className="gl-pill-side end"><bdi>{timed ? clockValue(view.clock, now) : pill}</bdi></span>
     </div>

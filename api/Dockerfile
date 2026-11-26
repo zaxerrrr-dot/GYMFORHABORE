@@ -60,6 +60,7 @@ COPY oidc ./oidc
 COPY integrations ./integrations
 COPY trainers ./trainers
 COPY sources ./sources
+COPY gymv2 ./gymv2
 ENV NODE_ENV=production
 ENV PORT=3000
 EXPOSE 3000

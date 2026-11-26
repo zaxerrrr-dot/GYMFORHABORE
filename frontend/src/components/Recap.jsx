@@ -4,6 +4,7 @@
 import { useStore } from '../store/useStore.js'
 import { useUI } from '../store/useUI.js'
 import { t, tn } from '../lib/i18n.js'
+import { inCardEnglish } from '../lib/i18n-core.js'
 import { fmtNum, fmtVol, fmtDateRange } from '../lib/format.js'
 import { recapDue, recapOf } from '../lib/recap.js'
 import { recapCardImage } from '../lib/recap-card.js'
@@ -28,6 +29,9 @@ function tilesOf(r, unit) {
   ]
 }
 const topOf = r => (r.top ? t('Most work: {0}, {1} sets', t(r.top.name), fmtNum(r.top.sets)) : null)
+
+// The picture's words: the same, always in English (local patch); the sheet stays in the app's language.
+const cardWords = (r, unit) => inCardEnglish(() => ({ title: titleOf(r), dates: datesOf(r), tiles: tilesOf(r, unit), top: topOf(r) }))
 
 /** One line for the Home card: "4 workouts · 12,300 kg · 2 new bests". */
 function lineOf(r, unit) {
@@ -55,7 +59,7 @@ function RecapSheet({ period, close }) {
   const tiles = tilesOf(r, S.unit)
   const words = { title: titleOf(r), dates: datesOf(r), tiles, top: topOf(r) }
   const shareImage = () => useUI.getState().openSheet(c => <ShareCardSheet title={titleOf(r)} close={c} toast={m => useUI.getState().toast(m)}
-    name={`opengym-${r.kind}-${r.from}.png`} shareTitle={titleOf(r)} render={pref => recapCardImage(words, pref)} />)
+    name={`opengym-${r.kind}-${r.from}.png`} shareTitle={titleOf(r)} render={pref => recapCardImage(cardWords(r, S.unit), pref)} />)
   const pdf = () => printReport(S, { range: 'custom', from: r.from, to: r.to, owner: user?.name || '' })
   return <>
     <div className="lbl2">{datesOf(r)}</div>

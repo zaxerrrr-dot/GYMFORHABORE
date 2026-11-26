@@ -5,12 +5,54 @@
 // on a card (the licence keeps those inside the app, NOTICE.md).
 
 import { inkIn } from './accent.js'
+// Local patch: the cards carry the kinkylocked.com logo instead of the openGym lockup. White
+// lettering for dark paper, the same artwork recoloured dark (same alpha) for light paper. Both are
+// hashed assets of the build, so they follow the base path and the service worker caches them.
+import LOGO_LIGHT_URL from '../brand/kinkylocked-logo-light.png'
+import LOGO_DARK_URL from '../brand/kinkylocked-logo-dark.png'
 
 // 9:16 for Stories and Reels, 1:1 for a feed or a chat.
 export const FORMATS = { story: { width: 1080, height: 1920 }, square: { width: 1080, height: 1080 } }
 export const FORMAT_IDS = Object.keys(FORMATS)
 export const STYLE_IDS = ['dark', 'light']
-export const SITE = 'opengym.ch'
+export const SITE = 'kinkylocked.com'
+
+// The logo's trimmed artwork is 841×480.
+export const LOGO_ASPECT = 841 / 480
+const logos = { light: null, dark: null }
+let logosReady = null
+/** Resolves once both logo pictures are decoded (or failed: a card then goes out without one).
+ *  Started as soon as this module loads in a browser, so it is normally done before Share. */
+export function brandReady() {
+  if (logosReady) return logosReady
+  if (typeof Image === 'undefined') return (logosReady = Promise.resolve(false))
+  const load = (key, url) => new Promise(resolve => {
+    const img = new Image()
+    img.onload = () => { logos[key] = img; resolve(true) }
+    img.onerror = () => resolve(false)
+    img.src = url
+  })
+  logosReady = Promise.all([load('light', LOGO_LIGHT_URL), load('dark', LOGO_DARK_URL)]).then(r => r.every(Boolean))
+  return logosReady
+}
+if (typeof window !== 'undefined' && typeof Image !== 'undefined') brandReady()
+
+// Relative luminance of a colour, 0 (black) to 1 (white).
+const luminance = c => {
+  const [r, g, b] = (parseColor(c) || [0, 0, 0]).map(v => { const x = v / 255; return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4 })
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b
+}
+/** Which logo reads on paper `bg`: the dark one on light paper, the white one on everything else. */
+export const logoFor = bg => (parseColor(bg) && luminance(bg) > 0.4 ? 'dark' : 'light')
+
+/** The logo `h` high, its left edge at x, centred on cy; `variant` 'light' (white) or 'dark'. */
+export function drawLogo(ctx, x, cy, h, variant = 'light') {
+  const img = logos[variant] || logos.light
+  if (!img) return 0
+  const w = h * LOGO_ASPECT
+  ctx.drawImage(img, x, cy - h / 2, w, h)
+  return w
+}
 
 /**
  * The colours of a card, the app's own (index.css) in a fixed light or dark look, whatever the
@@ -105,41 +147,34 @@ export function brandNeedsBadge(bg) {
 }
 
 /**
- * The footer every card ends with: the official lockup (brand-green mark, "open" plus "Gym" in
- * brand green, as in assets/logo) and the site at the other end. `y` is the text's baseline.
+ * The footer every card ends with: the kinkylocked.com logo (local patch; it was the openGym
+ * lockup) and the site at the other end. `y` is the text's baseline.
  * Drawn left to right whatever the language: it is a logo, and a logo does not mirror.
  */
 // `badge`: the lockup on its dark badge whatever the paper, for a card that has no paper of its
 // own: a photo behind it, or a see-through PNG laid over one later (TestFlight 11-08: the logo
 // on a photo read as see-through). The badge is solid BRAND.ink, never a tint.
 export function drawBrand(ctx, { x, y, width, colors, family, size = 40, badge: forceBadge = false }) {
-  // Proportions of assets/logo/opengym-logo-dark.svg: the mark 1.07× the type, a gap of 0.2×.
+  // The kinkylocked.com logo in the room the lockup had: as high as the lockup's badge box
+  // (brandBadgeBox), centred where the lockup was, its aspect ratio kept.
   const markH = size * 1.07
-  const gap = size * 0.2
+  const padY = size * 0.28
+  const boxH = markH + padY * 2
+  const cy = y - size * 0.36
   const badge = forceBadge || !colors.bg || brandNeedsBadge(colors.bg)
-  const onDark = badge || !colors.light
   ctx.direction = 'ltr'
   ctx.textAlign = 'left'
-  ctx.font = `700 ${size}px ${family}`
-  if ('letterSpacing' in ctx) ctx.letterSpacing = `${(-size * 0.036).toFixed(2)}px`
-  const textW = ctx.measureText('openGym').width
-  const lockW = markH * MARK_ASPECT + gap + textW
-  let lx = x
   if (badge) {
-    const padX = size * 0.5, padY = size * 0.28
+    // On a photo or a coloured card: the white logo on its own solid dark badge.
+    const padX = size * 0.5
+    const logoH = boxH - padY * 1.2
     ctx.fillStyle = BRAND.ink
-    roundRect(ctx, x, y - size * 0.36 - markH / 2 - padY, lockW + padX * 2, markH + padY * 2, (markH + padY * 2) / 2)
+    roundRect(ctx, x, cy - boxH / 2, logoH * LOGO_ASPECT + padX * 2, boxH, size * 0.3)
     ctx.fill()
-    lx = x + padX
+    drawLogo(ctx, x + padX, cy, logoH, 'light')
+  } else {
+    drawLogo(ctx, x, cy, boxH, logoFor(colors.bg))
   }
-  drawMark(ctx, lx, y - size * 0.36, markH, BRAND.green)
-  let tx = lx + markH * MARK_ASPECT + gap
-  ctx.fillStyle = onDark ? BRAND.light : BRAND.dark
-  ctx.fillText('open', tx, y)
-  tx += ctx.measureText('open').width
-  ctx.fillStyle = BRAND.green
-  ctx.fillText('Gym', tx, y)
-  if ('letterSpacing' in ctx) ctx.letterSpacing = '0px'
   ctx.font = `600 ${Math.round(size * 0.72)}px ${family}`
   ctx.fillStyle = colors.label2
   ctx.textAlign = 'right'

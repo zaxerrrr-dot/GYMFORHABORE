@@ -1,0 +1,174 @@
+# Habcore Gym (fork of openGym): the iPhone app (with its Apple Watch app) as an .ipa for SideStore,
+# and a debug APK for Android, published as a GitHub Release.
+#
+# The .ipa carries no real signature: SideStore signs it with the user's own (free) Apple ID when it
+# installs it. It is ad-hoc signed here ("-", no certificate) only so the entitlements (HealthKit,
+# App Group) are inside the binaries; a build with CODE_SIGNING_ALLOWED=NO alone has none, and
+# SideStore takes the entitlements from the app it is given.
+#
+# Left out on purpose, to stay inside a free Apple ID's 10 App IDs a week (each extension is one):
+# the Home Screen widgets / Live Activity (OpenGymWidgets), the watch's widgets/complications,
+# the Background Assets downloader and Garmin's closed-source SDK. App + watch app = 2 App IDs.
+name: Build iOS (SideStore)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+      - 'scripts/**'
+      - '.github/workflows/build-ios.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-ios-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  TAG: habcore-${{ github.run_number }}
+
+jobs:
+  ios:
+    runs-on: macos-26
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 26
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: npm ci
+        working-directory: frontend
+        run: |
+          npm ci > ../npm-ci.log 2>&1 || { tail -40 ../npm-ci.log | sed 's/^/::error::npm ci: /' || true; exit 1; }
+      # The phone build (vite, VITE_MOBILE=1, with .env.production's default server) and
+      # `cap sync` (copies it into ios/App/App/public and runs pod install). Pod downloads from
+      # GitHub sometimes drop, so up to three tries.
+      - name: Frontend build + cap sync ios
+        working-directory: frontend
+        run: |
+          for i in 1 2 3; do
+            if npm run build:mobile > ../build-mobile.log 2>&1 && npx cap sync ios >> ../build-mobile.log 2>&1; then ok=1; break; fi
+            echo "::warning::build:mobile / cap sync failed, try $i"; sleep 30
+          done
+          if [ -z "$ok" ]; then grep -iE "error|failed" ../build-mobile.log | tail -30 | sed 's/^/::error::build:mobile: /' || true; tail -60 ../build-mobile.log; exit 1; fi
+          tail -15 ../build-mobile.log
+      # The Apple Watch app (ios/App/Watch), embedded in App.app/Watch, without its widget extension.
+      - name: Add the watch app
+        working-directory: frontend
+        env:
+          NO_WATCH_WIDGETS: '1'
+        run: ruby ios/ci/add-watch-app.rb
+      - name: Archive (no signing)
+        working-directory: frontend/ios/App
+        run: |
+          mkdir -p build
+          set +e
+          xcodebuild -workspace App.xcworkspace -scheme App -configuration Release \
+            -destination 'generic/platform=iOS' -archivePath build/App.xcarchive \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            archive > build/archive.log 2>&1
+          status=$?
+          set -e
+          grep -E "error:|\*\* ARCHIVE" build/archive.log | head -60 || true
+          if [ $status -ne 0 ] || [ ! -d build/App.xcarchive/Products/Applications/App.app ]; then
+            grep -E "error:" build/archive.log | sort -u | head -40 | sed 's/^/::error::xcodebuild: /' || true
+            tail -80 build/archive.log
+            exit 1
+          fi
+      - name: Package the .ipa (ad-hoc signed, entitlements kept)
+        working-directory: frontend/ios/App
+        run: |
+          set -e
+          rm -rf build/ipa && mkdir -p build/ipa/Payload
+          cp -R build/App.xcarchive/Products/Applications/App.app build/ipa/Payload/
+          APP=build/ipa/Payload/App.app
+          W="$APP/Watch/OpenGymWatch.app"
+          test -d "$W" || { echo "::error::no watch app in App.app/Watch"; exit 1; }
+          sign() { codesign --force --sign - --timestamp=none --generate-entitlement-der "$@"; }
+          # Inner code first: frameworks, then the watch app, then the iPhone app.
+          find "$APP" -depth \( -name '*.framework' -o -name '*.dylib' \) -print0 | while IFS= read -r -d '' f; do sign "$f"; done
+          sign --entitlements Watch/OpenGymWatch.entitlements "$W"
+          sign --entitlements App/App.entitlements "$APP"
+          {
+            echo "Habcore Gym, build $TAG, commit $GITHUB_SHA"
+            echo
+            for b in "$APP" "$W"; do
+              echo "== ${b#build/ipa/}"
+              echo "CFBundleIdentifier: $(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$b/Info.plist")"
+              echo "CFBundleDisplayName: $(/usr/libexec/PlistBuddy -c 'Print :CFBundleDisplayName' "$b/Info.plist")"
+              echo "CFBundleShortVersionString: $(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$b/Info.plist")"
+              /usr/libexec/PlistBuddy -c 'Print :WKCompanionAppBundleIdentifier' "$b/Info.plist" 2>/dev/null | sed 's/^/WKCompanionAppBundleIdentifier: /' || true
+              echo "Entitlements:"
+              codesign -d --entitlements - --xml "$b" 2>/dev/null | plutil -convert xml1 -o - - 2>/dev/null || codesign -d --entitlements - "$b" 2>&1
+              echo
+            done
+            echo "== extensions (each one is an App ID in SideStore)"
+            find "$APP" \( -name '*.appex' -o -name '*.app' \) -not -path "$APP" | sed "s#^build/ipa/##"
+          } > build/build-info.txt
+          cat build/build-info.txt
+          cd build/ipa && zip -qry ../HabcoreGym.ipa Payload && cd ..
+          ls -la HabcoreGym.ipa
+          { echo '### Habcore Gym .ipa'; echo '```'; cat build-info.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        if: always()
+        with:
+          name: ios-build
+          path: |
+            frontend/ios/App/build/HabcoreGym.ipa
+            frontend/ios/App/build/build-info.txt
+            frontend/ios/App/build/archive.log
+            build-mobile.log
+          retention-days: 7
+      - name: Publish the release
+        working-directory: frontend/ios/App/build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo "Habcore Gym for iPhone (with the Apple Watch app), unsigned for SideStore."
+            echo "Download HabcoreGym.ipa and open it in SideStore (+, pick the file)."
+            echo
+            echo "Fork of openGym (https://github.com/DuarteSantos8/openGym), AGPL-3.0. Source: this repository at ${GITHUB_SHA}."
+            echo
+            echo '```'; cat build-info.txt; echo '```'
+          } > notes.md
+          gh release create "$TAG" HabcoreGym.ipa build-info.txt --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" --title "Habcore Gym iOS #${{ github.run_number }}" --notes-file notes.md --latest
+
+  android:
+    needs: ios
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 26
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+        working-directory: frontend
+      - name: Frontend build + cap sync
+        working-directory: frontend
+        run: |
+          npm run build:mobile > ../build-mobile.log 2>&1 || { grep -iE "error|failed" ../build-mobile.log | tail -30 | sed 's/^/::error::build:mobile: /' || true; tail -60 ../build-mobile.log; exit 1; }
+      # A debug APK (pl.habcore.gym.test, "Habcore Gym Test"), signed with the runner's debug key.
+      - name: Debug APK
+        working-directory: frontend/android
+        run: |
+          ./gradlew --no-daemon assembleSideloadDebug > ../../gradle.log 2>&1 || { grep -E "error:|FAILURE|What went wrong" -A3 ../../gradle.log | head -40 | sed 's/^/::error::gradle: /' || true; tail -60 ../../gradle.log; exit 1; }
+          cp "$(find app/build/outputs/apk -name '*.apk' | head -1)" ../../HabcoreGym-debug.apk
+          ls -la ../../HabcoreGym-debug.apk
+      - name: Add to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "$TAG" HabcoreGym-debug.apk --repo "$GITHUB_REPOSITORY" --clobber

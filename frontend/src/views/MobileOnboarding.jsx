@@ -108,7 +108,10 @@ export function CfAccessSheet({ close, server = '' }) {
 // `again`: a phone whose server stopped accepting it (components/ServerSync.jsx pairAgain) — the
 // address it had is filled in when it still has one, so only the new code is left to type, and
 // the sheet says that what the phone kept is merged, not replaced.
-export function ConnectSheet({ close, initialUrl = '', again = false }) {
+// Habcore Gym fork: the address is filled in with our server (VITE_DEFAULT_SERVER, .env.production).
+const DEFAULT_SERVER = import.meta.env.VITE_DEFAULT_SERVER || ''
+
+export function ConnectSheet({ close, initialUrl = DEFAULT_SERVER, again = false }) {
   const { connectToServer, connectWithProvider } = useStore()
   const [url, setUrl] = useState(initialUrl)
   const [code, setCode] = useState('')
@@ -195,9 +198,9 @@ export default function MobileOnboarding() {
         </div>
       </> : <>
       <div className="muted" style={{ marginBottom: 34 }}>{t('How do you want to use openGym?')}</div>
-      <Button variant="primary" icon="lock" onClick={() => chooseLocalMode()}>{t('Use on this device')}</Button>
+      <Button variant={DEFAULT_SERVER ? undefined : 'primary'} icon="lock" onClick={() => chooseLocalMode()}>{t('Use on this device')}</Button>
       <div style={{ height: 10 }} />
-      <Button icon="cloud" onClick={() => useUI.getState().openSheet(close => <ConnectSheet close={close} />)}>{t('Connect to my server')}</Button>
+      <Button variant={DEFAULT_SERVER ? 'primary' : undefined} icon="cloud" onClick={() => useUI.getState().openSheet(close => <ConnectSheet close={close} />)}>{t('Connect to my server')}</Button>
       <div className="dim small" style={{ marginTop: 26, lineHeight: 1.5 }}>
         {t('Local keeps everything on this phone. Connecting syncs to your own openGym server instead. You can switch later in Settings.')}
       </div>

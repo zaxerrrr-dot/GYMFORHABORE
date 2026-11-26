@@ -18,7 +18,7 @@ import WidgetKit
 
 /// The App Group the app, the widget extension and the asset pack downloader share.
 enum OpenGymGroup {
-    static let id = "group.ch.opengym.app"
+    static let id = "group.pl.habcore.gym"
     static var defaults: UserDefaults { UserDefaults(suiteName: id) ?? .standard }
     static var container: URL? { FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: id) }
 }
@@ -303,7 +303,7 @@ enum LiveAnswer {
 
 /**
  * Where a tap's time goes (1.4.5). One line per button of the Live Activity, for Console.app:
- * subsystem "ch.opengym.app", category "live". Numbers and fixed words only, never a workout's
+ * subsystem "pl.habcore.gym", category "live". Numbers and fixed words only, never a workout's
  * name, an exercise or a weight.
  *
  *   tap log age=41250ms scene=1 pre=3ms update=38ms total=41ms page=-
@@ -318,7 +318,7 @@ enum LiveAnswer {
  * activity for its workout.
  */
 enum LiveLog {
-    static let logger = Logger(subsystem: "ch.opengym.app", category: "live")
+    static let logger = Logger(subsystem: "pl.habcore.gym", category: "live")
     private static let lock = NSLock()
     private static var scene = false
 

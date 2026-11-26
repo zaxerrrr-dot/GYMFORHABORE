@@ -13,7 +13,8 @@ import { logRequest } from './net-log.js'
 import { MOBILE } from './mobile.js'
 import { APK_VARIANTS, APK_VARIANT } from './apk-variant.js'
 
-const REPO = 'DuarteSantos8/openGym'
+// Habcore Gym fork: its own releases (an APK from upstream could not update this app id anyway).
+const REPO = 'zaxerrrr-dot/GYMFORHABORE'
 const LATEST_URL = `https://api.github.com/repos/${REPO}/releases/latest`
 export const RELEASES_PAGE = `https://github.com/${REPO}/releases/latest`
 

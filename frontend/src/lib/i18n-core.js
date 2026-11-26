@@ -77,13 +77,27 @@ let enParens = true               // whether translated names show the English o
 let enOnly = false                // whether translated names are replaced entirely by the English original
 let version = 0                 // bumped on every setLang; drives the React subscription selector
 
-export const getLang = () => lang
-export const dateLocale = () => DATE_LOCALES[lang] || 'en-GB'
+// Share images in English whatever the app's language (local patch). inCardEnglish(fn) runs fn,
+// which must be synchronous (building a card's words, laying it out, drawing it), with every
+// reader below answering in English: t/tn/tnf, dates and numbers, plurals, exercise names. Nothing
+// else changes: no setLang, no React update, no pack loaded or dropped, and the scope ends when fn
+// returns, so the app around the card keeps its own language.
+let cardEn = 0
+const NO_DICT = {}
+export const isCardEnglish = () => cardEn > 0
+export function inCardEnglish(fn) {
+  cardEn++
+  try { return fn() } finally { cardEn-- }
+}
+const dictNow = () => (cardEn ? NO_DICT : dict)
+
+export const getLang = () => (cardEn ? 'en' : lang)
+export const dateLocale = () => (cardEn ? 'en-GB' : DATE_LOCALES[lang] || 'en-GB')
 export const getVersion = () => version
 
 // Translate a source string; {0},{1}… are replaced with args (also on the English fallback).
 export function t(s, ...args) {
-  let v = dict[s] || s
+  let v = dictNow()[s] || s
   // A plural key (an object of forms, read by tn()) reached through plain t() — a call site
   // that was not moved to tn(). Pick a form rather than crash on replaceAll.
   if (v && typeof v === 'object') {
@@ -121,7 +135,7 @@ const pluralCategory = n => {
  * forms of the target language, falling back through `other` to the English pair.
  */
 export function tn(one, other, n, ...rest) {
-  const forms = dict[other]
+  const forms = dictNow()[other]
   if (forms && typeof forms === 'object') {
     const form = forms[pluralCategory(n)] || forms.other || forms.many || forms.one
     if (form) {
@@ -139,9 +153,10 @@ export function tn(one, other, n, ...rest) {
  * while `n` still picks the form. The rest of the arguments are {1}, {2}… as in tn().
  */
 export function tnf(one, other, n, shown, ...rest) {
-  const forms = dict[other]
+  const d = dictNow()
+  const forms = d[other]
   let v = forms && typeof forms === 'object' ? (forms[pluralCategory(n)] || forms.other || forms.many || forms.one) : null
-  if (!v) v = (n === 1 ? dict[one] : (typeof forms === 'string' ? forms : null)) || (n === 1 ? one : other)
+  if (!v) v = (n === 1 ? d[one] : (typeof forms === 'string' ? forms : null)) || (n === 1 ? one : other)
   const args = [shown, ...rest]
   for (let i = 0; i < args.length; i++) v = v.replaceAll('{' + i + '}', args[i])
   return v
@@ -221,13 +236,14 @@ export function _setDetails(newEnInstr, newEnDescs, newDescs, forLang = lang) {
 // exercise the pack has no entry for keeps its English title, one exercise at a time.
 // User-created exercises have no entry in the pack and keep their exact chosen name.
 // An exercise shown by one of its other names (#903) carries that name everywhere, as typed.
-export const exerciseNameFor = ex => shownNameOf(ex) || exerciseOwnName(ex)
+// On an English share image the catalogue's English title (a custom exercise keeps its own name).
+export const exerciseNameFor = ex => (cardEn ? ex?.n || '' : shownNameOf(ex) || exerciseOwnName(ex))
 
 /** The exercise's own name in the active language, whatever other name it is shown by. */
 export const exerciseOwnName = ex => {
   // A language that chose "English names only" sees the canonical catalogue title, not the
   // translation — and never the parenthetical either. Custom exercises keep their exact name.
-  if (enOnly) return ex?.n || ''
+  if (enOnly || cardEn) return ex?.n || ''
   const translated = exerciseNames && ex && exerciseNames[ex.id]
   if (!translated) return ex?.n || ''
   // Some names (Burpee, Pilates, brand/model terms) are the established term in the target
@@ -266,12 +282,12 @@ export const CASED_NAME_LANGS = ['de', 'cs']
 // exercise while "English names only" is on, since exerciseNameFor then shows the English title.
 // Callers spread this onto the element that holds exerciseNameFor(ex)'s output, nothing else —
 // muscle and equipment labels next to it are t() strings and keep their own capitalize.
-export const exerciseNameClass = ex => (shownNameOf(ex) ? '' : exerciseOwnNameClass(ex))
+export const exerciseNameClass = ex => (!cardEn && shownNameOf(ex) ? '' : exerciseOwnNameClass(ex))
 // One of your own exercises is shown exactly as you typed it, in every language: "am Turm" is
 // not "Am Turm", and "DB press" stays that too (app test 2026-11-11, P10). Title-casing is the
 // catalogue's rule (#290), for names stored lower-case. A name with no exercise behind it (an id
 // this build does not know) keeps the catalogue's rule: it is most likely a catalogue name.
-export const exerciseOwnNameClass = ex => (isOwnExercise(ex) ? '' : !enOnly && exerciseNames && ex && exerciseNames[ex.id]
+export const exerciseOwnNameClass = ex => (isOwnExercise(ex) ? '' : !enOnly && !cardEn && exerciseNames && ex && exerciseNames[ex.id]
   && CASED_NAME_LANGS.includes(baseLang(lang)) ? '' : 'capitalize')
 // lib/exercises.js knows which exercises are your own (isCustomEx, by where they live) and says
 // so here once it has loaded; this module stays free of the catalogue. Until then the flag decides.

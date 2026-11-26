@@ -1,3 +1,16 @@
+> **Habcore Gym – a fork of openGym.**
+> This repository is a modified copy of [openGym](https://github.com/DuarteSantos8/openGym) by
+> Duarte Santos (version 1.4.5, upstream commit `e4a68a94c`), licensed under the
+> [GNU AGPL-3.0](LICENSE) with the additional permission described in [NOTICE.md](NOTICE.md).
+> Changes in this fork: KinkyLocked branding (logo, app icons, share cards), a gym / trainer mode,
+> its own app identifiers (`pl.habcore.gym`, display name "Habcore Gym") so it can be installed
+> next to the official app, a default server address for the phone app, and a GitHub Actions
+> workflow (`.github/workflows/build-ios.yml`) that builds an unsigned iPhone + Apple Watch `.ipa`
+> for private installation with SideStore and a debug Android APK (see Releases).
+> The phone build leaves out the iOS widgets / Live Activity, the watch widgets, the Background
+> Assets downloader and the Garmin SDK. Everything below is the original openGym README.
+> The complete corresponding source of every build is this repository at the release's commit.
+
 <div align="center">
 
 <p>

@@ -5,15 +5,15 @@
 #
 #   ruby frontend/ios/ci/add-watch-app.rb
 #
-# App Store Connect needs, before a signed build: the bundle ids ch.opengym.app.watchkitapp
-# (HealthKit, App Group group.ch.opengym.app) and ch.opengym.app.watchkitapp.widgets (App Group
-# group.ch.opengym.app), an App Store provisioning profile for each; the release script
+# App Store Connect needs, before a signed build: the bundle ids pl.habcore.gym.watchkitapp
+# (HealthKit, App Group group.pl.habcore.gym) and pl.habcore.gym.watchkitapp.widgets (App Group
+# group.pl.habcore.gym), an App Store provisioning profile for each; the release script
 # (scripts/ios/finish-ipa.sh) signs the watch app with WATCH_PROFILE and its widget extension with
 # WATCH_WIDGET_PROFILE.
 require 'xcodeproj'
 
 NAME = 'OpenGymWatch'
-BUNDLE_ID = 'ch.opengym.app.watchkitapp'
+BUNDLE_ID = 'pl.habcore.gym.watchkitapp'
 DIR = 'Watch'
 
 dir = File.expand_path('../App', __dir__)
@@ -75,9 +75,21 @@ embed.dst_path = '$(CONTENTS_FOLDER_PATH)/Watch'
 file = embed.add_file_reference(watch.product_reference, true)
 file.settings = { 'ATTRIBUTES' => ['RemoveHeadersOnCopy'] }
 
+# Habcore Gym fork: NO_WATCH_WIDGETS=1 leaves the watch's widget extension out (each extension is
+# one more App ID, and a free Apple ID gets 10 a week for SideStore).
+if ENV['NO_WATCH_WIDGETS'] == '1'
+  scheme = Xcodeproj::XCScheme.new
+  scheme.add_build_target(watch)
+  scheme.set_launch_target(watch)
+  scheme.save_as(File.join(dir, 'App.xcodeproj'), NAME, true)
+  proj.save
+  puts "added #{NAME} (#{BUNDLE_ID}) without its widgets, embedded in App"
+  exit 0
+end
+
 # The complications and the Smart Stack widget (ios/App/WatchWidgets), a WidgetKit extension in the
 # watch app (OpenGymWatch.app/PlugIns), reading the state the app writes (Watch/WidgetState.swift,
-# compiled into both) through the App Group group.ch.opengym.app.
+# compiled into both) through the App Group group.pl.habcore.gym.
 WIDGET = 'OpenGymWatchWidgets'
 WIDGET_DIR = 'WatchWidgets'
 widget = proj.new_target(:app_extension, WIDGET, :watchos, '10.0')

@@ -3,6 +3,7 @@ import { t } from './i18n-core.js'
 import { MOBILE } from './mobile.js'
 import { appBase } from './app-base.js'
 import { nativeFetch, inAndroidApp } from './capacitor-fetch.js'
+import { expectedAccount } from './account-guard.js'
 
 export const IS_APPLE = /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)
 export const IS_ANDROID = /Android/.test(navigator.userAgent)
@@ -30,7 +31,15 @@ let accessOrigin = ''
 export function setAccessHeaders(h, origin) { accessHeaders = Object.assign({}, h); accessOrigin = origin || '' }
 const originOf = base => { try { return new URL(base).origin } catch { return '' } }
 const accessFor = base => (base && accessOrigin && originOf(base) === accessOrigin ? accessHeaders : {})
-const remoteHeaders = () => Object.assign({}, accessFor(remoteBase), remoteToken ? { Authorization: 'Bearer ' + remoteToken } : {})
+// Gym mode v2 (local patch 0003): a paired phone leading a client sends the act token beside its
+// own bearer (a browser carries it as an HttpOnly cookie instead).
+const actHeader = () => { try { const v = localStorage.getItem('gym_act_token'); return v ? { 'X-OpenGym-Act': v } : {} } catch { return {} } }
+const remoteHeaders = () => Object.assign({}, accessFor(remoteBase), remoteToken ? { Authorization: 'Bearer ' + remoteToken, ...actHeader() } : {})
+// The account the store believes it syncs (useStore setUser). Sent with every request for the
+// document, so a session that now belongs to another account (a trainer started or stopped
+// leading a client in another tab) is refused (412) instead of mixing two people's data.
+const accountHeader = path => (expectedAccount() && /^\/api\/data(\/rev)?(\?|$)/.test(path) ? { 'X-OpenGym-As': expectedAccount() } : {})
+let reloading = false
 // The paired server and what a request to it carries (the token, an Access service token for that
 // origin), for the phone's background check (lib/nudge-check.js), which runs with no WebView and
 // so has to be handed them. null when this is not a paired phone.
@@ -65,7 +74,7 @@ export async function api(path, opts) {
   // there and the change was marked as synced while the server never saw it. status 0, not
   // undefined: this is not "offline", and the store must not show it as such.
   if (MOBILE && !remoteBase) throw failure(t('This phone is not connected to a server.'), 'not-paired', 0)
-  const headers = Object.assign({ 'Content-Type': 'application/json' }, init.headers, remoteHeaders())
+  const headers = Object.assign({ 'Content-Type': 'application/json' }, init.headers, remoteHeaders(), accountHeader(path))
   // A paired phone has an absolute base of its own; everyone else is relative to where the app
   // is served, so a subpath deployment reaches its own API instead of the proxy's root.
   const url = remoteBase ? remoteBase + path : appBase().replace(/\/$/, '') + path
@@ -122,7 +131,11 @@ async function exchange(url, init) {
   try { data = await r.json() } catch { parsed = false }
   const body = parsed && data && typeof data === 'object' ? data : null
   // The body rides along on the error: a 409 from /api/data carries the server's document.
-  if (!r.ok) { const e = new Error(refusal(r.status, body)); e.status = r.status; e.data = body || {}; throw e }
+  if (!r.ok) {
+    // The session is another account's now: start again as that account (useStore boot).
+    if (r.status === 412 && body?.code === 'account-mismatch' && !reloading && typeof location !== 'undefined') { reloading = true; setTimeout(() => location.reload(), 50) }
+    const e = new Error(refusal(r.status, body)); e.status = r.status; e.data = body || {}; throw e
+  }
   if (!body) throw failure(t('The server answered with something other than openGym data.'), 'bad-response', r.status)
   return body
 }

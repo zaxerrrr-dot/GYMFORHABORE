@@ -1,7 +1,7 @@
 // How a picture leaves the app: drawn on a canvas made here, then the OS share sheet in the phone
 // apps, the browser's share sheet where it can share files, or a download. Nothing is uploaded.
 import { MOBILE, shareExportBlob, saveImageToPhotos } from './mobile.js'
-import { t } from './i18n-core.js'
+import { t, isCardEnglish } from './i18n-core.js'
 
 /** A canvas of the given size, its context, and a measure(text, weight, size) on it. null without canvas support. */
 export function makeCanvas(width, height, family) {
@@ -22,7 +22,8 @@ export const toPng = canvas => new Promise(resolve => {
 export function currentAccent() {
   try { return getComputedStyle(document.documentElement).getPropertyValue('--acc').trim() || '#a3e635' } catch (e) { return '#a3e635' }
 }
-export const isRtl = () => typeof document !== 'undefined' && document.documentElement.dir === 'rtl'
+// A card drawn in English (i18n-core inCardEnglish) is left to right whatever the app shows.
+export const isRtl = () => !isCardEnglish() && typeof document !== 'undefined' && document.documentElement.dir === 'rtl'
 
 /**
  * Out of the app: the OS share sheet in the phone apps (Capacitor Share, through a file in the

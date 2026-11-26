@@ -1,7 +1,8 @@
 // The recap as a picture (lib/recap.js): "Your week" or "Your month", its dates, four tiles
 // (workouts, volume, records, streak), the muscle it hit most, and the brand. Drawn on the device
 // with the share cards' palette and footer (lib/card-draw.js); shared through components/ShareCard.jsx.
-import { FORMATS, cardPalette, drawBrand, roundRect } from './card-draw.js'
+import { FORMATS, cardPalette, drawBrand, roundRect, brandReady } from './card-draw.js'
+import { inCardEnglish } from './i18n-core.js'
 import { makeCanvas, toPng, currentAccent, isRtl } from './share-image.js'
 import { CARD_FONT, fitSize } from './workout-card.js'
 import { isoRun } from './bidi.js'
@@ -65,8 +66,10 @@ export function drawRecapCard(ctx, words, { width, height, colors, family = CARD
 /** The picture as a PNG blob, or null where there is no canvas. */
 export async function recapCardImage(words, { format = 'story', style = 'dark' } = {}) {
   const { width, height } = FORMATS[format] || FORMATS.story
+  await brandReady()
   const c = makeCanvas(width, height, CARD_FONT)
   if (!c) return null
-  drawRecapCard(c.ctx, words, { width, height, colors: cardPalette(style, currentAccent()), rtl: isRtl() })
+  // `words` come in English (components/Recap.jsx); the card is drawn left to right with them.
+  inCardEnglish(() => drawRecapCard(c.ctx, words, { width, height, colors: cardPalette(style, currentAccent()), rtl: isRtl() }))
   return toPng(c.canvas)
 }

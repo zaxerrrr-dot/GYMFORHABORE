@@ -1,4 +1,5 @@
 import { showsDashboard } from '../lib/trainer-api.js'
+import { g, stopLeading } from '../lib/gymv2.js'
 import { recordHintsOn } from '../lib/set-records.js'
 import { setRecoveryHint } from '../lib/recovery-hint.js'
 import { useEffect, useRef, useState, forwardRef, useSyncExternalStore } from 'react'
@@ -176,6 +177,9 @@ export default function Settings({ page = null, find = null, via = null, entryKe
   // Name-and-password sign-in, where the instance offers it (#118).
   const config = useStore(s => s.config)
   const pwOn = passwordOn(config)
+  // Gym mode v2 (local patch 0003): the gym screen, and a trainer leading a client's account.
+  const gymv2On = !!config?.gymv2?.on
+  const acting = !!user?.acting
   // The server's community library (views/Community.jsx), where it has one and the module is on.
   const community = useStore(st => libraryOn(st.config, st.user) && isOn(st.S, 'community'))
   // What the app is showing, which for a profile that never picked a language is worked out on
@@ -184,7 +188,7 @@ export default function Settings({ page = null, find = null, via = null, entryKe
   // This profile's passkeys and the code for another device (#95). A change to them is read back
   // here and by the password row, whose "Remove" depends on there being a passkey.
   // On a paired phone only the code for another device uses it (#551).
-  const passkeys = usePasskeys(!!user && !DEMO && (page === 'account'))
+  const passkeys = usePasskeys(!!user && !user.acting && !DEMO && (page === 'account'))
   const [credsV, setCredsV] = useState(0)
   const credsChanged = () => { passkeys.load(); setCredsV(v => v + 1) }
   const { update, importConflict, importBackup, setUnit, resetEverything: resetAll, setUser, pullState, pushState, resetDemo } = useStore()
@@ -1365,12 +1369,15 @@ export default function Settings({ page = null, find = null, via = null, entryKe
         {MOBILE && <>
           {community && <Row icon="globe" iconTint="var(--blue)" title={t('Community')} subtitle={t('What people on this server shared')} accessory="chevron" onClick={() => nav('/community')} />}
           {user.admin && <Row icon="crown" iconTint="var(--indigo)" title={t('Admin dashboard')} accessory="chevron" onClick={() => nav('/admin')} />}
-          {pageVisible('trainer', ctx) && <Row icon="personCircle" iconTint="var(--acc)" title={t('Trainer & gym')} subtitle={t('Who sees what of your training')} accessory="chevron" onClick={() => nav('/settings/trainer')} />}
-          {pageVisible('trainer', ctx) && showsDashboard(config) && <Row icon="clipboard" iconTint="var(--orange)" title={t('Trainer dashboard')} subtitle={t('The people you train, and how they are doing')} accessory="chevron" onClick={() => nav('/trainer')} />}
+          {!gymv2On && pageVisible('trainer', ctx) && <Row icon="personCircle" iconTint="var(--acc)" title={t('Trainer & gym')} subtitle={t('Who sees what of your training')} accessory="chevron" onClick={() => nav('/settings/trainer')} />}
+          {!gymv2On && pageVisible('trainer', ctx) && showsDashboard(config) && <Row icon="clipboard" iconTint="var(--orange)" title={t('Trainer dashboard')} subtitle={t('The people you train, and how they are doing')} accessory="chevron" onClick={() => nav('/trainer')} />}
+          {gymv2On && !acting && <Row icon="clipboard" iconTint="var(--orange)" title={g('gym')} subtitle={g('gymSub')} accessory="chevron" onClick={() => nav('/silownia')} />}
           {/* A code to sign in on a computer (#551), behind the same proof as in a browser. */}
+          {acting ? <Row icon="signOut" iconTint="var(--orange)" title={g('backToMine')} subtitle={g('actingNoAccount')} onClick={() => stopLeading(useStore).catch(() => {})} /> : <>
           <DeviceLinkRow state={passkeys.st} />
           <AccountIdRow id={user.id} />
           <Row icon="signOut" iconTint="var(--red)" title={t('Disconnect')} danger onClick={disconnect} />
+          </>}
         </>}
       </ServerSyncSection>}
 
@@ -1393,8 +1400,13 @@ export default function Settings({ page = null, find = null, via = null, entryKe
         </> : user ? <>
           {community && <Row icon="globe" iconTint="var(--blue)" title={t('Community')} subtitle={t('What people on this server shared')} accessory="chevron" onClick={() => nav('/community')} />}
           {user.admin && <Row icon="crown" iconTint="var(--indigo)" title={t('Admin dashboard')} accessory="chevron" onClick={() => nav('/admin')} />}
-          {pageVisible('trainer', ctx) && <Row icon="personCircle" iconTint="var(--acc)" title={t('Trainer & gym')} subtitle={t('Who sees what of your training')} accessory="chevron" onClick={() => nav('/settings/trainer')} />}
-          {pageVisible('trainer', ctx) && showsDashboard(config) && <Row icon="clipboard" iconTint="var(--orange)" title={t('Trainer dashboard')} subtitle={t('The people you train, and how they are doing')} accessory="chevron" onClick={() => nav('/trainer')} />}
+          {!gymv2On && pageVisible('trainer', ctx) && <Row icon="personCircle" iconTint="var(--acc)" title={t('Trainer & gym')} subtitle={t('Who sees what of your training')} accessory="chevron" onClick={() => nav('/settings/trainer')} />}
+          {!gymv2On && pageVisible('trainer', ctx) && showsDashboard(config) && <Row icon="clipboard" iconTint="var(--orange)" title={t('Trainer dashboard')} subtitle={t('The people you train, and how they are doing')} accessory="chevron" onClick={() => nav('/trainer')} />}
+          {gymv2On && !acting && <Row icon="clipboard" iconTint="var(--orange)" title={g('gym')} subtitle={g('gymSub')} accessory="chevron" onClick={() => nav('/silownia')} />}
+          {acting ? <>
+            <Row icon="lock" iconTint="var(--orange)" title={g('leading', user.name)} subtitle={g('actingNoAccount')} />
+            <Row icon="signOut" iconTint="var(--orange)" title={g('backToMine')} onClick={() => stopLeading(useStore).catch(() => {})} />
+          </> : <>
           <PasskeysRow state={passkeys.st} changed={credsChanged} />
           <OidcRow state={passkeys.st} changed={credsChanged} />
           <DeviceLinkRow state={passkeys.st} />
@@ -1404,6 +1416,7 @@ export default function Settings({ page = null, find = null, via = null, entryKe
           <Row icon="signOut" iconTint="var(--red)" title={t('Sign out')} danger onClick={signOutHere} />
           <Row icon="shield" iconTint="var(--red)" title={t('Sign out everywhere')} subtitle={t('Ends this profile’s sessions on all your devices.')} danger onClick={signOutEverywhere} />
           <AccountIdRow id={user.id} />
+          </>}
         </> : webauthnOK() ? <>
           <Row icon="plusCircle" iconTint="var(--acc)" title={t('Create passkey profile')} subtitle={t('Keeps your data safe and separate per person.')} accessory="chevron" onClick={registerHere} />
           <Row icon="fingerprint" iconTint="var(--blue)" title={t('Sign in with passkey')} accessory="chevron" onClick={passkeySignIn} />

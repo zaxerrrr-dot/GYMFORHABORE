@@ -53,6 +53,7 @@ import { useTour } from './lib/tour.js'
 import { useTourOffer } from './lib/tour-offer.js'
 import { exitWorkoutEdit, startFlow, beginWorkout, bwSheet, finishWorkoutNow, confirmSheet } from './sheets.jsx'
 import { BrandMark } from './components/BrandLogo.jsx'
+import ActingBar from './components/ActingBar.jsx'
 import TabBar from './components/TabBar.jsx'
 import { startOrPreview, startPickerSheet } from './components/StartSheets.jsx'
 import ScrollTopButton from './components/ScrollTopButton.jsx'
@@ -104,6 +105,9 @@ const Journal = lazyView(() => import('./views/Journal.jsx'))
 const ProgressPhotos = lazyView(() => import('./views/ProgressPhotos.jsx'))
 // The trainer dashboard (docs/TRAINERS.md): only for sessions that train someone or lead a gym.
 const Trainer = lazyView(() => import('./views/Trainer.jsx'))
+// Gym mode v2 (local patch 0003): the gym screen and the invite page a client takes an account over on.
+const Gym = lazyView(() => import('./views/Gym.jsx'))
+const GymClaim = lazyView(() => import('./views/GymClaim.jsx'))
 // The tabs and screens past Home (Stats, History, the Library, Settings, ...) as well: a start
 // only needs Home, and these are fetched right behind it the same way.
 const CheckIn = lazyView(() => import('./views/CheckIn.jsx'))
@@ -367,7 +371,7 @@ function Shell() {
   }, [inWorkout])
   // The chat owns the bottom of the screen as well: its composer sits where the tabs would be.
   // The first-launch card has no tabs either: they changed the route behind it.
-  const noTabs = inWorkout || loc.pathname === '/coach' || needsMobileOnboarding || permSteps
+  const noTabs = inWorkout || loc.pathname === '/coach' || loc.pathname === '/zaproszenie' || needsMobileOnboarding || permSteps
 
   const authed = user || isGuest
   // The first setup is through (sign-in or "Use on this device", and the phone's permission
@@ -389,12 +393,12 @@ function Shell() {
   if (!ready && !authed) return (
     <div id="app">
       <div style={{ paddingTop: '44vh', display: 'flex', justifyContent: 'center' }}>
-        <BrandMark height={28} />
+        <BrandMark height={40} />
       </div>
     </div>
   )
 
-  const view = l => (!authed ? <Login /> : needsMobileOnboarding ? <MobileOnboarding /> : permSteps ? <PermissionSteps /> : (
+  const view = l => (l.pathname === '/zaproszenie' ? <GymClaim /> : !authed ? <Login /> : needsMobileOnboarding ? <MobileOnboarding /> : permSteps ? <PermissionSteps /> : (
     <Routes location={l}>
       <Route path="/home" element={<Home />} />
       {/* A module switched off (Settings → Modules, lib/modules.js) takes its screens with it: the
@@ -434,6 +438,7 @@ function Shell() {
       {/* The dashboard decides for itself once the config is in, so a deep link survives the boot. */}
       {user && <Route path="/trainer" element={<Trainer />} />}
       {user && <Route path="/trainer/m/:id" element={<Trainer />} />}
+      {user && <Route path="/silownia" element={<Gym />} />}
       <Route path="*" element={<Navigate to="/home" replace />} />
     </Routes>
   ))
@@ -454,6 +459,7 @@ function Shell() {
           would ride along with the page for the length of it. Decides for itself when to show —
           including on the sign-in screen, when the server has just ended the session. */}
       <SyncBanner />
+      <ActingBar />
       {!noTabs && <TabBar onStart={startOrPreview} onPick={startPickerSheet} />}
       {!noTabs && authed && <ScrollTopButton off={loc.pathname === '/workout'} path={loc.pathname} />}
       <RestTimer />
