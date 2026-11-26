@@ -8,7 +8,9 @@ import { useUI } from '../store/useUI.js'
 import { exercisePicker, confirmSheet } from '../sheets.jsx'
 import { EXIDX } from '../lib/exercises.js'
 import { exerciseNameText } from '../lib/format.js'
-import { g, gErr } from '../lib/gymv2.js'
+import { g, gErr, gymGroups, saveGroup } from '../lib/gymv2.js'
+import { sameMembers, groupNameOf } from '../components/GymPicker.jsx'
+import { TextField } from '../components/ui.jsx'
 import { theGroup } from '../lib/gym-group-app.js'
 import { savedGroup } from '../lib/gym-group.js'
 import { nav } from '../lib/nav.js'
@@ -84,6 +86,36 @@ function MemberPanel({ G, m, members, onNext, now }) {
     </div>
   </div>
 }
+// Everyone is done (patch 0006.2): "Zapisać tę grupę?" unless the gym has this group already.
+function GroupDone({ members }) {
+  const [state, setState] = useState('look') // look | ask | saved | known
+  const [name, setName] = useState(() => groupNameOf(members))
+  const [busy, setBusy] = useState(false)
+  const ids = members.map(m => m.id)
+  useEffect(() => {
+    let gone = false
+    gymGroups().then(r => { if (!gone) setState((r.groups || []).some(x => sameMembers(x.members.map(m => m.id), ids)) ? 'known' : 'ask') })
+      .catch(() => { if (!gone) setState('ask') })
+    return () => { gone = true }
+  }, [ids.join(',')])
+  const save = async () => {
+    setBusy(true)
+    try { const r = await saveGroup({ name: name.trim() || groupNameOf(members), members: ids }); toast(g('groupSaved', r.group.name)); setState('saved') }
+    catch (e) { toast(gErr(e)) } finally { setBusy(false) }
+  }
+  return <div className="card gg-done" data-testid="group-done">
+    <p><strong>{g('groupAllDone')}</strong></p>
+    {state === 'ask' && members.length >= 2 && <div className="gp-name-f" data-testid="group-save-ask">
+      <div className="gg-done-q">{g('groupSaveQ')}</div>
+      <div className="muted small">{g('groupSaveQMsg')}</div>
+      <label className="small dim" htmlFor="gg-gname">{g('groupName')}</label>
+      <TextField id="gg-gname" data-testid="group-save-name" value={name} maxLength={40} placeholder={g('groupNameHint')} onChange={e => setName(e.target.value)} />
+      <button type="button" className="btn primary" disabled={busy} onClick={save} data-testid="group-save-yes">{g('groupSaveBtn')}</button>
+      <button type="button" className="btn ghost dim" onClick={() => setState('known')} data-testid="group-save-no">{g('groupNotNow')}</button>
+    </div>}
+    <button type="button" className={'btn' + (state === 'ask' ? ' ghost' : ' primary')} onClick={() => nav('/home')} data-testid="group-home">{g('backHome')}</button>
+  </div>
+}
 const nextOf = (members, m) => {
   const live = members.filter(x => !x.ended)
   if (live.length < 2) return null
@@ -114,7 +146,7 @@ export default function GroupWorkout() {
   const cur = members.find(m => m.id === tab) || members.find(m => !m.ended) || members[0] || null
   const finishAll = () => confirmSheet({
     title: g('finishAllQ'), message: g('finishAllMsg'), confirmText: g('finishAll'),
-    onConfirm: () => G.finishAll().then(() => { toast(g('groupTitle') + ': ' + g('endedTag')); nav('/home') }).catch(e => toast(gErr(e)))
+    onConfirm: () => G.finishAll().then(() => { toast(g('groupTitle') + ': ' + g('endedTag')); window.scrollTo?.(0, 0) }).catch(e => toast(gErr(e)))
   })
   return <div className="narrow gg" data-testid="group-workout">
     <div className="hdr"><div><h1>{g('groupTitle')}</h1>{busy && <div className="sub">{g('groupStarting')}</div>}</div>
@@ -134,6 +166,7 @@ export default function GroupWorkout() {
     </div>}
     {cur && !cur.ended && <MemberPanel key={cur.id} G={G} m={cur} members={members} now={now} onNext={() => { const n = nextOf(members, cur); if (n) setTab(n.id) }} />}
     {cur && cur.ended && <p className="muted">{cur.name}: {g('endedTag')}</p>}
-    {members.some(m => !m.ended) && <button type="button" className="btn ghost dim" onClick={finishAll} data-testid="group-finish-all">{g('finishAll')}</button>}
+    {members.length > 0 && members.every(m => m.ended || m.finishing) && <GroupDone members={members} />}
+    {members.some(m => !m.ended && !m.finishing) && <button type="button" className="btn ghost dim" onClick={finishAll} data-testid="group-finish-all">{g('finishAll')}</button>}
   </div>
 }

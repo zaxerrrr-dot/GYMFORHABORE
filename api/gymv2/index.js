@@ -235,7 +235,58 @@ export function gymV2({
     const d = store.get();
     const before = d.members.length;
     d.members = d.members.filter(m => m.userId !== uid);
+    if (d.members.length !== before) pruneGroups(uid);
     return d.members.length !== before;
+  }
+
+  /* ---------- saved groups (patch 0006.2) ---------- */
+  // A trainer saves a group of clients who usually train together ("Bartek + Sylwek",
+  // "Poniedziałek 18:00"), for the whole gym: every trainer sees, starts, edits and deletes it.
+  // gymv2.json `groups`: [{ id, name, members: [uid], created, by, updated, updatedBy }].
+  // Only the gym's clients can be in a group (checked on every save); someone who leaves the gym,
+  // is taken out of it, becomes a trainer or is deleted is taken out of every group at once.
+  const GROUP_MAX = 5, GROUP_MIN = 2, GROUPS_MAX = 200;
+  const groupsOf = () => { const d = store.get(); if (!Array.isArray(d.groups)) d.groups = []; return d.groups; };
+  const groupRef = gr => ({ id: gr.id, name: gr.name });
+  // The change log of each person of a group: a group made, changed or deleted, by whom.
+  function logGroup(uids, ev, gr, by, extra = {}) {
+    for (const uid of new Set(uids)) log(uid, { ev, by, group: groupRef(gr), ...extra });
+  }
+  // Called with the store about to be saved by the caller.
+  function pruneGroups(uid) {
+    for (const gr of groupsOf()) {
+      if (!gr.members.includes(uid)) continue;
+      gr.members = gr.members.filter(x => x !== uid);
+      gr.updated = nowIso();
+      logGroup(gr.members, 'group-edit', gr, null, { why: 'member-left', removed: 1 });
+    }
+  }
+  // What a trainer gets: the people of the group who are still the gym's clients, with names.
+  function groupOut(gr, self) {
+    const members = gr.members.map(userById).filter(u => u && !u.disabled && canLead(self, u)).map(who);
+    const byU = userById(gr.by), upU = userById(gr.updatedBy);
+    return { id: gr.id, name: gr.name, members, created: gr.created, updated: gr.updated || gr.created,
+      by: byU ? who(byU) : null, updatedBy: upU ? who(upU) : null };
+  }
+  // The name and the people of a group from a request, checked; or { error }.
+  function groupInput(body, self, { partial = false } = {}) {
+    const out = {};
+    if (!partial || body.name !== undefined) {
+      const name = str(body.name).trim().replace(/\s+/g, ' ').slice(0, 40);
+      if (!name) return { error: 'name required', code: 'group-name' };
+      out.name = name;
+    }
+    if (!partial || body.members !== undefined) {
+      if (!Array.isArray(body.members)) return { error: 'members required', code: 'group-size' };
+      const ids = [...new Set(body.members.map(str).filter(Boolean))];
+      if (ids.length < GROUP_MIN || ids.length > GROUP_MAX) return { error: `a group has ${GROUP_MIN}-${GROUP_MAX} people`, code: 'group-size' };
+      for (const id of ids) {
+        const u = userById(id);
+        if (!u || !canLead(self, u)) return { error: 'only the gym\'s clients can be in a group', code: 'group-not-client', status: 403 };
+      }
+      out.members = ids;
+    }
+    return out;
   }
 
   /* ---------- the language of client accounts made by a trainer (patch 0006.1) ---------- */
@@ -622,7 +673,9 @@ export function gymV2({
       const u = userById(id);
       if (!u) return json(res, 404, { error: 'not found' });
       if (u.id !== m.self.id && !(isStaff(m.self) && isMember(u))) return json(res, 404, { error: 'not found' });
-      json(res, 200, { log: readLog(u.id) });
+      // A client reading their own log: a group's name may name other clients (patch 0006.2).
+      const own = u.id === m.self.id && !isStaff(m.self);
+      json(res, 200, { log: readLog(u.id).map(e => (own && e.group ? { ...e, group: { id: e.group.id }, from: undefined } : e)) });
     },
 
     // The gym's join code (trainers and admins): the current one, or a new one replacing it.
@@ -854,6 +907,61 @@ export function gymV2({
       timer = setTimeout(finish, waitS * 1000);
       req.on('close', () => { if (!done) { done = true; offs.forEach(f => f()); clearTimeout(timer); } });
     };
+    // Saved groups (patch 0006.2): the gym's, for every trainer; never while leading a client.
+    routes['GET /api/gymv2/groups'] = async (req, res) => {
+      const m = groupStaff(req, res); if (!m) return;
+      const list = groupsOf().map(gr => groupOut(gr, m.self)).sort((a, b) => a.name.localeCompare(b.name, 'pl'));
+      json(res, 200, { groups: list });
+    };
+    routes['POST /api/gymv2/groups'] = async (req, res) => {
+      const m = groupStaff(req, res); if (!m) return;
+      const body = await readBody(req);
+      const v = groupInput(body, m.self);
+      if (v.error) return json(res, v.status || 400, { error: v.error, code: v.code });
+      if (groupsOf().length >= GROUPS_MAX) return json(res, 409, { error: 'too many groups', code: 'group-limit' });
+      const at = nowIso();
+      const gr = { id: 'gr' + crypto.randomBytes(9).toString('base64url'), name: v.name, members: v.members, created: at, by: m.self.id, updated: at, updatedBy: m.self.id };
+      groupsOf().push(gr);
+      store.save();
+      logGroup(gr.members, 'group-create', gr, who(m.self));
+      audit(req, 'gymv2.group.create', { user: m.self, msg: `${gr.id} members=${gr.members.length}` });
+      json(res, 200, { group: groupOut(gr, m.self) });
+    };
+    routes['POST /api/gymv2/groups/update'] = async (req, res) => {
+      const m = groupStaff(req, res); if (!m) return;
+      const body = await readBody(req);
+      const gr = groupsOf().find(x => x.id === str(body.id));
+      if (!gr) return json(res, 404, { error: 'no such group', code: 'not-found' });
+      const v = groupInput(body, m.self, { partial: true });
+      if (v.error) return json(res, v.status || 400, { error: v.error, code: v.code });
+      const before = { name: gr.name, members: gr.members.slice() };
+      if (v.name !== undefined) gr.name = v.name;
+      if (v.members !== undefined) gr.members = v.members;
+      const added = gr.members.filter(x => !before.members.includes(x));
+      const removed = before.members.filter(x => !gr.members.includes(x));
+      const renamed = gr.name !== before.name;
+      if (!added.length && !removed.length && !renamed) return json(res, 200, { group: groupOut(gr, m.self), changed: false });
+      gr.updated = nowIso(); gr.updatedBy = m.self.id;
+      store.save();
+      const by = who(m.self), from = renamed ? before.name : undefined;
+      logGroup(added, 'group-add', gr, by, { from });
+      logGroup(removed, 'group-remove', gr, by, { from });
+      logGroup(gr.members.filter(x => !added.includes(x)), 'group-edit', gr, by, { from, added: added.length, removed: removed.length });
+      audit(req, 'gymv2.group.update', { user: m.self, msg: `${gr.id} +${added.length} -${removed.length}${renamed ? ' renamed' : ''}` });
+      json(res, 200, { group: groupOut(gr, m.self), changed: true });
+    };
+    routes['POST /api/gymv2/groups/delete'] = async (req, res) => {
+      const m = groupStaff(req, res); if (!m) return;
+      const body = await readBody(req);
+      const d = store.get();
+      const gr = groupsOf().find(x => x.id === str(body.id));
+      if (!gr) return json(res, 404, { error: 'no such group', code: 'not-found' });
+      d.groups = groupsOf().filter(x => x !== gr);
+      store.save();
+      logGroup(gr.members, 'group-delete', gr, who(m.self));
+      audit(req, 'gymv2.group.delete', { user: m.self, msg: gr.id });
+      json(res, 200, { ok: true });
+    };
     // Who of the gym's clients is training right now (live), for a trainer's banner.
     routes['GET /api/gymv2/live-now'] = async (req, res) => {
       const m = staffOnly(req, res); if (!m) return;
@@ -892,6 +1000,7 @@ export function gymV2({
       if (!on) return;
       const d = store.get();
       d.trainers = d.trainers.filter(t => t.userId !== uid);
+      if (d.members.some(x => x.userId === uid)) pruneGroups(uid);
       d.members = d.members.filter(x => x.userId !== uid);
       d.invites = d.invites.filter(i => i.userId !== uid);
       store.save();

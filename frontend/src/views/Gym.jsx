@@ -9,7 +9,8 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useStore } from '../store/useStore.js'
 import { useUI } from '../store/useUI.js'
 import { confirmSheet } from '../sheets.jsx'
-import { Section, Row, Button, TextField, Switch, Check } from '../components/ui.jsx'
+import { Section, Row, Button, TextField, Switch, Check, SearchField } from '../components/ui.jsx'
+import { GymGroups, openPicker, filterClients } from '../components/GymPicker.jsx'
 import Icon from '../components/Icon.jsx'
 import { pathBefore } from '../lib/nav.js'
 import {
@@ -106,6 +107,7 @@ function StaffView({ st, reload }) {
   const [name, setName] = useState('')
   const [busy, setBusy] = useState(false)
   const [code, setCode] = useState(undefined)
+  const [q, setQ] = useState('')
   const load = () => gymClients().then(r => setClients(r.clients || [])).catch(e => toast(gErr(e)))
   useEffect(() => { load(); gymCode().then(r => setCode(r.code)).catch(() => setCode(null)) }, [])
   // From Home's gym card, "Nowy klient": straight to the name field (patch 0006).
@@ -135,11 +137,20 @@ function StaffView({ st, reload }) {
     title: g('newCode'), message: g('codeFoot'), confirmText: g('makeCode'),
     onConfirm: () => newGymCode().then(r => setCode(r.code)).catch(e => toast(gErr(e)))
   })
+  const shown = clients ? filterClients(clients, q) : null
   return <>
+    {st.live && clients && clients.some(c => c.canLead) && <div className="gv-top">
+      <Button variant="primary" icon="play" disabled={clients.filter(c => c.canLead).length < 2} onClick={() => openPicker('group')} data-testid="gym-all-group">{g('trainGroupBtn')}</Button>
+    </div>}
+    {st.live && <Section title={g('groups')} footer={g('groupsFoot')}>
+      <div className="gv-groups"><GymGroups /></div>
+    </Section>}
     <Section title={g('clients') + (clients ? ` (${clients.length})` : '')} footer={g('clientsFoot')}>
       {st.merge && <p className="muted small" data-testid="gym-merge-hint" style={{ margin: 0, padding: '12px 16px 4px', lineHeight: 1.45 }}>{g('mergeHint')}</p>}
+      {clients && clients.length > 3 && <div className="gv-search"><SearchField value={q} onChange={e => setQ(e.target.value)} onClear={() => setQ('')} placeholder={g('searchName')} aria-label={g('searchName')} data-testid="gym-all-search" /></div>}
       {!clients ? <Row title={g('loading')} /> : !clients.length ? <Row title={g('noClients')} />
-        : clients.map(c => <ClientRow key={c.id} c={c} onInvite={invite} onLog={c => openSheet(close => <LogSheet client={c} close={close} />)}
+        : !shown.length ? <Row title={g('pickNone', q)} />
+        : shown.map(c => <ClientRow key={c.id} c={c} onInvite={invite} onLog={c => openSheet(close => <LogSheet client={c} close={close} />)}
           onMerges={c => openSheet(close => <MergesSheet c={c} close={close} reload={load} />)} />)}
     </Section>
     <Section title={g('newClient')} footer={g('newClientFoot')}>

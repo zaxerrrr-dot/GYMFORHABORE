@@ -97,6 +97,8 @@ export function createGroup({ request, storage = null, now = () => Date.now(), b
   /** Starts (or joins) a workout for each client: [{ id, name }]. */
   async function start(clients) {
     const list = clients.slice(0, GROUP_MAX)
+    // A group that is over (everyone finished) is not mixed into the next one (patch 0006.2).
+    if (g.members.length && g.members.every(m => m.ended)) g.members = []
     for (const c of list) {
       if (byId(c.id)) continue
       const m = { id: c.id, name: c.name, doc: {}, wid: null, el: null, seq: -1, pending: [], peers: null, ended: null, local: { cur: 0 }, rest: null, inflight: null, error: null }

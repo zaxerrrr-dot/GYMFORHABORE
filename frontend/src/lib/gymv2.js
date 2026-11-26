@@ -162,6 +162,53 @@ const W = {
   'ev_live-saved': ['{0}: trening na żywo zapisany', '{0}: live workout saved'],
   'ev_live-discarded': ['{0}: trening na żywo odrzucony', '{0}: live workout discarded'],
   'ev_live-finish-request': ['{0}: zakończył trening na żywo (zapis na telefonie klienta)', '{0}: finished the live workout (saved on the client\'s phone)'],
+  // Full client list and saved groups (patch 0006.2)
+  pickOneTitle: ['Trenuj jako klient – kogo?', 'Train as client – who?'],
+  pickGroupTitle: ['Trening grupowy – kogo?', 'Group workout – who?'],
+  searchName: ['Szukaj po imieniu', 'Search by name'],
+  pickedN: ['Wybrano: {0}', 'Picked: {0}'],
+  pickRange: ['2–5 osób', '2–5 people'],
+  pickMin: ['Zaznacz co najmniej 2 osoby', 'Tick at least 2 people'],
+  pickMax: ['To już 5 osób – więcej się nie da', 'That is 5 people – no more'],
+  pickTop: ['Trenują teraz i ostatnio prowadzeni', 'Training now and led recently'],
+  pickAll: ['Wszyscy klienci (A–Z)', 'All clients (A–Z)'],
+  pickNone: ['Nikt nie pasuje do „{0}”.', 'Nobody matches “{0}”.'],
+  trainShort: ['Trenuj', 'Train'],
+  findClient: ['Znajdź klienta', 'Find a client'],
+  trainGroupBtn: ['Trenuj z grupą', 'Train the group'],
+  groupGo: ['Trenuj z grupą ({0})', 'Train the group ({0})'],
+  saveAsGroup: ['Zapisz jako grupę', 'Save as a group'],
+  groupSaveBtn: ['Zapisz grupę', 'Save the group'],
+  groupName: ['Nazwa grupy', 'Group name'],
+  groupNameHint: ['np. „Bartek + Sylwek” albo „Poniedziałek 18:00”', 'e.g. “Bart + Sylvester” or “Monday 6 pm”'],
+  groupSaved: ['Grupa „{0}” zapisana', 'Group “{0}” saved'],
+  groups: ['Grupy', 'Groups'],
+  groupsFoot: ['Grupy są wspólne dla całej siłowni – widzi je każdy trener. Ktoś, kto opuści siłownię, sam znika z grup.', 'Groups belong to the whole gym – every trainer sees them. Someone who leaves the gym drops out of the groups by themselves.'],
+  noGroups: ['Brak zapisanych grup. Wybierz osoby w „Trenuj z grupą” i dotknij „Zapisz jako grupę”.', 'No saved groups. Pick people in “Train the group” and tap “Save as a group”.'],
+  groupEdit: ['Edytuj', 'Edit'],
+  groupEditTitle: ['Edytuj grupę', 'Edit the group'],
+  groupSaveChanges: ['Zapisz zmiany', 'Save changes'],
+  groupDelete: ['Usuń grupę', 'Delete the group'],
+  groupDeleteQ: ['Usunąć grupę „{0}”?', 'Delete the group “{0}”?'],
+  groupDeleteMsg: ['Grupa zniknie u wszystkich trenerów. Treningi klientów zostają.', 'The group goes for every trainer. The clients\' workouts stay.'],
+  groupDeleted: ['Grupa usunięta', 'Group deleted'],
+  groupTooSmall: ['za mało osób – dodaj kogoś w „Edytuj”', 'too few people – add someone in “Edit”'],
+  groupSaveQ: ['Zapisać tę grupę?', 'Save this group?'],
+  groupSaveQMsg: ['Następnym razem uruchomisz ją jednym dotknięciem na Starcie.', 'Next time you start it with one tap on Home.'],
+  groupNotNow: ['Nie, dziękuję', 'No, thanks'],
+  groupAllDone: ['Wszyscy skończyli. Treningi są zapisane.', 'Everyone is done. The workouts are saved.'],
+  backHome: ['Wróć do Startu', 'Back to Home'],
+  cancel: ['Anuluj', 'Cancel'],
+  'ev_group-create': ['{0} zapisał grupę{1}', '{0} saved the group{1}'],
+  'ev_group-edit': ['{0} zmienił grupę{1}', '{0} changed the group{1}'],
+  'ev_group-add': ['{0} dodał do grupy{1}', '{0} added to the group{1}'],
+  'ev_group-remove': ['{0} usunął z grupy{1}', '{0} took out of the group{1}'],
+  'ev_group-delete': ['{0} usunął grupę{1}', '{0} deleted the group{1}'],
+  'ev_group-left': ['ktoś opuścił siłownię – zniknął z grupy{1}', 'someone left the gym – out of the group{1}'],
+  'e_group-size': ['Grupa to 2–5 osób.', 'A group is 2–5 people.'],
+  'e_group-name': ['Wpisz nazwę grupy.', 'Enter the group\'s name.'],
+  'e_group-not-client': ['W grupie mogą być tylko klienci siłowni.', 'Only the gym\'s clients can be in a group.'],
+  'e_not-found': ['Tego już nie ma (ktoś inny to usunął).', 'That is gone (someone else removed it).'],
   err: ['Nie udało się: {0}', 'That did not work: {0}'],
   e_name_taken: ['Ta nazwa jest już zajęta. Dodaj np. inicjał nazwiska.', 'That name is taken. Add an initial, for example.'],
   e_code_invalid: ['Ten kod siłowni nie działa.', 'That gym code does not work.'],
@@ -205,6 +252,14 @@ export const setTrainer = (id, trainer) => post('/api/gymv2/trainer', { id, trai
 export const setGymName = name => post('/api/gymv2/name', { name })
 export const clientLog = id => api('/api/gymv2/log?id=' + encodeURIComponent(id))
 export const undoMerge = id => post('/api/gymv2/merge/undo', { id })
+// Saved groups (patch 0006.2): the gym's, every trainer's.
+export const gymGroups = () => api('/api/gymv2/groups')
+export const saveGroup = ({ id, name, members }) => (id ? post('/api/gymv2/groups/update', { id, name, members }) : post('/api/gymv2/groups', { name, members }))
+export const deleteGroup = id => post('/api/gymv2/groups/delete', { id })
+// The clients led last on this device first (Home's gym card, the client picker).
+export function rememberLed(clientId) {
+  try { const k = 'gymv2_recent'; const v = JSON.parse(localStorage.getItem(k) || '[]'); localStorage.setItem(k, JSON.stringify([clientId, ...(Array.isArray(v) ? v : []).filter(x => x !== clientId)].slice(0, 12))) } catch { /* order only */ }
+}
 
 // The address of a page of this app, for a link sent to someone (hash router).
 // In the phone app the page is the app's own (capacitor://localhost): a link goes to the paired server.
@@ -235,7 +290,7 @@ export function actorLang() {
 export async function startLeading(store, clientId, hashPath = '#/home') {
   try { const l = getLang(); if (l) localStorage.setItem(ACTOR_LANG_KEY, l) } catch { /* the client's own language then */ }
   // Home's gym card puts the clients led last first (components/GymHomeCard.jsx).
-  try { const k = 'gymv2_recent'; const v = JSON.parse(localStorage.getItem(k) || '[]'); localStorage.setItem(k, JSON.stringify([clientId, ...(Array.isArray(v) ? v : []).filter(x => x !== clientId)].slice(0, 12))) } catch { /* order only */ }
+  rememberLed(clientId)
   await settleThenReload(store)
   const r = await post('/api/gymv2/act', { id: clientId })
   if (MOBILE) keepAct(r.token)
@@ -257,6 +312,13 @@ export async function stopLeading(store) {
 export function logLine(e) {
   const by = e.by?.name || '?'
   if (e.ev === 'merge') return g('ev_merge', by, e.d ? ' (' + fmtDay(e.d) + ')' : '')
+  // Saved groups (patch 0006.2); a client reading their own log gets no group name.
+  if (String(e.ev).startsWith('group-')) {
+    const nm = e.group?.name ? ` „${e.group.name}”` : ''
+    const was = e.from && e.from !== e.group?.name ? ` (${isPl() ? 'było' : 'was'} „${e.from}”)` : ''
+    if (e.ev === 'group-edit' && !e.by) return g('ev_group-left', '', nm)
+    return g('ev_' + e.ev, by, nm + was)
+  }
   if (e.ev !== 'write') return g('ev_' + e.ev, by)
   const c = e.changes || {}, parts = []
   const add = (k, list, label) => { for (const x of list || []) parts.push(g(k) + (label(x) ? ' ' + label(x) : '')) }
