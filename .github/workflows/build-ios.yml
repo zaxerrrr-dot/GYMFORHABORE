@@ -133,8 +133,14 @@ jobs:
             echo
             echo '```'; cat build-info.txt; echo '```'
           } > notes.md
-          gh release create "$TAG" HabcoreGym.ipa build-info.txt --repo "$GITHUB_REPOSITORY" \
-            --target "$GITHUB_SHA" --title "Habcore Gym iOS #${{ github.run_number }}" --notes-file notes.md --latest
+          if ! gh release create "$TAG" HabcoreGym.ipa build-info.txt --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" --title "Habcore Gym iOS #${{ github.run_number }}" --notes-file notes.md --latest > gh.log 2>&1; then
+            sed 's/^/::error::gh release: /' gh.log
+            # what the token may do here (a read-only token is the usual reason)
+            curl -s -o /dev/null -D - -H "Authorization: Bearer $GH_TOKEN" "https://api.github.com/repos/$GITHUB_REPOSITORY" | grep -i "x-oauth-scopes\|x-accepted-github-permissions\|^HTTP" | sed 's/^/::error::token: /' || true
+            exit 1
+          fi
+          cat gh.log
 
   android:
     needs: ios
@@ -167,4 +173,5 @@ jobs:
       - name: Add to the release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release upload "$TAG" HabcoreGym-debug.apk --repo "$GITHUB_REPOSITORY" --clobber
+        run: |
+          gh release upload "$TAG" HabcoreGym-debug.apk --repo "$GITHUB_REPOSITORY" --clobber > gh.log 2>&1 || { sed 's/^/::error::gh release upload: /' gh.log; exit 1; }
