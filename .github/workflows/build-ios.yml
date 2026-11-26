@@ -210,6 +210,7 @@ jobs:
       - name: Pack the Xcode project
         run: |
           set -e
+          trap 'echo "::error::pack step failed at line $LINENO: $BASH_COMMAND"' ERR
           Z=HabcoreGym-xcode
           rm -rf "$Z" && mkdir -p "$Z/frontend/node_modules"
           # the exercise animations stay out (size); the app shows placeholders for them
@@ -217,7 +218,7 @@ jobs:
           rm -rf frontend/ios/App/build frontend/ios/App/DerivedData
           cp -R frontend/ios "$Z/frontend/"
           # every plugin folder the Podfile points at (../../node_modules/...)
-          grep -oE "node_modules/[^']+" frontend/ios/App/Podfile | sort -u | while read -r m; do
+          grep -E ":path *=>" frontend/ios/App/Podfile | grep -oE "node_modules/[^']+" | sort -u | while read -r m; do
             mkdir -p "$Z/frontend/$(dirname "$m")"; cp -R "frontend/$m" "$Z/frontend/$m"
           done
           cp frontend/capacitor.config.json "$Z/frontend/"
