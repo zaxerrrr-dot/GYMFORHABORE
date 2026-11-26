@@ -9,7 +9,7 @@ import { exercisePicker, confirmSheet } from '../sheets.jsx'
 import { EXIDX } from '../lib/exercises.js'
 import { exerciseNameText } from '../lib/format.js'
 import { g, gErr, gymGroups, saveGroup } from '../lib/gymv2.js'
-import { sameMembers, groupNameOf } from '../components/GymPicker.jsx'
+import { sameMembers, groupNameOf, groupsChanged } from '../components/GymPicker.jsx'
 import { TextField } from '../components/ui.jsx'
 import { theGroup } from '../lib/gym-group-app.js'
 import { savedGroup } from '../lib/gym-group.js'
@@ -100,7 +100,7 @@ function GroupDone({ members }) {
   }, [ids.join(',')])
   const save = async () => {
     setBusy(true)
-    try { const r = await saveGroup({ name: name.trim() || groupNameOf(members), members: ids }); toast(g('groupSaved', r.group.name)); setState('saved') }
+    try { const r = await saveGroup({ name: name.trim() || groupNameOf(members), members: ids }); toast(g('groupSaved', r.group.name)); groupsChanged(); setState('saved') }
     catch (e) { toast(gErr(e)) } finally { setBusy(false) }
   }
   return <div className="card gg-done" data-testid="group-done">

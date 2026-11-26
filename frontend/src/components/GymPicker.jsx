@@ -20,6 +20,9 @@ export const GROUP_START_KEY = 'gymv2_group_start'
 export const START_AFTER_KEY = 'gymv2_start_after_switch'
 const RECENT_KEY = 'gymv2_recent'
 const toast = m => useUI.getState().toast(m)
+// A group saved, changed or deleted anywhere on this device: every list of groups reads again.
+export const GROUPS_EVENT = 'gymv2-groups'
+export const groupsChanged = () => { try { window.dispatchEvent(new Event(GROUPS_EVENT)) } catch { /* the 30 s refresh then */ } }
 export const readRecent = () => { try { const v = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]'); return Array.isArray(v) ? v.filter(x => typeof x === 'string') : [] } catch { return [] } }
 
 /** A name folded for searching: no case, no Polish marks ("Łukasz" ~ "lukasz"). */
@@ -106,6 +109,7 @@ export function GymPicker({ mode = 'group', group = null, preset = [], close, on
     try {
       const r = await saveGroup({ id: group?.id, name: n, members: picked.map(p => p.id) })
       toast(g('groupSaved', r.group.name))
+      groupsChanged()
       onChanged?.()
       if (mode === 'edit') close()
       else { setNaming(false); setName('') }
@@ -116,7 +120,7 @@ export function GymPicker({ mode = 'group', group = null, preset = [], close, on
     close()
     confirmSheet({
       title: g('groupDeleteQ', group.name), message: g('groupDeleteMsg'), confirmText: g('groupDelete'), danger: true,
-      onConfirm: () => deleteGroup(group.id).then(() => { toast(g('groupDeleted')); onChanged?.() }).catch(e => toast(gErr(e)))
+      onConfirm: () => deleteGroup(group.id).then(() => { toast(g('groupDeleted')); groupsChanged(); onChanged?.() }).catch(e => toast(gErr(e)))
     })
   }
   const title = mode === 'one' ? g('pickOneTitle') : mode === 'edit' ? g('groupEditTitle') : g('pickGroupTitle')
@@ -172,7 +176,8 @@ export function GymGroups({ compact = false }) {
   useEffect(() => {
     load()
     const t = setInterval(() => { if (!document.hidden) load() }, 30000)
-    return () => clearInterval(t)
+    window.addEventListener(GROUPS_EVENT, load)
+    return () => { clearInterval(t); window.removeEventListener(GROUPS_EVENT, load) }
   }, [])
   if (!groups) return null
   if (!groups.length) return compact ? null : <p className="muted small" data-testid="gym-groups-none">{g('noGroups')}</p>
