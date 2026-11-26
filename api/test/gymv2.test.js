@@ -91,12 +91,12 @@ test('admin gives the trainer role; a trainer makes a client, leads it, and ever
   const me = await h.req('GET', '/api/me', { jar: tr1 });
   assert.equal(me.body.user.id, cid);
   assert.equal(me.body.user.acting.by.id, 'TR1');
-  assert.equal((await h.req('GET', '/api/data', { jar: tr1 })).body.rev, 0);
+  assert.equal((await h.req('GET', '/api/data', { jar: tr1 })).body.rev, 1, 'starts with the trainer language (patch 0006.1)');
   const S = { unit: 'kg', workouts: [{ id: 'w1', d: '2026-11-26', name: 'Trening A', entries: [{ id: '0001', sets: [{ w: 20, r: 10, done: true }] }] }], routines: [] };
-  const put = await h.req('PUT', '/api/data', { jar: tr1, body: { state: S, baseRev: 0 } });
+  const put = await h.req('PUT', '/api/data', { jar: tr1, body: { state: S, baseRev: 1 } });
   assert.equal(put.status, 200);
   const S2 = { ...S, workouts: [{ ...S.workouts[0], entries: [{ id: '0001', sets: [{ w: 25, r: 8, done: true }] }] }] };
-  assert.equal((await h.req('PUT', '/api/data', { jar: tr1, body: { state: S2, baseRev: put.body.rev } })).status, 200);
+  assert.equal((await h.req('PUT', '/api/data', { jar: tr1, body: { state: S2, baseRev: (await h.req('GET', '/api/data/rev', { jar: tr1 })).body.rev } })).status, 200);
   const writes = h.logOf(cid).filter(e => e.ev === 'write');
   assert.equal(writes.length, 2);
   assert.equal(writes[0].by.id, 'TR1');
@@ -147,7 +147,7 @@ test('invite link: the client sets a password, signs in and has the history; the
   await h.req('POST', '/api/gymv2/trainer', { jar: admin, body: { id: 'TR1', trainer: true } });
   const cid = (await h.req('POST', '/api/gymv2/clients', { jar: tr1, body: { name: 'Kasia' } })).body.client.id;
   await h.req('POST', '/api/gymv2/act', { jar: tr1, body: { id: cid } });
-  await h.req('PUT', '/api/data', { jar: tr1, body: { state: { unit: 'kg', workouts: [{ id: 'w9', d: '2026-11-20', name: 'Nogi', entries: [] }] }, baseRev: 0 } });
+  await h.req('PUT', '/api/data', { jar: tr1, body: { state: { unit: 'kg', workouts: [{ id: 'w9', d: '2026-11-20', name: 'Nogi', entries: [] }] }, baseRev: 1 } });
   await h.req('POST', '/api/gymv2/act/end', { jar: tr1, body: {} });
 
   // Nobody can sign in to it before.

@@ -158,6 +158,7 @@ const W = {
   liveBadge: ['NA ŻYWO', 'LIVE'],
   liveWith: ['Na żywo z: {0}', 'Live with: {0}'],
   liveClientAway: ['telefon klienta poza zasięgiem', 'client\'s phone out of reach'],
+  'ev_lang-set': ['język konta ustawiony jak u trenera', 'account language set to the trainer\'s'],
   'ev_live-saved': ['{0}: trening na żywo zapisany', '{0}: live workout saved'],
   'ev_live-discarded': ['{0}: trening na żywo odrzucony', '{0}: live workout discarded'],
   'ev_live-finish-request': ['{0}: zakończył trening na żywo (zapis na telefonie klienta)', '{0}: finished the live workout (saved on the client\'s phone)'],
@@ -225,7 +226,14 @@ const keepAct = tok => { try { if (tok) localStorage.setItem(ACT_KEY, tok); else
 async function settleThenReload(store, hashPath) {
   try { await store.getState().pushState() } catch { /* still owed: kept aside by the switch */ }
 }
+// While leading a client the app speaks the TRAINER's language, not the client account's (patch
+// 0006.1): kept here when the trainer starts leading, read by App.jsx while `user.acting`.
+export const ACTOR_LANG_KEY = 'gymv2_actor_lang'
+export function actorLang() {
+  try { const v = localStorage.getItem(ACTOR_LANG_KEY); return v && /^[a-z]{2,3}(-[A-Za-z]{2,4})?$/.test(v) ? v : null } catch { return null }
+}
 export async function startLeading(store, clientId, hashPath = '#/home') {
+  try { const l = getLang(); if (l) localStorage.setItem(ACTOR_LANG_KEY, l) } catch { /* the client's own language then */ }
   // Home's gym card puts the clients led last first (components/GymHomeCard.jsx).
   try { const k = 'gymv2_recent'; const v = JSON.parse(localStorage.getItem(k) || '[]'); localStorage.setItem(k, JSON.stringify([clientId, ...(Array.isArray(v) ? v : []).filter(x => x !== clientId)].slice(0, 12))) } catch { /* order only */ }
   await settleThenReload(store)

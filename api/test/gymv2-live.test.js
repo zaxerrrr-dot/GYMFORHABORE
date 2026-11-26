@@ -306,3 +306,16 @@ test('group training: one trainer, several clients, each checked per request, no
   assert.ok(!(syl?.workouts || []).some(w => w.id === B.id));
   assert.equal((await h.req('POST', '/api/gymv2/group/save', { jar: h.tr, body: { id: 'OUT', workout: done } })).status, 403);
 });
+
+test('patch 0006.1: a client account a trainer makes speaks the trainer\'s language', async t => {
+  const h = await startServer(t, { env: { DEFAULT_LANG: 'pl' } });
+  const r = await h.req('POST', '/api/gymv2/clients', { jar: h.tr, body: { name: 'Nowa Klientka' } });
+  assert.equal(r.status, 200);
+  await h.req('POST', '/api/gymv2/act', { jar: h.tr, body: { id: r.body.client.id } });
+  const S = (await h.req('GET', '/api/data', { jar: h.tr })).body.state;
+  assert.equal(S.lang, 'pl');
+  assert.equal(S.langAuto, false);
+  assert.ok(S.edited.lang > 0);
+  // Once at start-up: done and marked, never again.
+  assert.ok(h.gym().migrations.clientLang.at);
+});

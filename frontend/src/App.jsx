@@ -57,6 +57,7 @@ import ActingBar from './components/ActingBar.jsx'
 import LiveBanner from './components/LiveBanner.jsx'
 import InstallHint from './components/InstallHint.jsx'
 import { initGymLive } from './lib/gym-live-app.js'
+import { actorLang } from './lib/gymv2.js'
 import TabBar from './components/TabBar.jsx'
 import { startOrPreview, startPickerSheet } from './components/StartSheets.jsx'
 import ScrollTopButton from './components/ScrollTopButton.jsx'
@@ -273,7 +274,8 @@ function Shell() {
   // A profile that never picked a language follows the instance default or the browser (#303) —
   // worked out here, on this device, and never written into the synced state (lib/default-lang.js).
   const config = useStore(s => s.config)
-  const lang = effectiveLang(S, config)
+  // Leading a client (gym mode v2): the trainer's own language, not the client account's (patch 0006.1).
+  const lang = (user?.acting && actorLang()) || effectiveLang(S, config)
   useEffect(() => { setLang(lang, S.enParens?.[baseLang(lang)] ?? true, S.enOnly?.[baseLang(lang)] === true) }, [lang, S.enParens, S.enOnly])
   // Same shape as the language: a module-level display setting, pushed when it changes (#139).
   // The profile's weight step (Settings → Weight step, lib/weight-step.js) stands in for each lift's

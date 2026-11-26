@@ -238,6 +238,53 @@ export function gymV2({
     return d.members.length !== before;
   }
 
+  /* ---------- the language of client accounts made by a trainer (patch 0006.1) ---------- */
+  const LANG_RE = /^[a-z]{2,3}(-[A-Za-z]{2,4})?$/;
+  const DEFAULT_LANG = LANG_RE.test(process.env.DEFAULT_LANG || '') ? process.env.DEFAULT_LANG : 'pl';
+  // The trainer's language and units (their document), or the server's default language.
+  function lookOf(trainerId) {
+    const T = (trainerId && readStateCached(trainerId)) || {};
+    // A trainer who never picked a language (langAuto) sees the server's default language.
+    const own = T.langAuto !== true && typeof T.lang === 'string' && LANG_RE.test(T.lang) ? T.lang : DEFAULT_LANG;
+    return { lang: own, unit: T.unit === 'lb' || T.unit === 'kg' ? T.unit : null };
+  }
+  // Writes the language (and units) into a client's document, stamped as a settings edit, so a
+  // device's merge keeps it. `onlyIf(cur)`: leave the document alone unless true.
+  function seedLook(uid, trainerId, onlyIf = null) {
+    if (!writeStateAs) return false;
+    const look = lookOf(trainerId);
+    try {
+      return writeStateAs(uid, (next, t) => {
+        if (onlyIf && !onlyIf(next)) return 'skip';
+        next.lang = look.lang;
+        next.langAuto = false;
+        if (look.unit && !(Array.isArray(next.workouts) && next.workouts.length)) next.unit = look.unit;
+        next.edited = { ...(next.edited && typeof next.edited === 'object' ? next.edited : {}), lang: t, langAuto: t, ...(next.unit === look.unit && look.unit ? { unit: t } : {}) };
+        return 'set';
+      }, { create: true, skipIf: r => r === 'skip' }) === 'set';
+    } catch (e) { console.error('gymv2 seed look', uid, e.message); return false; }
+  }
+  // Once: the accounts trainers made before this, still in English or with no language chosen,
+  // take their trainer's language (DEFAULT_LANG). Through the server's own write, at start-up,
+  // never by editing files under a running API. Marked done in gymv2.json.
+  function migrateLanguages() {
+    if (!on || !store) return;
+    const d = store.get();
+    if (d.migrations?.clientLang) return;
+    let n = 0;
+    for (const u of users()) {
+      if (!u || u.disabled || !(u.gymVirtual || u.gymCreatedBy)) continue;
+      const S = readStateCached(u.id);
+      const lang = S && typeof S.lang === 'string' ? S.lang : null;
+      if (lang && lang !== 'en' && S.langAuto !== true) continue;
+      if (seedLook(u.id, u.gymCreatedBy, next => !(typeof next.lang === 'string' && next.lang !== 'en' && next.langAuto !== true))) { n++; log(u.id, { ev: 'lang-set', by: { id: 'server', name: 'server' }, lang: lookOf(u.gymCreatedBy).lang }); }
+    }
+    d.migrations = { ...(d.migrations || {}), clientLang: { at: nowIso(), n } };
+    store.save();
+    if (n) console.log(`gymv2: ${n} client account(s) made by a trainer now in their trainer's language`);
+  }
+  setImmediate(() => { try { migrateLanguages(); } catch (e) { console.error('gymv2 lang migration', e.message); } });
+
   /* ---------- joint training (patch 0004, gymv2/merge.js) ---------- */
   // Which workouts of a client a trainer added while leading: from the change log (every write made
   // while leading names the workouts it added). Parsed again only when the log file changed.
@@ -465,6 +512,9 @@ export function gymV2({
       store.get().members.push({ userId: u.id, since: created, via: 'created', by: m.self.id });
       store.save();
       log(u.id, { ev: 'created', by: who(m.self) });
+      // Habcore Gym (patch 0006.1): the new account speaks the trainer's language (and units), so
+      // "Lead as client" and the client's first sign-in are not in English.
+      seedLook(u.id, m.self.id);
       audit(req, 'gymv2.client.create', { user: m.self, target: u });
       json(res, 200, { client: { ...who(u), virtual: true, since: created, canLead: true, invite: null, workouts: 0, lastWorkout: null, routines: 0 } });
     },
