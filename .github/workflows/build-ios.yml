@@ -14,10 +14,6 @@ name: Build iOS (SideStore)
 on:
   push:
     branches: [main]
-    paths:
-      - 'frontend/**'
-      - 'scripts/**'
-      - '.github/workflows/build-ios.yml'
   workflow_dispatch:
 
 permissions:
