@@ -175,3 +175,69 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release upload "$TAG" HabcoreGym-debug.apk --repo "$GITHUB_REPOSITORY" --clobber > gh.log 2>&1 || { sed 's/^/::error::gh release upload: /' gh.log; exit 1; }
+
+  # The iOS project itself, for Xcode on the owner's Mac (a free Personal Team signs it there):
+  # after `cap sync ios` (web assets in App/public, Pods installed), with the watch app target,
+  # and the Capacitor plugin folders the Pods point at. README-XCODE.txt (Polish) on top.
+  xcode-project:
+    needs: ios
+    runs-on: macos-26
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 26
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: npm ci
+        working-directory: frontend
+        run: |
+          npm ci > ../npm-ci.log 2>&1 || { tail -40 ../npm-ci.log | sed 's/^/::error::npm ci: /' || true; exit 1; }
+      - name: Frontend build + cap sync ios
+        working-directory: frontend
+        run: |
+          for i in 1 2 3; do
+            if npm run build:mobile > ../build-mobile.log 2>&1 && npx cap sync ios >> ../build-mobile.log 2>&1; then ok=1; break; fi
+            echo "::warning::build:mobile / cap sync failed, try $i"; sleep 30
+          done
+          if [ -z "$ok" ]; then grep -iE "error|failed" ../build-mobile.log | tail -30 | sed 's/^/::error::build:mobile: /' || true; tail -60 ../build-mobile.log; exit 1; fi
+      - name: Add the watch app
+        working-directory: frontend
+        env:
+          NO_WATCH_WIDGETS: '1'
+        run: ruby ios/ci/add-watch-app.rb
+      - name: Pack the Xcode project
+        run: |
+          set -e
+          Z=HabcoreGym-xcode
+          rm -rf "$Z" && mkdir -p "$Z/frontend/node_modules"
+          # the exercise animations stay out (size); the app shows placeholders for them
+          rm -rf frontend/ios/App/App/public/exercise-media
+          rm -rf frontend/ios/App/build frontend/ios/App/DerivedData
+          cp -R frontend/ios "$Z/frontend/"
+          # every plugin folder the Podfile points at (../../node_modules/...)
+          grep -oE "node_modules/[^']+" frontend/ios/App/Podfile | sort -u | while read -r m; do
+            mkdir -p "$Z/frontend/$(dirname "$m")"; cp -R "frontend/$m" "$Z/frontend/$m"
+          done
+          cp frontend/capacitor.config.json "$Z/frontend/"
+          cp LICENSE NOTICE.md "$Z/"
+          cp scripts/habcore/README-XCODE.txt "$Z/"
+          test -d "$Z/frontend/ios/App/Pods" || { echo "::error::no Pods folder after cap sync"; exit 1; }
+          test -f "$Z/frontend/ios/App/App/public/index.html" || { echo "::error::no web assets in App/public"; exit 1; }
+          # the project must build as it is packed (unsigned, generic device), from the packed copy
+          set +e
+          (cd "$Z/frontend/ios/App" && xcodebuild -workspace App.xcworkspace -scheme App -configuration Debug \
+            -destination 'generic/platform=iOS' -derivedDataPath /tmp/xc-dd \
+            CODE_SIGNING_ALLOWED=NO build > /tmp/xc-build.log 2>&1)
+          st=$?
+          set -e
+          if [ $st -ne 0 ]; then grep -E "error:" /tmp/xc-build.log | sort -u | head -40 | sed 's/^/::error::xcodebuild (packed project): /' || true; tail -60 /tmp/xc-build.log; exit 1; fi
+          grep -E "\*\* BUILD" /tmp/xc-build.log || true
+          zip -qry "$Z.zip" "$Z"
+          ls -la "$Z.zip"
+      - name: Add to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload "$TAG" HabcoreGym-xcode.zip --repo "$GITHUB_REPOSITORY" --clobber > gh.log 2>&1 || { sed 's/^/::error::gh release upload: /' gh.log; exit 1; }
