@@ -18,8 +18,8 @@ const KEEP = /[\\/]src[\\/]instr[\\/]en\.js$/
 export function lazyAssets(bundle) {
   const out = []
   for (const [file, item] of Object.entries(bundle)) {
-    // Local patch: the share cards' and the app's kinkylocked pictures, so they are there offline too.
-    if (/(?:^|\/)kinkylocked-(?:logo|mark)-[^/]*\.png$/.test(file)) { out.push('./' + file); continue }
+    // Local patch: the share cards' and the app's Habcore Gym pictures, so they are there offline too.
+    if (/(?:^|\/)habcore-(?:logo|mark)-[^/]*\.png$/.test(file)) { out.push('./' + file); continue }
     if (!/\.(?:js|css)$/.test(file)) continue
     const ids = item.type === 'chunk' ? (item.moduleIds?.length ? item.moduleIds : Object.keys(item.modules || {})) : []
     if (ids.length && ids.every(id => PACK.test(id) && !KEEP.test(id))) continue

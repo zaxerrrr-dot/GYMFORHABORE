@@ -1,4 +1,4 @@
-// Gym mode v2 (local patch 0003, kinkylocked): one gym per server, trainers given by an admin,
+// Gym mode v2 (local patch 0003, Habcore Gym): one gym per server, trainers given by an admin,
 // clients created by a trainer (an account with no way in until it is claimed) or joining with
 // the gym's code. Every trainer of the gym sees and leads every client of the gym, with full
 // consent given once at joining and ended only by leaving the gym.

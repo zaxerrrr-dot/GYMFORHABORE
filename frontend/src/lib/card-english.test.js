@@ -76,14 +76,14 @@ describe('share images in English while the app is Polish', () => {
     expect(t('Duration')).toBe('Czas')
   })
 
-  it('the recap card draws the English words it is given, with the kinkylocked footer', () => {
+  it('the recap card draws the English words it is given, with the Habcore Gym footer', () => {
     _setLangState('pl', pl, null, plNames)
     const words = inCardEnglish(() => ({ title: t('Your month'), dates: '1–30 Nov', tiles: [{ label: tn('workout', 'workouts', 12), value: '12' }, { label: t('Volume'), value: '1 kg' }, { label: 'x', value: '0' }, { label: 'y', value: '1' }], top: null }))
     expect(words.title).toBe('Your month')
     expect(words.tiles[0].label).toBe('workouts')
     const { ctx, texts } = recorder()
     drawRecapCard(ctx, words, { width: 1080, height: 1920, colors: cardPalette('dark') })
-    expect(texts).toEqual(expect.arrayContaining(['Your month', 'workouts', 'Volume', 'kinkylocked.com']))
+    expect(texts).toEqual(expect.arrayContaining(['Your month', 'workouts', 'Volume', 'Habcore Gym']))
     expect(texts).not.toContain('Gym')
   })
 

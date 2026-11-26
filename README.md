@@ -2,7 +2,7 @@
 > This repository is a modified copy of [openGym](https://github.com/DuarteSantos8/openGym) by
 > Duarte Santos (version 1.4.5, upstream commit `e4a68a94c`), licensed under the
 > [GNU AGPL-3.0](LICENSE) with the additional permission described in [NOTICE.md](NOTICE.md).
-> Changes in this fork: KinkyLocked branding (logo, app icons, share cards), a gym / trainer mode
+> Changes in this fork: Habcore Gym branding (logo, app icons, splash, share cards), a gym / trainer mode
 > with joint (shared) workouts,
 > its own app identifiers (`pl.habcore.gym`, display name "Habcore Gym") so it can be installed
 > next to the official app, a default server address for the phone app, and a GitHub Actions

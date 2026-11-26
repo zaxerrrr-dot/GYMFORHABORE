@@ -213,9 +213,9 @@ self.addEventListener('push', e => {
     try { for (const n of await self.registration.getNotifications({ tag })) n.close() } catch {}
     await self.registration.showNotification(data.title || 'openGym', {
       body: data.body || '',
-      icon: 'kl-icon-512.png',
+      icon: 'habcore-icon-512.png',
       // The status bar draws the badge as a mask: the mark in white on clear, not the square icon.
-      badge: 'kl-badge-96.png',
+      badge: 'habcore-badge-96.png',
       tag,
       renotify: true
     })

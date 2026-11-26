@@ -102,7 +102,7 @@ export async function renderCompare({ items, rows, aspect, mode = 'side', pct = 
       pill(ctx, it.label, cell.x + 14, cell.y + cell.h - 14)
     })
   }
-  // The kinkylocked.com logo (local patch; it was the word openGym), white on the black foot.
+  // The Habcore Gym logo (local patch; it was the word openGym), white on the black foot.
   drawLogo(ctx, PAD, L.foot - 6, 56, 'light')
   ctx.textBaseline = 'middle'
   ctx.textAlign = 'left'

@@ -5,20 +5,20 @@
 // on a card (the licence keeps those inside the app, NOTICE.md).
 
 import { inkIn } from './accent.js'
-// Local patch: the cards carry the kinkylocked.com logo instead of the openGym lockup. White
+// Local patch: the cards carry the Habcore Gym logo instead of the openGym lockup. White
 // lettering for dark paper, the same artwork recoloured dark (same alpha) for light paper. Both are
 // hashed assets of the build, so they follow the base path and the service worker caches them.
-import LOGO_LIGHT_URL from '../brand/kinkylocked-logo-light.png'
-import LOGO_DARK_URL from '../brand/kinkylocked-logo-dark.png'
+import LOGO_LIGHT_URL from '../brand/habcore-logo-light.png'
+import LOGO_DARK_URL from '../brand/habcore-logo-dark.png'
 
 // 9:16 for Stories and Reels, 1:1 for a feed or a chat.
 export const FORMATS = { story: { width: 1080, height: 1920 }, square: { width: 1080, height: 1080 } }
 export const FORMAT_IDS = Object.keys(FORMATS)
 export const STYLE_IDS = ['dark', 'light']
-export const SITE = 'kinkylocked.com'
+export const SITE = 'Habcore Gym'
 
-// The logo's trimmed artwork is 841×480.
-export const LOGO_ASPECT = 841 / 480
+// The logo's trimmed artwork is 841×470.
+export const LOGO_ASPECT = 841 / 470
 const logos = { light: null, dark: null }
 let logosReady = null
 /** Resolves once both logo pictures are decoded (or failed: a card then goes out without one).
@@ -147,7 +147,7 @@ export function brandNeedsBadge(bg) {
 }
 
 /**
- * The footer every card ends with: the kinkylocked.com logo (local patch; it was the openGym
+ * The footer every card ends with: the Habcore Gym logo (local patch; it was the openGym
  * lockup) and the site at the other end. `y` is the text's baseline.
  * Drawn left to right whatever the language: it is a logo, and a logo does not mirror.
  */
@@ -155,7 +155,7 @@ export function brandNeedsBadge(bg) {
 // own: a photo behind it, or a see-through PNG laid over one later (TestFlight 11-08: the logo
 // on a photo read as see-through). The badge is solid BRAND.ink, never a tint.
 export function drawBrand(ctx, { x, y, width, colors, family, size = 40, badge: forceBadge = false }) {
-  // The kinkylocked.com logo in the room the lockup had: as high as the lockup's badge box
+  // The Habcore Gym logo in the room the lockup had: as high as the lockup's badge box
   // (brandBadgeBox), centred where the lockup was, its aspect ratio kept.
   const markH = size * 1.07
   const padY = size * 0.28

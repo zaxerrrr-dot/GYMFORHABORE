@@ -1,4 +1,4 @@
-// Joint training (local patch 0004, kinkylocked): a client trains with the phone app and the watch,
+// Joint training (local patch 0004, Habcore Gym): a client trains with the phone app and the watch,
 // and at the same time a trainer logs the exercises for them through "Lead as client" (gymv2). The
 // app keeps a running workout on its own device (server.js commitState: `delete state.active`), so
 // the two can never be one workout while they run. Once both are finished and on the server, they

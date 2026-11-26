@@ -4651,11 +4651,11 @@ button.wl-summary{width:100%;padding:0 0 10px;text-align:start;border-radius:var
 .gl-strip-empty{margin:0;color:var(--label-2);font-size:var(--fs-footnote)}
 
 /* ---------------------------------------------------------- brand lockup -- */
-/* Local patch (kinkylocked): the logo pictures of components/BrandLogo.jsx. With variant 'auto' both
+/* Local patch (Habcore Gym): the logo pictures of components/BrandLogo.jsx. With variant 'auto' both
    are in the page: the white one on the dark theme, the dark one on the light theme. */
-.kl-brand{display:inline-flex;align-items:center;justify-content:center;line-height:0;direction:ltr;unicode-bidi:isolate}
-.kl-brand-img{display:block;max-width:100%;height:100%;width:auto;-webkit-user-select:none;user-select:none}
-:root[data-theme="light"] .kl-brand .kl-on-dark,:root:not([data-theme="light"]) .kl-brand .kl-on-light{display:none}
+.hc-brand{display:inline-flex;align-items:center;justify-content:center;line-height:0;direction:ltr;unicode-bidi:isolate}
+.hc-brand-img{display:block;max-width:100%;height:100%;width:auto;-webkit-user-select:none;user-select:none}
+:root[data-theme="light"] .hc-brand .hc-on-dark,:root:not([data-theme="light"]) .hc-brand .hc-on-light{display:none}
 
 /* Add set / Warm-up / Remove: 44px tall, the leading glyph on the card's content edge; wrapped siblings share the same edge */
 .wk-add{min-height:44px;margin-inline-start:-14px}
