@@ -131,6 +131,7 @@ jobs:
             echo "- HabcoreGym.ipa: unsigned, for SideStore (+, pick the file)."
             echo "- HabcoreGym-debug.apk: Android (debug build)."
             echo
+            echo "Apple Watch: automatic rep counting for 30 barbell, dumbbell and cable exercises (Count reps on the set page, confirm with the Digital Crown); watch start screen > Rep counter. docs/LICZENIE-POWTORZEN.md."
             echo "Lost access: Ask your trainer, no server command (local patch 0012)."
             echo "Sign-in screen: password first, then sign in with passkey, then Registration (opens on a password); passwords need 8 characters (local patch 0011)."
             echo "Habcore Gym name everywhere, no donation links, Settings > About > Licences (local patch 0010)."
