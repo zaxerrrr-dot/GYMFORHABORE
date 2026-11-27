@@ -36,7 +36,7 @@ if (MOBILE) startNetLog()
 const render = () => createRoot(document.getElementById('root')).render(
   <StrictMode><App /></StrictMode>
 )
-// The phone app first asks which build it is (lib/build-caps.js): openGym Offline must never show
+// The phone app first asks which build it is (lib/build-caps.js): Habcore Gym Offline must never show
 // a sync button, not even for a frame. The answer is a few milliseconds; a shell that never
 // answers still gets its app after a moment.
 if (MOBILE) Promise.race([initBuildCaps().catch(() => {}), new Promise(r => setTimeout(r, 700))]).then(render)

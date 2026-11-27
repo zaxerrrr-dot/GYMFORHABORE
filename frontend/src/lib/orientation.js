@@ -1,5 +1,5 @@
 // Screen orientation on Android (#821): follow the phone (the default), or stay upright or
-// sideways whatever the phone does, for openGym alone and not the system's auto-rotate.
+// sideways whatever the phone does, for Habcore Gym alone and not the system's auto-rotate.
 //
 // The choice is this device's, not the profile's (a tablet and a phone want different things), so
 // it lives in localStorage and never in S. OrientationPlugin.java keeps a copy in the app's own

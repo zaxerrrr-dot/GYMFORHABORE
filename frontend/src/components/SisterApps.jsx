@@ -14,7 +14,7 @@ import { Section, Row, Switch, Button, TextField } from './ui.jsx'
    where, and the Home line about the fasting window. openRunning has no app yet: its contract is
    docs/dev/SISTER_APPS.md, and runs come in through Apple Health / Health Connect meanwhile. */
 
-export const SISTER_DOCS = 'https://github.com/DuarteSantos8/openGym/blob/main/docs/dev/SISTER_APPS.md'
+export const SISTER_DOCS = 'https://github.com/zaxerrrr-dot/GYMFORHABORE/blob/main/docs/dev/SISTER_APPS.md'
 
 /** This device's openNutrition link, kept up to date; with `range`, the days of it are fetched too. */
 export function useNutritionLink(range = null) {
@@ -28,7 +28,7 @@ export function useNutritionLink(range = null) {
 const ERRORS = {
   url: 'That does not look like an address.',
   code: 'That code did not work. Codes expire after a few minutes, so grab a fresh one.',
-  unreachable: 'openGym could not reach openNutrition there. Check the address, or that this device can see it.',
+  unreachable: 'Habcore Gym could not reach openNutrition there. Check the address, or that this device can see it.',
   revoked: 'openNutrition said no. The link was revoked there, so link again.',
   missing: 'That openNutrition does not know this kind of link yet. Create a token there and paste it instead.',
   notnutrition: 'Something answered, but it was not openNutrition.',
@@ -61,14 +61,14 @@ function LinkSetup({ close }) {
   }
   return <>
     <Head status="off" />
-    <p className="intg-lead">{t('What you ate next to what you lifted: calories, protein and protein meals in your report and month story, and your fasting window on Home. openGym only reads, it never changes a thing there.')}</p>
+    <p className="intg-lead">{t('What you ate next to what you lifted: calories, protein and protein meals in your report and month story, and your fasting window on Home. Habcore Gym only reads, it never changes a thing there.')}</p>
     <label className="intg-label" htmlFor="on-url">{t('openNutrition address')}</label>
     <TextField id="on-url" type="url" inputMode="url" autoCapitalize="off" autoCorrect="off" spellCheck={false}
       placeholder="https://nutrition.example.com" value={url} onChange={e => setUrl(e.target.value)} />
     <label className="intg-label" htmlFor="on-code">{t('Code or token')}</label>
     <TextField id="on-code" autoCapitalize="characters" autoCorrect="off" spellCheck={false} autoComplete="one-time-code"
       placeholder="ABCD1234" value={code} onChange={e => setCode(e.target.value)} />
-    <p className="sect-f" style={{ marginTop: 6 }}>{t('In openNutrition: Settings, Connected apps, Link openGym. Type the code it shows, or paste a token with summary access. The token stays on this device.')}</p>
+    <p className="sect-f" style={{ marginTop: 6 }}>{t('In openNutrition: Settings, Connected apps, Link Habcore Gym. Type the code it shows, or paste a token with summary access. The token stays on this device.')}</p>
     {err && <div className="small" role="alert" style={{ color: 'var(--red-ink)', margin: '4px 0 10px' }}>{err}</div>}
     <Button variant="primary" disabled={busy || !cleanUrl(url) || !code.trim()} onClick={go}>{busy ? t('Checking…') : t('Link')}</Button>
     <div style={{ height: 8 }} />

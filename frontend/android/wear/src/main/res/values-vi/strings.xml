@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- openGym on Wear OS, vi. Written by frontend/android/wear/wear-strings.mjs: change that, not this. -->
+<!-- Habcore Gym on Wear OS, vi. Written by frontend/android/wear/wear-strings.mjs: change that, not this. -->
 <resources>
     <string name="add_birth_year">Thêm năm sinh trong ứng dụng trên điện thoại</string>
     <string name="added_weight">Tạ thêm</string>
@@ -70,7 +70,7 @@
     <string name="not_now">Để sau</string>
     <string name="not_synced">Chưa đồng bộ</string>
     <string name="notif_running">Đang tập. Chạm để quay lại.</string>
-    <string name="open_phone_once">Mở openGym trên điện thoại một lần là các bài tập của bạn sẽ hiện ở đây.</string>
+    <string name="open_phone_once">Mở Habcore Gym trên điện thoại một lần là các bài tập của bạn sẽ hiện ở đây.</string>
     <string name="overview">Tổng quan</string>
     <string name="personal_records">PR</string>
     <string name="phone_away">Điện thoại ngoài tầm. Các hiệp của bạn chờ ở đây.</string>

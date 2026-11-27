@@ -90,8 +90,8 @@ export function buildIcs(S, { uid = 'u', now = Date.now(), tz = S?.reminder?.tz,
   const today = dayIn(now, tz);
   const routines = new Map(list(S?.routines).map(r => [r.id, r]));
   const lines = [
-    'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//openGym//Calendar feed//EN', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH',
-    'X-WR-CALNAME:' + icsText(name ? `openGym · ${name}` : 'openGym'),
+    'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Habcore Gym//Calendar feed//EN', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH',
+    'X-WR-CALNAME:' + icsText(name ? `Habcore Gym · ${name}` : 'Habcore Gym'),
     'X-PUBLISHED-TTL:PT1H', 'REFRESH-INTERVAL;VALUE=DURATION:PT1H',
   ];
   let n = 0;
@@ -116,7 +116,7 @@ export function buildIcs(S, { uid = 'u', now = Date.now(), tz = S?.reminder?.tz,
         'DTSTART:' + stamp(start), 'DTEND:' + stamp(end),
         'SUMMARY:' + icsText('✓ ' + (String(w.name || '').slice(0, NAME_MAX) || 'Workout')),
         'DESCRIPTION:' + icsText([`${sets} ${sets === 1 ? 'set' : 'sets'}`, ...names].join('\n')),
-        'CATEGORIES:openGym,Workout', 'TRANSP:TRANSPARENT',
+        'CATEGORIES:Habcore Gym,Workout', 'TRANSP:TRANSPARENT',
       ]);
     }
   }
@@ -134,7 +134,7 @@ export function buildIcs(S, { uid = 'u', now = Date.now(), tz = S?.reminder?.tz,
         'DTSTART;VALUE=DATE:' + dateValue(iso), 'DTEND;VALUE=DATE:' + dateValue(addDays(iso, 1)),
         'SUMMARY:' + icsText([r.emoji, String(r.name || 'Workout').slice(0, NAME_MAX)].filter(Boolean).join(' ')),
         ...(exNames.length ? ['DESCRIPTION:' + icsText(exNames.join('\n'))] : []),
-        'CATEGORIES:openGym,Plan', 'TRANSP:TRANSPARENT',
+        'CATEGORIES:Habcore Gym,Plan', 'TRANSP:TRANSPARENT',
       ]);
     }
   }

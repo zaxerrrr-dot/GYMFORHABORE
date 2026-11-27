@@ -13,7 +13,7 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             content
-                .navigationTitle(store.ready?.today != nil ? Text("Today") : Text(verbatim: "")) // the logo says openGym, centred with the rest
+                .navigationTitle(store.ready?.today != nil ? Text("Today") : Text(verbatim: "")) // the logo says Habcore Gym, centred with the rest
         }
         // Hidden: a long press shows what arrived from the phone (animations, sync, heart rate).
         .onLongPressGesture(minimumDuration: 2) { debug = true }
@@ -47,7 +47,7 @@ struct HomeView: View {
                 .padding(.horizontal, 2)
             }
         } else {
-            // Nothing from the phone yet (it sends only while openGym runs there): say so, rather
+            // Nothing from the phone yet (it sends only while Habcore Gym runs there): say so, rather
             // than a "no workout" that reads as if the two were in touch.
             let fresh = !store.heardFromPhone && store.ready == nil
             ScrollView {
@@ -56,7 +56,7 @@ struct HomeView: View {
                     Text(fresh ? LocalizedStringKey("Not synced yet") : LocalizedStringKey("No workout running"))
                         .font(.system(.headline, design: .rounded))
                         .multilineTextAlignment(.center)
-                    Text(fresh ? LocalizedStringKey("Open openGym on your iPhone once and your routines show up here.")
+                    Text(fresh ? LocalizedStringKey("Open Habcore Gym on your iPhone once and your routines show up here.")
                          : LocalizedStringKey("Start one on your iPhone and it shows up here."))
                         .font(.footnote)
                         .foregroundStyle(Theme.label2)
@@ -121,13 +121,13 @@ struct LogoMark: View {
     }
 }
 
-/// "openGym 1.4.5 (49)", small at the end of the start screen: which build is on the watch.
+/// "Habcore Gym 1.4.5 (49)", small at the end of the start screen: which build is on the watch.
 struct VersionLine: View {
     var body: some View {
         let info = Bundle.main.infoDictionary
         let version = info?["CFBundleShortVersionString"] as? String ?? ""
         let build = info?["CFBundleVersion"] as? String ?? ""
-        Text(verbatim: "openGym \(version)" + (build.isEmpty ? "" : " (\(build))"))
+        Text(verbatim: "Habcore Gym \(version)" + (build.isEmpty ? "" : " (\(build))"))
             .font(.system(size: 12, design: .rounded))
             .foregroundStyle(Theme.label3)
             .frame(maxWidth: .infinity)

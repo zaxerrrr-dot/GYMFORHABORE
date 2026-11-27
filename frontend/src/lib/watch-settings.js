@@ -16,7 +16,7 @@
 // `health` field in the stored prefs is left alone and not read.
 export const WATCH_PREFS_KEY = 'gym_watch_v1'
 export const WATCH_STATUS_KEY = 'gym_watch_status_v1'
-// Whether the phone's watch link last found a Garmin with the openGym app (WatchBridge status
+// Whether the phone's watch link last found a Garmin with the Habcore Gym app (WatchBridge status
 // `garmin`, docs/GARMIN.md). Settings → Modules asks before Watch goes off while one is there.
 export const GARMIN_LINK_KEY = 'gym_garmin_link_v1'
 export const SHOW_DEFAULTS = Object.freeze({ clip: true, hr: true, last: true, kcal: true, next: true, zones: true, rest: 'ring' })
@@ -57,7 +57,7 @@ export function writeWatchPrefs(patch, storage = globalThis.localStorage) {
   return next
 }
 
-/** Whether a Garmin with the openGym app was there the last time the link looked. */
+/** Whether a Garmin with the Habcore Gym app was there the last time the link looked. */
 export function readGarminLink(storage = globalThis.localStorage) {
   return read(GARMIN_LINK_KEY, storage) === true
 }
@@ -113,7 +113,7 @@ export const settingsForWatch = (p = readWatchPrefs(), health = false) => ({ hea
  *   checking   still asking the phone
  *   starting   the phone's link to the watch is not up yet (right after launch): nothing known
  *   unpaired   no Apple Watch paired with this iPhone
- *   missing    a watch is paired, openGym is not on it
+ *   missing    a watch is paired, Habcore Gym is not on it
  *   silent     the app is on the watch but has never checked in: it was never opened
  *   live       the watch app is there right now (open, or running a workout)
  *   away       installed and heard from before, not there right now: closed, asleep or out of reach

@@ -1,4 +1,4 @@
-// openGym on a Zepp OS wrist: the app's dark look and the brand's green accent (frontend/src/index.css,
+// Habcore Gym on a Zepp OS wrist: the app's dark look and the brand's green accent (frontend/src/index.css,
 // a new profile's accent since 1.4.5; the watch does not get the phone's own accent), the
 // Wear OS watch's tokens (frontend/android/wear/.../ui/Theme.kt), for small round AMOLED screens.
 //

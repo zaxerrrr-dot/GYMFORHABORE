@@ -1,5 +1,5 @@
-// The openGym watch app's settings page, shown inside the Zepp phone app: where the watch is paired
-// with the user's own openGym server. The address and the code from openGym (Settings, Zepp OS
+// The Habcore Gym watch app's settings page, shown inside the Zepp phone app: where the watch is paired
+// with the user's own Habcore Gym server. The address and the code from Habcore Gym (Settings, Zepp OS
 // watch, Pair a watch) go into the Zepp app's settings storage, and the Side Service trades the
 // code for a watch token (app-side/index.js). In the phone's language (setting/i18n).
 import { gettext } from 'i18n'
@@ -21,7 +21,7 @@ AppSettingsPage({
     const paired = !!st.getItem('token') && status.state !== 'failed'
     const line = status.state === 'pairing' ? gettext('pairing')
       : status.state === 'failed' ? gettext('failed')
-      : paired ? gettext('paired').replace('{0}', status.name || 'openGym')
+      : paired ? gettext('paired').replace('{0}', status.name || 'Habcore Gym')
       : gettext('not_paired_yet')
 
     const field = (key, label, extra = {}) => TextInput({

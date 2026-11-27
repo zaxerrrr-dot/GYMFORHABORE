@@ -139,7 +139,7 @@ final class GarminLink: NSObject {
         #endif
     }
 
-    /// A workout started on the phone: each connected Garmin with the app asks "open openGym?".
+    /// A workout started on the phone: each connected Garmin with the app asks "open Habcore Gym?".
     func open() -> Bool {
         #if canImport(ConnectIQ)
         guard started, let ciq = ConnectIQ.sharedInstance() else { return false }
@@ -154,7 +154,7 @@ final class GarminLink: NSObject {
         #endif
     }
 
-    /// The openGym page in the Connect IQ Store, once it is published there.
+    /// The Habcore Gym page in the Connect IQ Store, once it is published there.
     func openStore() -> Bool {
         #if canImport(ConnectIQ)
         guard started, GarminLink.storeId != nil, let d = devices.first, let ciq = ConnectIQ.sharedInstance() else { return false }

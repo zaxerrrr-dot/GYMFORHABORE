@@ -47,7 +47,7 @@ describe('install channel', () => {
     expect(await gymReminderBuilt()).toBe(true)
   })
 
-  it('openGym Offline is updated by nobody, scans like F-Droid and sets the offline flag', async () => {
+  it('Habcore Gym Offline is updated by nobody, scans like F-Droid and sets the offline flag', async () => {
     h.answer = { channel: 'offline' }
     const { getChannel, selfUpdates, nativeScanner, initBuildCaps } = await import('./channel.js')
     const caps = await import('./build-caps.js')

@@ -82,16 +82,16 @@ export default function WatchSettingsPage() {
   // Every state says what to do next (lib/watch-settings.js watchLinkState). What the watch said
   // last (it checks in each time its app starts) is the one sign the two really talk.
   const state = watchLinkState(link, status)
-  const onWatch = t('openGym is on your Apple Watch') + '. '
+  const onWatch = t('Habcore Gym is on your Apple Watch') + '. '
   // (its newest set, rest or status that reached this phone, #1151)
   const heardAt = lastHeardAt(status)
   const heard = heardAt ? t('Last heard from the watch: {0}', fmtAgo(heardAt)) + '. ' : ''
   const linkLine = {
     checking: t('Checking…'),
     starting: t('Still connecting to your Apple Watch. Give it a moment, then open this page again.'),
-    unpaired: t('No Apple Watch is paired with this iPhone. Pair one in the Watch app, then install openGym on it there.'),
-    missing: t('openGym is not on your Apple Watch yet. Open the Watch app on this iPhone, find openGym under Available Apps and tap Install.'),
-    silent: onWatch + t('The watch hasn’t checked in yet. Open openGym on it once.'),
+    unpaired: t('No Apple Watch is paired with this iPhone. Pair one in the Watch app, then install Habcore Gym on it there.'),
+    missing: t('Habcore Gym is not on your Apple Watch yet. Open the Watch app on this iPhone, find Habcore Gym under Available Apps and tap Install.'),
+    silent: onWatch + t('The watch hasn’t checked in yet. Open Habcore Gym on it once.'),
     live: onWatch + heard + t('Connected right now.'),
     away: onWatch + heard + t('The watch app is closed or out of reach right now. Sets you log on the watch are kept there and arrive when the two are in touch again.'),
   }[state]
@@ -113,7 +113,7 @@ export default function WatchSettingsPage() {
       </Row>
     </Section>
     {prefs.enabled && <>
-      <Section footer={t('Start a workout on the phone and openGym pops up on your wrist.')}>
+      <Section footer={t('Start a workout on the phone and Habcore Gym pops up on your wrist.')}>
         <Row icon="bolt" iconTint="var(--green)" title={t('Open on the watch')}>
           <Switch checked={prefs.autoShow} onChange={v => set({ autoShow: v })} aria-label={t('Open on the watch')} />
         </Row>

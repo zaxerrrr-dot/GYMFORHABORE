@@ -1,4 +1,4 @@
-// openGym Offline (lib/build-caps.js) has no network: no player, no search, no links to embed.
+// Habcore Gym Offline (lib/build-caps.js) has no network: no player, no search, no links to embed.
 import { offlineBuild } from './build-caps.js'
 
 // Only a video ID crosses into the iframe URL; never embed an arbitrary exercise link.

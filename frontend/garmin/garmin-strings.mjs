@@ -48,39 +48,39 @@ const FROM_APP = { next_exercise: 'Next exercise', paused: 'Paused' }
 
 // Only this watch says these.
 const OWN = {
-  // Wear OS says "openGym Beta" while it is one; the Garmin app is plain openGym.
-  app_name: Object.fromEntries(Object.keys(LANGS).map(l => [l, 'openGym'])),
+  // Wear OS says "Habcore Gym Beta" while it is one; the Garmin app is plain Habcore Gym.
+  app_name: Object.fromEntries(Object.keys(LANGS).map(l => [l, 'Habcore Gym'])),
   // The menu's way to the page beside the set on watches without touch.
   metrics: {
     eng: 'Metrics', deu: 'Werte', fre: 'Mesures', spa: 'Métricas', ita: 'Metriche', por: 'Métricas', pol: 'Pomiary',
     hun: 'Adatok', tur: 'Ölçümler', rus: 'Показатели', ukr: 'Показники', ara: 'المقاييس', tha: 'ค่าวัด', kor: '측정값',
     swe: 'Mätvärden', zhs: '数据', zht: '數據', ces: 'Metriky', ind: 'Metrik', lit: 'Rodikliai', vie: 'Chỉ số',
   },
-  // A Garmin that has never heard from the phone. The other watches say "open openGym on your
+  // A Garmin that has never heard from the phone. The other watches say "open Habcore Gym on your
   // phone once"; here that is not enough: the Garmin link starts in Settings → Garmin (Android)
   // or with "Choose watches" there (iPhone), so the watch says where to go.
   open_phone_once: {
-    eng: 'In openGym on your phone, open Settings, then Garmin.',
-    deu: 'Öffne in openGym auf dem Handy die Einstellungen, dann Garmin.',
-    fre: 'Dans openGym sur ton téléphone, ouvre Réglages, puis Garmin.',
-    spa: 'En openGym en tu móvil, abre Ajustes y luego Garmin.',
-    ita: 'In openGym sul telefono, apri Impostazioni, poi Garmin.',
-    por: 'No openGym do telemóvel, abre Definições e depois Garmin.',
-    pol: 'W openGym na telefonie otwórz Ustawienia, potem Garmin.',
-    hun: 'A telefonodon az openGymben nyisd meg a Beállításokat, majd a Garmint.',
-    tur: 'Telefonundaki openGym’de Ayarlar’ı, sonra Garmin’i aç.',
-    rus: 'В openGym на телефоне откройте Настройки, затем Garmin.',
-    ukr: 'В openGym на телефоні відкрий Налаштування, потім Garmin.',
-    ara: 'في openGym على هاتفك، افتح الإعدادات ثم Garmin.',
-    tha: 'ใน openGym บนโทรศัพท์ เปิดตั้งค่า แล้วเลือก Garmin',
-    kor: '휴대폰의 openGym에서 설정, Garmin 순서로 열어 주세요.',
-    swe: 'Öppna Inställningar och sedan Garmin i openGym på telefonen.',
-    zhs: '在手机上的 openGym 里打开设置，再点 Garmin。', zht: '在手機上的 openGym 裡打開設定，再點 Garmin。',
-    ces: 'V openGym na telefonu otevři Nastavení a pak Garmin.',
-    ind: 'Di openGym di ponselmu, buka Pengaturan, lalu Garmin.',
-    lit: 'Telefone atidaryk openGym, tada Nustatymai ir Garmin.',
-    vie: 'Trong openGym trên điện thoại, mở Cài đặt rồi chọn Garmin.',
-    dan: 'Åbn Indstillinger og derefter Garmin i openGym på telefonen.',
+    eng: 'In Habcore Gym on your phone, open Settings, then Garmin.',
+    deu: 'Öffne in Habcore Gym auf dem Handy die Einstellungen, dann Garmin.',
+    fre: 'Dans Habcore Gym sur ton téléphone, ouvre Réglages, puis Garmin.',
+    spa: 'En Habcore Gym en tu móvil, abre Ajustes y luego Garmin.',
+    ita: 'In Habcore Gym sul telefono, apri Impostazioni, poi Garmin.',
+    por: 'No Habcore Gym do telemóvel, abre Definições e depois Garmin.',
+    pol: 'W Habcore Gym na telefonie otwórz Ustawienia, potem Garmin.',
+    hun: 'A telefonodon az Habcore Gymben nyisd meg a Beállításokat, majd a Garmint.',
+    tur: 'Telefonundaki Habcore Gym’de Ayarlar’ı, sonra Garmin’i aç.',
+    rus: 'В Habcore Gym на телефоне откройте Настройки, затем Garmin.',
+    ukr: 'В Habcore Gym на телефоні відкрий Налаштування, потім Garmin.',
+    ara: 'في Habcore Gym على هاتفك، افتح الإعدادات ثم Garmin.',
+    tha: 'ใน Habcore Gym บนโทรศัพท์ เปิดตั้งค่า แล้วเลือก Garmin',
+    kor: '휴대폰의 Habcore Gym에서 설정, Garmin 순서로 열어 주세요.',
+    swe: 'Öppna Inställningar och sedan Garmin i Habcore Gym på telefonen.',
+    zhs: '在手机上的 Habcore Gym 里打开设置，再点 Garmin。', zht: '在手機上的 Habcore Gym 裡打開設定，再點 Garmin。',
+    ces: 'V Habcore Gym na telefonu otevři Nastavení a pak Garmin.',
+    ind: 'Di Habcore Gym di ponselmu, buka Pengaturan, lalu Garmin.',
+    lit: 'Telefone atidaryk Habcore Gym, tada Nustatymai ir Garmin.',
+    vie: 'Trong Habcore Gym trên điện thoại, mở Cài đặt rồi chọn Garmin.',
+    dan: 'Åbn Indstillinger og derefter Garmin i Habcore Gym på telefonen.',
   },
   next_on_phone: {
     eng: 'Next exercise is on its way from your phone.', deu: 'Die nächste Übung kommt gleich vom Handy.',
@@ -95,24 +95,24 @@ const OWN = {
     lit: 'Kitas pratimas jau keliauja iš telefono.', vie: 'Bài tập tiếp theo đang đến từ điện thoại.',
   },
   waiting_phone: {
-    eng: 'Waiting for your phone. Open openGym there if it takes a while.',
-    deu: 'Warte aufs Handy. Öffne dort openGym, falls es dauert.',
-    fre: 'On attend ton téléphone. Ouvre openGym dessus si ça traîne.',
-    spa: 'Esperando a tu móvil. Abre openGym allí si tarda.',
-    ita: 'In attesa del telefono. Apri openGym lì se ci mette tanto.',
-    por: 'À espera do telemóvel. Abre lá o openGym se demorar.',
-    pol: 'Czekam na telefon. Otwórz tam openGym, jeśli to potrwa.',
-    hun: 'Várok a telefonra. Ha sokáig tart, nyisd meg ott az openGymet.',
-    tur: 'Telefonun bekleniyor. Uzun sürerse orada openGym’i aç.',
-    rus: 'Ждём телефон. Если долго, откройте там openGym.',
-    ukr: 'Чекаю на телефон. Якщо довго, відкрий там openGym.',
-    ara: 'بانتظار هاتفك. افتح openGym عليه إذا تأخر.',
-    tha: 'กำลังรอโทรศัพท์ ถ้านานไป ให้เปิด openGym บนโทรศัพท์',
-    kor: '휴대폰을 기다리는 중이에요. 오래 걸리면 거기서 openGym을 열어 주세요.',
-    swe: 'Väntar på telefonen. Öppna openGym där om det dröjer.',
-    zhs: '正在等手机。太久的话，在手机上打开 openGym。', zht: '正在等手機。太久的話，在手機上打開 openGym。',
-    ces: 'Čekám na telefon. Když to trvá, otevři tam openGym.', ind: 'Menunggu ponselmu. Buka openGym di sana kalau lama.',
-    lit: 'Laukiu telefono. Jei ilgai, atidaryk ten openGym.', vie: 'Đang chờ điện thoại. Mở openGym trên đó nếu lâu quá.',
+    eng: 'Waiting for your phone. Open Habcore Gym there if it takes a while.',
+    deu: 'Warte aufs Handy. Öffne dort Habcore Gym, falls es dauert.',
+    fre: 'On attend ton téléphone. Ouvre Habcore Gym dessus si ça traîne.',
+    spa: 'Esperando a tu móvil. Abre Habcore Gym allí si tarda.',
+    ita: 'In attesa del telefono. Apri Habcore Gym lì se ci mette tanto.',
+    por: 'À espera do telemóvel. Abre lá o Habcore Gym se demorar.',
+    pol: 'Czekam na telefon. Otwórz tam Habcore Gym, jeśli to potrwa.',
+    hun: 'Várok a telefonra. Ha sokáig tart, nyisd meg ott az Habcore Gymet.',
+    tur: 'Telefonun bekleniyor. Uzun sürerse orada Habcore Gym’i aç.',
+    rus: 'Ждём телефон. Если долго, откройте там Habcore Gym.',
+    ukr: 'Чекаю на телефон. Якщо довго, відкрий там Habcore Gym.',
+    ara: 'بانتظار هاتفك. افتح Habcore Gym عليه إذا تأخر.',
+    tha: 'กำลังรอโทรศัพท์ ถ้านานไป ให้เปิด Habcore Gym บนโทรศัพท์',
+    kor: '휴대폰을 기다리는 중이에요. 오래 걸리면 거기서 Habcore Gym을 열어 주세요.',
+    swe: 'Väntar på telefonen. Öppna Habcore Gym där om det dröjer.',
+    zhs: '正在等手机。太久的话，在手机上打开 Habcore Gym。', zht: '正在等手機。太久的話，在手機上打開 Habcore Gym。',
+    ces: 'Čekám na telefon. Když to trvá, otevři tam Habcore Gym.', ind: 'Menunggu ponselmu. Buka Habcore Gym di sana kalau lama.',
+    lit: 'Laukiu telefono. Jei ilgai, atidaryk ten Habcore Gym.', vie: 'Đang chờ điện thoại. Mở Habcore Gym trên đó nếu lâu quá.',
   },
   record_gc: {
     eng: 'Also save to Garmin Connect', deu: 'Auch in Garmin Connect speichern', fre: 'Enregistrer aussi dans Garmin Connect',
@@ -127,7 +127,7 @@ const OWN = {
 }
 
 // Danish (#1039).
-for (const [k, v] of Object.entries({"metrics": "Målinger", "next_on_phone": "Næste øvelse er på vej fra telefonen.", "waiting_phone": "Venter på telefonen. Åbn openGym der, hvis det tager lidt tid.", "record_gc": "Gem også i Garmin Connect"})) OWN[k].dan = v
+for (const [k, v] of Object.entries({"metrics": "Målinger", "next_on_phone": "Næste øvelse er på vej fra telefonen.", "waiting_phone": "Venter på telefonen. Åbn Habcore Gym der, hvis det tager lidt tid.", "record_gc": "Gem også i Garmin Connect"})) OWN[k].dan = v
 
 /* ---------- reading the sources ---------- */
 
@@ -166,7 +166,7 @@ for (const [lang, [folder, pack]] of Object.entries(LANGS)) {
   const dir = join(here, lang === 'eng' ? 'resources' : `resources-${lang}`, 'strings')
   mkdirSync(dir, { recursive: true })
   const body = Object.keys(strings).sort().map(k => `    <string id="${k}">${strings[k]}</string>`).join('\n')
-  writeFileSync(join(dir, 'strings.xml'), `<!-- openGym on Garmin, ${lang}. Written by frontend/garmin/garmin-strings.mjs: change that, not this. -->
+  writeFileSync(join(dir, 'strings.xml'), `<!-- Habcore Gym on Garmin, ${lang}. Written by frontend/garmin/garmin-strings.mjs: change that, not this. -->
 <strings>
 ${body}
 </strings>

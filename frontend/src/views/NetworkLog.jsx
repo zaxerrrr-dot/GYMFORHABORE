@@ -1,6 +1,6 @@
-// Settings → About & updates → Network log (phone app): what this copy of openGym sent where since
+// Settings → About & updates → Network log (phone app): what this copy of Habcore Gym sent where since
 // it started (lib/net-log.js). A phone kept on its own should read "0 requests this session", and
-// anyone can check that here instead of taking our word for it. openGym Offline adds why it can
+// anyone can check that here instead of taking our word for it. Habcore Gym Offline adds why it can
 // only ever be 0: Android does not give it the internet permission.
 import { useSyncExternalStore } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -47,7 +47,7 @@ export default function NetworkLogPage() {
   const recent = log.entries.slice(-50).reverse()
   const since = log.since ? clock(log.since) : null
   const lead = log.total === 0
-    ? (offline ? t('And it stays that way: openGym Offline has no internet permission, so Android blocks anything it might try.')
+    ? (offline ? t('And it stays that way: Habcore Gym Offline has no internet permission, so Android blocks anything it might try.')
       : paired ? t('Nothing yet. Your server hears from this phone when there is something to sync.')
         : t('Not a single byte left this phone. Your training is nobody’s business but yours.'))
     : paired && server ? t('Mostly your own server, {0}, when there was something to sync.', hostOf(server))

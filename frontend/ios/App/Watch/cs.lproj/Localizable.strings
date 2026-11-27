@@ -1,4 +1,4 @@
-/* openGym on the Apple Watch, cs. Written by ios/ci/watch-strings.mjs: change that, not this. */
+/* Habcore Gym on the Apple Watch, cs. Written by ios/ci/watch-strings.mjs: change that, not this. */
 
 "Today" = "Dnes";
 "Start workout" = "Začít trénink";
@@ -50,7 +50,7 @@
 "Finish the workout now? Otherwise it ends by itself at %@." = "Ukončit trénink teď? Jinak skončí sám v %@.";
 "No workout running" = "Žádný trénink neběží";
 "Not synced yet" = "Zatím nesynchronizováno";
-"Open openGym on your iPhone once and your routines show up here." = "Otevři openGym jednou na iPhonu a tvoje rutiny se objeví tady.";
+"Open Habcore Gym on your iPhone once and your routines show up here." = "Otevři Habcore Gym jednou na iPhonu a tvoje rutiny se objeví tady.";
 "Start one on your iPhone and it shows up here." = "Spusť ho na iPhonu a objeví se tady.";
 "All sets done" = "Všechny série hotové";
 "measuring" = "měřím …";
@@ -73,7 +73,7 @@
 "Tap to change it." = "Klepni a změň to.";
 "Added weight" = "Přidaná váha";
 "Your rest, your next set, or today's workout." = "Tvoje pauza, další série nebo dnešní trénink.";
-"Opens openGym." = "Otevře openGym.";
+"Opens Habcore Gym." = "Otevře Habcore Gym.";
 "Hold to finish" = "Podrž pro dokončení";
 "iPhone out of reach" = "iPhone je mimo dosah";
 "No set for %lld min. Still at it?" = "Už %lld min žádná série. Pořád cvičíš?";
@@ -85,7 +85,7 @@
 "No effort rated yet" = "Zatím žádné hodnocení náročnosti";
 "max" = "max";
 "min" = "min";
-"Turn on Apple Health on your iPhone and openGym stays on screen through rests and holds." = "Zapni na iPhonu Apple Zdraví a openGym zůstane na displeji i při pauzách a výdržích.";
+"Turn on Apple Health on your iPhone and Habcore Gym stays on screen through rests and holds." = "Zapni na iPhonu Apple Zdraví a Habcore Gym zůstane na displeji i při pauzách a výdržích.";
 "No sets yet" = "Zatím žádné série";
 "+%lld more" = "+%lld další";
 "%@ sets" = "Sérií: %@";

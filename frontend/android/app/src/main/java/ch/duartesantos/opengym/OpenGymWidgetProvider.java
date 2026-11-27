@@ -25,7 +25,7 @@ import java.util.Map;
 import org.json.JSONObject;
 
 /**
- * openGym's Home Screen widget on Android: a row when it is one cell tall, one thing big at 2x2,
+ * Habcore Gym's Home Screen widget on Android: a row when it is one cell tall, one thing big at 2x2,
  * two side by side at 4x2 (Shape),
  * each picked when the widget is placed (OpenGymWidgetConfigure): the streak, the weight goal, this
  * week, the next workout, records or volume (WidgetContent). What it shows is the snapshot the app
@@ -60,7 +60,7 @@ public class OpenGymWidgetProvider extends AppWidgetProvider {
         return context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
     }
 
-    /** Every openGym widget on the Home Screen, drawn again (after the app wrote a new snapshot). */
+    /** Every Habcore Gym widget on the Home Screen, drawn again (after the app wrote a new snapshot). */
     static void updateAll(Context context) {
         AppWidgetManager mgr = AppWidgetManager.getInstance(context);
         int[] ids = mgr.getAppWidgetIds(new ComponentName(context, OpenGymWidgetProvider.class));

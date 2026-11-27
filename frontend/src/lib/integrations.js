@@ -15,7 +15,7 @@ export const CATEGORIES = [
   { id: 'backup', title: 'Backups & calendar' },
   { id: 'automation', title: 'Automation' },
   { id: 'ai', title: 'AI & API' },
-  // openGym's own family (gm-hooks, docs/dev/SISTER_APPS.md): read-only links, off until linked.
+  // Habcore Gym's own family (gm-hooks, docs/dev/SISTER_APPS.md): read-only links, off until linked.
   { id: 'sister', title: 'Sister apps' },
 ]
 
@@ -49,7 +49,7 @@ export const CARDS = [
   {
     id: 'csv', cat: 'training', name: 'Spreadsheet (CSV)', translate: true, icon: 'share', tint: 'var(--green)',
     desc: 'Every set, weigh-in and measurement, for Excel and friends.',
-    syncs: ['One row per set, plus body weight and measurements.', 'openGym can read it back in later.'],
+    syncs: ['One row per set, plus body weight and measurements.', 'Habcore Gym can read it back in later.'],
   },
   {
     id: 'webdav', cat: 'backup', name: 'WebDAV backup', translate: true, icon: 'cloud', tint: 'var(--blue)',
@@ -84,8 +84,8 @@ export const CARDS = [
 ]
 export const CARD = Object.fromEntries(CARDS.map(c => [c.id, c]))
 
-// Apps people asked about that reach openGym through the phone's health store. `reads` is what
-// openGym gets from them that way: heart rate, weigh-ins or both. No fake Connect buttons.
+// Apps people asked about that reach Habcore Gym through the phone's health store. `reads` is what
+// Habcore Gym gets from them that way: heart rate, weigh-ins or both. No fake Connect buttons.
 export const WORKS_WITH = [
   { name: 'Garmin', glyph: 'watch', reads: 'hr' },
   { name: 'COROS', glyph: 'watch', reads: 'hr' },
@@ -160,7 +160,7 @@ export function cardState(id, ctx) {
       return mine.every(c => c.paused) ? { status: 'off', action: 'manage' } : { status: 'connected', action: 'manage' }
     }
     case 'webdav': {
-      // This device talks to your WebDAV server itself: no openGym server needed (#582).
+      // This device talks to your WebDAV server itself: no Habcore Gym server needed (#582).
       if (ctx.demo) return null
       const w = ctx.webdav
       if (!w) return { status: 'off', action: 'connect' }
@@ -181,7 +181,7 @@ export function cardState(id, ctx) {
       if (ctx.demo || !ctx.user) return { status: 'server', action: null }
       return { status: null, action: 'open' }
     case 'opennutrition': {
-      // This device talks to openNutrition itself (lib/sister-nutrition.js): no openGym server needed.
+      // This device talks to openNutrition itself (lib/sister-nutrition.js): no Habcore Gym server needed.
       if (ctx.demo) return null
       const l = ctx.nutrition
       if (!l) return { status: 'off', action: 'connect' }
@@ -198,7 +198,7 @@ export const CARD_MODULE = { 'apple-health': 'health', 'health-connect': 'health
 /** The directory for this device: categories with their visible cards, empty ones left out.
  *  `ctx.mod(id)` says whether a module is on (absent: all on). */
 export function directory(ctx) {
-  // openGym Offline (lib/build-caps.js): only what works without a network (the health store, files).
+  // Habcore Gym Offline (lib/build-caps.js): only what works without a network (the health store, files).
   const net = new Set(ctx.offline ? OFFLINE_OFF_CARDS : [])
   return CATEGORIES.map(cat => ({
     ...cat,

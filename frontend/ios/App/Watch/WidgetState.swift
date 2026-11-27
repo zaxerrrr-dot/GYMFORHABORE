@@ -27,7 +27,7 @@ struct WidgetState: Codable, Equatable {
     /// Sets logged on the watch that have not reached the iPhone yet (nil: none).
     var unsent: Int?
 
-    static let idle = WidgetState(mode: "idle", title: "openGym", detail: "", restEndsAt: nil)
+    static let idle = WidgetState(mode: "idle", title: "Habcore Gym", detail: "", restEndsAt: nil)
     static let groupId = "group.pl.habcore.gym"
     private static let key = "widgetState"
 
@@ -72,7 +72,7 @@ extension WidgetState {
     }
 }
 
-/// openGym's mark (assets/logo/opengym-mark.svg): five plain rectangles on a 352 x 174 grid, square
+/// Habcore Gym's mark (assets/logo/opengym-mark.svg): five plain rectangles on a 352 x 174 grid, square
 /// corners. One shape, so it takes the watch face's tint and stays sharp at every complication size.
 struct OpenGymLogo: Shape {
     /// The brand green (#A3E635): the logo's colour wherever it is not tinted by the face.

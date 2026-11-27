@@ -147,7 +147,7 @@ final class WorkoutNotification {
         try {
             nm.notify(RestAlert.COUNTDOWN_ID, card(ctx, attrs, state));
         } catch (Exception e) {
-            Log.w("openGym", "workout card not posted", e);
+            Log.w("Habcore Gym", "workout card not posted", e);
         }
     }
 
@@ -216,7 +216,7 @@ final class WorkoutNotification {
     /** The card between sets (or with a rest the page sent but no countdown service runs). */
     static Notification card(Context ctx, JSONObject attrs, JSONObject state) {
         if (WorkoutCard.glance(state) != null) {
-            try { return glanceCard(ctx, attrs, state); } catch (Exception e) { Log.w("openGym", "live widget card, the classic one instead", e); }
+            try { return glanceCard(ctx, attrs, state); } catch (Exception e) { Log.w("Habcore Gym", "live widget card, the classic one instead", e); }
         }
         int accent = accentOf(attrs);
         Notification.Builder b = builder(ctx, accent);

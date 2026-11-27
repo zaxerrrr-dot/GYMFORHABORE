@@ -1,6 +1,6 @@
 # MCP over HTTPS
 
-openGym's MCP tools at `https://<your host>/mcp`, for AI assistants that cannot start a process on
+Habcore Gym's MCP tools at `https://<your host>/mcp`, for AI assistants that cannot start a process on
 your computer: Claude or ChatGPT on the web and phone, another machine, an agent somewhere else.
 The local stdio server ([mcp/README.md](../mcp/README.md)) keeps working as before.
 
@@ -43,24 +43,24 @@ or in a JSON config:
   "headers": { "Authorization": "Bearer ogt_…" } } } }
 ```
 
-### Claude, ChatGPT and Gemini: sign in with openGym (OAuth)
+### Claude, ChatGPT and Gemini: sign in with Habcore Gym (OAuth)
 
 This is the "use your subscription" route: the assistant app people already pay for comes to
-openGym, not the other way round. **Settings → Use your subscription** in the app walks through it
+Habcore Gym, not the other way round. **Settings → Use your subscription** in the app walks through it
 with the exact address, a QR code, a link to each app's connector page and a status that turns to
 "Connected via Claude" once the assistant has used its token. Nobody pastes an API key, and no
-Claude or ChatGPT login ever reaches openGym (Anthropic's terms forbid third-party apps from using
+Claude or ChatGPT login ever reaches Habcore Gym (Anthropic's terms forbid third-party apps from using
 claude.ai logins; a connector is the way they allow).
 
 Claude, ChatGPT and Gemini add a custom connector by its address and then sign in with OAuth. With
-`MCP=on`, openGym is that sign-in: the assistant identifies itself, sends you to openGym, you pick
+`MCP=on`, Habcore Gym is that sign-in: the assistant identifies itself, sends you to Habcore Gym, you pick
 what it may see and change, and it gets an ordinary scoped token (listed under Settings → API
 tokens and Use your subscription as "Claude (connector)", revocable there like any other). Nothing
 else is needed on the server.
 
 | App | Where | Plan (as of 2026-11) |
 |---|---|---|
-| **Claude** (web, Desktop, mobile once added) | [Customize → Connectors](https://claude.ai/customize/connectors) → Add custom connector. Name openGym, the address, OAuth fields empty, then Connect. | Free (one custom connector), Pro, Max, Ultra; on Team and Enterprise an Owner adds it under Organization settings → Connectors and members connect. ([Anthropic](https://claude.com/docs/connectors/custom/add-unlisted)) |
+| **Claude** (web, Desktop, mobile once added) | [Customize → Connectors](https://claude.ai/customize/connectors) → Add custom connector. Name Habcore Gym, the address, OAuth fields empty, then Connect. | Free (one custom connector), Pro, Max, Ultra; on Team and Enterprise an Owner adds it under Organization settings → Connectors and members connect. ([Anthropic](https://claude.com/docs/connectors/custom/add-unlisted)) |
 | **ChatGPT** (web) | [Plugins](https://chatgpt.com/plugins) → + → Add custom MCP server. Name, the address, authentication OAuth, then Create. | Paid plans; Business and Enterprise workspaces decide whether members may add their own, and some plans get read tools only. ([OpenAI](https://developers.openai.com/apps-sdk/deploy/connect-chatgpt)) |
 | **Gemini** (web app), where available | Settings & help → Connected apps → Add a custom app, the address. | Reported since mid-2026 for personal Google accounts on some Google AI plans and countries; Google documents only Gemini Enterprise's own route so far. |
 
@@ -74,10 +74,10 @@ What the sign-in is, for the curious (api/oauth.js), checked against
 - **Discovery.** The mcp container answers an unauthenticated call with `401` and
   `WWW-Authenticate: Bearer resource_metadata="…/.well-known/oauth-protected-resource/mcp", scope="…"`
   (Claude starts sign-in from a 401 only). The protected resource document names the address you
-  pasted as `resource` and openGym as the only authorization server, whose RFC 8414 metadata is
+  pasted as `resource` and Habcore Gym as the only authorization server, whose RFC 8414 metadata is
   also served under the OpenID Connect name.
 - **Who the assistant is.** Client ID Metadata Documents (`client_id_metadata_document_supported`):
-  Claude and ChatGPT identify themselves with an https `client_id` that openGym fetches (public
+  Claude and ChatGPT identify themselves with an https `client_id` that Habcore Gym fetches (public
   internet only, 5 KB, 5 s, cached an hour), so no registration piles up. Dynamic Client
   Registration (RFC 7591) stays for clients that use it. Public clients only (`none`).
 - **The sign-in.** PKCE with S256 only, the redirect matched exactly (a loopback one on any port,
@@ -99,19 +99,19 @@ What the sign-in is, for the curious (api/oauth.js), checked against
 `https://<host><BASE_PATH>`. The 401 points at the document below the prefix, and the metadata
 answers at `<BASE_PATH>/.well-known/openid-configuration` as well as at the root's path-inserted
 `/.well-known/oauth-authorization-server<BASE_PATH>` (when your proxy passes the root's
-`/.well-known/` to openGym too). Pass the prefix through to openGym (`BASE_PATH=/gym`, docs/SELF_HOSTING.md
-§5); a proxy that strips it leaves openGym unaware of it, and the sign-in then names the wrong address.
+`/.well-known/` to Habcore Gym too). Pass the prefix through to Habcore Gym (`BASE_PATH=/gym`, docs/SELF_HOSTING.md
+§5); a proxy that strips it leaves Habcore Gym unaware of it, and the sign-in then names the wrong address.
 
 **Reachable from the internet.** Claude, ChatGPT and Gemini call the connector from their own
 servers, so the address has to be public https (a reverse proxy, a Cloudflare tunnel). A LAN-only
-or plain-http openGym works with the token header from a local client such as Claude Code or
+or plain-http Habcore Gym works with the token header from a local client such as Claude Code or
 Claude Desktop's local servers, not as a connector; the app says so on that screen. Anthropic's
 traffic comes from `160.79.104.0/21` if you allowlist.
 
 ### Ask it
 
 "Make me three full-body routines with only bodyweight and a pull-up bar", "how did my bench go this
-month", "log today: squats 3x5 at 100 kg". Routines it makes appear in openGym at once and sync to
+month", "log today: squats 3x5 at 100 kg". Routines it makes appear in Habcore Gym at once and sync to
 your phone; its writes need a token (or a sign-in) with Change directly for that category.
 
 ## What it serves
@@ -161,5 +161,5 @@ The web container reads `MCP_BACKEND` (`mcp`) and `MCP_PORT` (3100) to find it.
 ## Not yet
 
 - Helm and the Kubernetes manifests do not include the mcp container.
-- Phone-only openGym (no server) has nothing an assistant could reach; the in-app Coach with
+- Phone-only Habcore Gym (no server) has nothing an assistant could reach; the in-app Coach with
   OpenRouter, an API key or a local model is the way there.

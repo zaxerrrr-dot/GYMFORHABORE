@@ -1,8 +1,8 @@
-<!-- openGym on Garmin, swe. Written by frontend/garmin/garmin-strings.mjs: change that, not this. -->
+<!-- Habcore Gym on Garmin, swe. Written by frontend/garmin/garmin-strings.mjs: change that, not this. -->
 <strings>
     <string id="all_sets_done">Alla set klara</string>
     <string id="all_synced">Allt synkat</string>
-    <string id="app_name">openGym</string>
+    <string id="app_name">Habcore Gym</string>
     <string id="cancel">Avbryt</string>
     <string id="continue_workout">Fortsätt passet</string>
     <string id="discard_q">Släng passet?</string>
@@ -33,7 +33,7 @@
     <string id="no_set_for">Inget set på $1$ min. Kör du fortfarande?</string>
     <string id="no_workout">Inget pass pågår</string>
     <string id="not_synced">Inte synkat än</string>
-    <string id="open_phone_once">Öppna Inställningar och sedan Garmin i openGym på telefonen.</string>
+    <string id="open_phone_once">Öppna Inställningar och sedan Garmin i Habcore Gym på telefonen.</string>
     <string id="overview">Översikt</string>
     <string id="paused">Pausad</string>
     <string id="phone_out_of_reach">Telefonen utom räckhåll</string>
@@ -62,7 +62,7 @@
     <string id="up_next">Härnäst</string>
     <string id="up_next_set">$1$, set $2$</string>
     <string id="volume">Volym</string>
-    <string id="waiting_phone">Väntar på telefonen. Öppna openGym där om det dröjer.</string>
+    <string id="waiting_phone">Väntar på telefonen. Öppna Habcore Gym där om det dröjer.</string>
     <string id="waiting_sync">Väntar på synk</string>
     <string id="warmup">Uppvärmning</string>
     <string id="weight">Vikt</string>

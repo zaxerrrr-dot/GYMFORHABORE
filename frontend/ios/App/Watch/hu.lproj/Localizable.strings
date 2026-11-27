@@ -1,4 +1,4 @@
-/* openGym on the Apple Watch, hu. Written by ios/ci/watch-strings.mjs: change that, not this. */
+/* Habcore Gym on the Apple Watch, hu. Written by ios/ci/watch-strings.mjs: change that, not this. */
 
 "Today" = "Ma";
 "Start workout" = "Edzés indítása";
@@ -50,7 +50,7 @@
 "Finish the workout now? Otherwise it ends by itself at %@." = "Befejezed most az edzést? Különben %@-kor magától véget ér.";
 "No workout running" = "Nincs folyamatban edzés";
 "Not synced yet" = "Még nincs szinkronizálva";
-"Open openGym on your iPhone once and your routines show up here." = "Nyisd meg egyszer az openGymet az iPhone-on, és itt lesznek a rutinjaid.";
+"Open Habcore Gym on your iPhone once and your routines show up here." = "Nyisd meg egyszer az Habcore Gymet az iPhone-on, és itt lesznek a rutinjaid.";
 "Start one on your iPhone and it shows up here." = "Indíts egyet az iPhone-on, és itt megjelenik.";
 "All sets done" = "Minden sorozat kész";
 "measuring" = "mérés …";
@@ -73,7 +73,7 @@
 "Tap to change it." = "Koppints a módosításhoz.";
 "Added weight" = "Plusz súly";
 "Your rest, your next set, or today's workout." = "A pihenőd, a következő sorozat vagy a mai edzés.";
-"Opens openGym." = "Megnyitja az openGymet.";
+"Opens Habcore Gym." = "Megnyitja az Habcore Gymet.";
 "Hold to finish" = "Tartsd nyomva a befejezéshez";
 "iPhone out of reach" = "Az iPhone nincs a közelben";
 "No set for %lld min. Still at it?" = "%lld perce nincs sorozat. Még edzel?";
@@ -85,7 +85,7 @@
 "No effort rated yet" = "Még nincs értékelt erőfeszítés";
 "max" = "max.";
 "min" = "min.";
-"Turn on Apple Health on your iPhone and openGym stays on screen through rests and holds." = "Kapcsold be az Apple Egészséget az iPhone-on, és az openGym a pihenők és tartások alatt is a képernyőn marad.";
+"Turn on Apple Health on your iPhone and Habcore Gym stays on screen through rests and holds." = "Kapcsold be az Apple Egészséget az iPhone-on, és az Habcore Gym a pihenők és tartások alatt is a képernyőn marad.";
 "No sets yet" = "Még nincs sorozat";
 "+%lld more" = "+%lld további";
 "%@ sets" = "%@ sorozat";

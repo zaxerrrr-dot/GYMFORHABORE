@@ -1,4 +1,4 @@
-/* A provider's group claims mapped onto openGym roles, for OIDC sign-in (api/oidc/: accounts.js
+/* A provider's group claims mapped onto Habcore Gym roles, for OIDC sign-in (api/oidc/: accounts.js
  * asks rolesFromGroups, routes.js applyRoles hands studio roles to org-store syncClaimRoles and
  * `admin` to db.users; `access` gates sign-up). Roles given by hand are never taken away by a claim.
  *

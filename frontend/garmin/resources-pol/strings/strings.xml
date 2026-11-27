@@ -1,8 +1,8 @@
-<!-- openGym on Garmin, pol. Written by frontend/garmin/garmin-strings.mjs: change that, not this. -->
+<!-- Habcore Gym on Garmin, pol. Written by frontend/garmin/garmin-strings.mjs: change that, not this. -->
 <strings>
     <string id="all_sets_done">Wszystkie serie zrobione</string>
     <string id="all_synced">Wszystko zsynchronizowane</string>
-    <string id="app_name">openGym</string>
+    <string id="app_name">Habcore Gym</string>
     <string id="cancel">Anuluj</string>
     <string id="continue_workout">Kontynuuj trening</string>
     <string id="discard_q">Odrzucić trening?</string>
@@ -33,7 +33,7 @@
     <string id="no_set_for">Brak serii od $1$ min. Dalej ćwiczysz?</string>
     <string id="no_workout">Żaden trening nie trwa</string>
     <string id="not_synced">Jeszcze nie zsynchronizowano</string>
-    <string id="open_phone_once">W openGym na telefonie otwórz Ustawienia, potem Garmin.</string>
+    <string id="open_phone_once">W Habcore Gym na telefonie otwórz Ustawienia, potem Garmin.</string>
     <string id="overview">Przegląd</string>
     <string id="paused">Wstrzymano</string>
     <string id="phone_out_of_reach">Telefon poza zasięgiem</string>
@@ -62,7 +62,7 @@
     <string id="up_next">Następny</string>
     <string id="up_next_set">$1$, seria $2$</string>
     <string id="volume">Objętość</string>
-    <string id="waiting_phone">Czekam na telefon. Otwórz tam openGym, jeśli to potrwa.</string>
+    <string id="waiting_phone">Czekam na telefon. Otwórz tam Habcore Gym, jeśli to potrwa.</string>
     <string id="waiting_sync">Czeka na synchronizację</string>
     <string id="warmup">Rozgrzewka</string>
     <string id="weight">Ciężar</string>

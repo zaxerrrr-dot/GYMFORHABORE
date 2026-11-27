@@ -35,7 +35,7 @@ export const BACKUP_JSON = 'opengym-backup.json'
 // .wav: a sound of one's own (lib/user-sounds.js), exported since v1.4.5 but read back only now.
 const MEDIA_ENTRY = /^media\/([0-9a-f]{64})\.(jpg|png|webp|gif|mp4|mov|webm|wav)$/
 
-const README = `openGym backup with photos and videos
+const README = `Habcore Gym backup with photos and videos
 =====================================
 
 opengym-backup.json  your data - the same file "Export backup (JSON)" writes.
@@ -43,7 +43,7 @@ media/               the photos, GIFs and videos of your own exercises and of yo
                      workouts, each named by its SHA-256, plus the small previews
                      shown in lists.
 
-To bring it back: openGym -> Settings -> Data & backup -> Import backup, and pick this .zip as it is.
+To bring it back: Habcore Gym -> Settings -> Data & backup -> Import backup, and pick this .zip as it is.
 Do not unpack and re-zip it: the app reads zips that are stored, not compressed.
 `
 
@@ -101,7 +101,7 @@ export async function exportBackupZip(S, { media = mediaStore, fetchOne = null, 
 
 const isBackup = d => !!d && typeof d === 'object' && !Array.isArray(d) && Array.isArray(d.workouts) && Array.isArray(d.routines)
 
-const notBackup = () => Object.assign(new Error('not an openGym backup'), { code: 'not-backup' })
+const notBackup = () => Object.assign(new Error('not an Habcore Gym backup'), { code: 'not-backup' })
 
 /**
  * What to tell someone whose pick did not import, in their language. The thrown messages are for
@@ -109,7 +109,7 @@ const notBackup = () => Object.assign(new Error('not an openGym backup'), { code
  */
 export function backupImportError(e) {
   if (e?.code === 'compressed') return t('That zip was repacked. Import the original backup file.')
-  if (e?.code === 'not-backup' || e?.code === 'not-zip' || e?.code === 'encrypted' || e instanceof SyntaxError) return t('That file isn’t an openGym backup.')
+  if (e?.code === 'not-backup' || e?.code === 'not-zip' || e?.code === 'encrypted' || e instanceof SyntaxError) return t('That file isn’t an Habcore Gym backup.')
   return t('Couldn’t read that file.')
 }
 
@@ -117,7 +117,7 @@ export function backupImportError(e) {
  * Reads a picked backup, .json or .zip (told apart by its first bytes, not its name):
  * { state, files: [{ hash, entry }], zip }. `files` are the zip's media entries the state refers
  * to, not yet checked or stored — storeBackupMedia does that, once the import is confirmed.
- * Throws on anything that is not an openGym backup.
+ * Throws on anything that is not an Habcore Gym backup.
  */
 export async function readBackupFile(file) {
   let state, files = []

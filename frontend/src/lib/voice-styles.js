@@ -1,5 +1,5 @@
 // What the spoken cues sound like (Settings → Timer alerts → Voice, v1.4.5): a style, which is a
-// pack of lines per moment, written for openGym, translated like every other string, and said by
+// pack of lines per moment, written for Habcore Gym, translated like every other string, and said by
 // the device's own voice (lib/speech.js). Nothing here imitates anyone: the personality is in
 // the words, the voice is whichever one the phone has.
 //

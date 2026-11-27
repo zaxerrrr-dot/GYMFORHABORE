@@ -1,5 +1,5 @@
 /* The plan's write tools: create_routine, update_routine and delete_routine (#960, #310). They save
-   through the openGym api like log_workout (api-client.js), with a paired session or a scoped token
+   through the Habcore Gym api like log_workout (api-client.js), with a paired session or a scoped token
    that holds Plans at "Change directly". The rules are frontend/src/lib/routine-write.js.
 
    The revision contract (#310): list_routines and get_routine say the profile's `revision`. An edit
@@ -32,7 +32,7 @@ async function writePlan({ change, exact = null, dryRun = false, env, fetchImpl,
   if (!dryRun && saves.length >= WRITE_LIMIT) throw fail('ERATE', `already ${WRITE_LIMIT} saves in the last hour, the most this takes in one go; nothing was saved`)
   const me = await apiFetch(cfg, paths.me, opts)
   const uid = me.body?.user?.id
-  if (typeof uid !== 'string' || !uid) throw fail('EAPI', `the openGym server did not say which profile the token belongs to (GET ${paths.me}); nothing was saved`)
+  if (typeof uid !== 'string' || !uid) throw fail('EAPI', `the Habcore Gym server did not say which profile the token belongs to (GET ${paths.me}); nothing was saved`)
   const local = localUid()
   if (local && local !== uid) {
     console.error(`[opengym-mcp] the token is for profile ${uid}, this server reads ${local}`)
@@ -41,7 +41,7 @@ async function writePlan({ change, exact = null, dryRun = false, env, fetchImpl,
   let got = await apiFetch(cfg, paths.data, opts)
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
     const doc = got.body?.state
-    if (!doc || typeof doc !== 'object') throw fail('ENOSTATE', 'this profile has no synced data on the server yet: open openGym and sign in on a device once, then try again')
+    if (!doc || typeof doc !== 'object') throw fail('ENOSTATE', 'this profile has no synced data on the server yet: open Habcore Gym and sign in on a device once, then try again')
     const rev = got.body.rev ?? 0
     if (exact != null && rev !== exact) {
       return { saved: false, conflict: true, revision: rev, message: `The profile changed since revision ${exact} (it is at ${rev} now). Nothing was saved: read the routine again (get_routine), show the user what it is now, and ask before trying again.` }
@@ -61,7 +61,7 @@ async function writePlan({ change, exact = null, dryRun = false, env, fetchImpl,
     if (exact != null) {
       return { saved: false, conflict: true, revision: put.body?.rev ?? null, message: 'Another device saved in between. Nothing was saved: read the routine again and ask the user before trying again.' }
     }
-    if (!put.body?.state || typeof put.body.state !== 'object' || typeof put.body.rev !== 'number') throw fail('EAPI', 'the openGym server answered 409 without the current profile; nothing was saved')
+    if (!put.body?.state || typeof put.body.state !== 'object' || typeof put.body.rev !== 'number') throw fail('EAPI', 'the Habcore Gym server answered 409 without the current profile; nothing was saved')
     got = { status: 200, body: { state: put.body.state, rev: put.body.rev, wid: put.body.wid } }
   }
   throw fail('ECONFLICT', `the profile kept changing on the server (${MAX_ATTEMPTS} attempts); nothing was saved, try again in a moment`)
@@ -89,7 +89,7 @@ const weekdaysSchema = z.array(z.enum(WEEKDAYS)).max(7)
 export const createRoutineTool = {
   name: 'create_routine',
   description: [
-    'Create a routine in the user\'s openGym plan (it syncs to all their devices), e.g. "squat 5 × 5 at 100 kg, plank 3 × 60 s, Tuesdays and Fridays".',
+    'Create a routine in the user\'s Habcore Gym plan (it syncs to all their devices), e.g. "squat 5 × 5 at 100 kg, plank 3 × 60 s, Tuesdays and Fridays".',
     'Exercises are matched against the library like log_workout: when a name matches several or none, nothing is saved and `problems` lists candidates to put to the user.',
     'Each exercise starts the way picking it in the app starts it; only what you pass is set on top. `weekdays` puts it on those days of the weekly plan, next to whatever is planned there already.',
     'Call with dry_run: true first when you interpreted anything, show the preview, and save once the user agrees.',

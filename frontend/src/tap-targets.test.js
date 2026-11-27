@@ -40,10 +40,11 @@ describe('tap targets of small controls', () => {
   it('the words of an About link lie above its neighbours’ targets', () => {
     expect(rulesFor('.sp-version').join(';')).toMatch(/z-index:0/)
     expect(rulesFor('.sp-version a>span').join(';')).toMatch(/position:relative;z-index:1/)
-    const jsx = readFileSync(fileURLToPath(new URL('./views/Settings.jsx', import.meta.url)), 'utf8')
-    const block = jsx.slice(jsx.indexOf('sp-version'), jsx.indexOf('sp-version') + 1200)
+    // Habcore Gym (patch 0010): the About links (source, notices, media credit) live on the Licences page.
+    const jsx = readFileSync(fileURLToPath(new URL('./views/Licenses.jsx', import.meta.url)), 'utf8')
+    const block = jsx.slice(jsx.indexOf('lic-notes'))
     const links = block.match(/<a [^>]*>(.*?)<\/a>/g) || []
-    expect(links.length).toBe(3)
+    expect(links.length).toBe(4)
     for (const a of links) expect(a).toMatch(/><span>.*<\/span><\/a>$/)
   })
   it.each([

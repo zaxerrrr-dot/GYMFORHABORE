@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- openGym on Wear OS, uk. Written by frontend/android/wear/wear-strings.mjs: change that, not this. -->
+<!-- Habcore Gym on Wear OS, uk. Written by frontend/android/wear/wear-strings.mjs: change that, not this. -->
 <resources>
     <string name="add_birth_year">Вкажи рік народження в застосунку на телефоні</string>
     <string name="added_weight">Додаткова вага</string>
@@ -70,7 +70,7 @@
     <string name="not_now">Не зараз</string>
     <string name="not_synced">Ще не синхронізовано</string>
     <string name="notif_running">Тренування триває. Торкнись, щоб повернутися.</string>
-    <string name="open_phone_once">Відкрий openGym на телефоні один раз, і твої програми з’являться тут.</string>
+    <string name="open_phone_once">Відкрий Habcore Gym на телефоні один раз, і твої програми з’являться тут.</string>
     <string name="overview">Огляд</string>
     <string name="personal_records">Рекорди</string>
     <string name="phone_away">Телефон поза зоною. Твої підходи чекають тут.</string>

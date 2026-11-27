@@ -114,7 +114,7 @@ describe('routine links: size fallback', () => {
   it('a normal routine fits in a link', async () => {
     const link = await routineLink(state(), push, { weights: true })
     expect(link.tooLong).toBeUndefined()
-    expect(link.url.startsWith('https://opengym.ch/r#1.')).toBe(true)
+    expect(link.url.startsWith('https://sv.metin2sp.pl/opengym/#/r/1.')).toBe(true)
     expect(link.length).toBeLessThanOrEqual(MAX_LINK)
   })
 

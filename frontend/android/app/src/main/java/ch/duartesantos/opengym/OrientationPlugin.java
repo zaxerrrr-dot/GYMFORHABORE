@@ -10,7 +10,7 @@ import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 
 /**
- * Settings → Workout → Screen orientation (#821): openGym follows the phone, or stays upright or
+ * Settings → Workout → Screen orientation (#821): Habcore Gym follows the phone, or stays upright or
  * sideways whatever the phone does, without touching the system's own auto-rotate. The page
  * (lib/orientation.js) calls lock() with its choice; the choice is also kept in the app's
  * preferences, and MainActivity applies it in onCreate, so the app opens the right way up before

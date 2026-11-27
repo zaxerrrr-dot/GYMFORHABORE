@@ -16,12 +16,12 @@ afterEach(() => { act(() => root.unmount()); host.remove(); setOfflineBuild(fals
 const draw = el => act(() => root.render(<MemoryRouter>{el}</MemoryRouter>))
 
 describe('Network log', () => {
-  it('says 0 on a phone that talked to nobody, and why in openGym Offline', () => {
+  it('says 0 on a phone that talked to nobody, and why in Habcore Gym Offline', () => {
     draw(<NetworkLogPage />)
     expect(host.querySelector('.netlog-n').textContent).toBe('0 requests this session')
     expect(host.textContent).toContain('Not a single byte left this phone.')
     act(() => setOfflineBuild(true))
-    expect(host.textContent).toContain('openGym Offline has no internet permission')
+    expect(host.textContent).toContain('Habcore Gym Offline has no internet permission')
     expect(host.querySelectorAll('.sect-t').length).toBe(0)
   })
 

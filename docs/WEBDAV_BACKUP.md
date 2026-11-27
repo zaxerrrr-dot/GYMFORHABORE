@@ -7,7 +7,7 @@ day while the app is open, and whenever you tap **Back up now**. On a new phone,
 folder and tap **Restore from a backup**: you pick the day, then choose whether it replaces what
 is on the phone or merges with it (the same question as importing a backup file).
 
-No openGym server is involved: the device talks to your WebDAV server directly. That is what makes
+No Habcore Gym server is involved: the device talks to your WebDAV server directly. That is what makes
 it useful for the phone apps without a server (#582).
 
 ## What it keeps, and where
@@ -32,7 +32,7 @@ The address of the folder itself, for example:
 - ownCloud: `https://cloud.example.com/remote.php/webdav/openGym/`
 - Synology: `https://nas.example.com:5006/home/openGym/`
 
-openGym makes the last folder (`MKCOL`) when it is missing. Only `GET`, `PUT`, `DELETE` and that
+Habcore Gym makes the last folder (`MKCOL`) when it is missing. Only `GET`, `PUT`, `DELETE` and that
 one `MKCOL` are used.
 
 ## Browser (web app) and CORS
@@ -40,16 +40,16 @@ one `MKCOL` are used.
 The phone apps (Android, iPhone) send these requests through native HTTP, where CORS does not
 apply: any WebDAV server works.
 
-In a **browser**, the WebDAV server has to allow requests from your openGym address (CORS), or the
+In a **browser**, the WebDAV server has to allow requests from your Habcore Gym address (CORS), or the
 browser blocks them and the sheet says it could not reach the server. Nextcloud and most NAS
 systems do not allow that out of the box. Options:
 
-- add the headers on the reverse proxy in front of the WebDAV server, for your openGym origin only:
+- add the headers on the reverse proxy in front of the WebDAV server, for your Habcore Gym origin only:
   `Access-Control-Allow-Origin: https://gym.example.com`,
   `Access-Control-Allow-Methods: GET, PUT, DELETE, MKCOL, OPTIONS`,
   `Access-Control-Allow-Headers: Authorization, Content-Type`,
   `Access-Control-Allow-Credentials: true`, and answer `OPTIONS` with 204 without asking for a login;
-- or serve WebDAV under the same origin as openGym (a path on the same host), which needs no CORS;
+- or serve WebDAV under the same origin as Habcore Gym (a path on the same host), which needs no CORS;
 - or use the phone app for the backup.
 
 A plain `http://` address only works where the page itself is not https (a browser blocks mixed

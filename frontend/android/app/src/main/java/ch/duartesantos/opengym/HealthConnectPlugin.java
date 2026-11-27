@@ -58,8 +58,8 @@ import org.json.JSONException;
  * Settings: no permission is asked for before that. What to write is worked out in JS
  * (lib/health-connect.js); this side only turns those plain objects into records.
  *
- * Every record carries openGym's own id as its clientRecordId, so writing it again replaces it,
- * and "remove" finds exactly the records openGym wrote. The version is the time of the write:
+ * Every record carries Habcore Gym's own id as its clientRecordId, so writing it again replaces it,
+ * and "remove" finds exactly the records Habcore Gym wrote. The version is the time of the write:
  * Health Connect keeps a rewritten record only when its version is higher than the stored one.
  *
  * The client's API is Kotlin suspend functions. They are called from a worker thread through
@@ -269,7 +269,7 @@ public class HealthConnectPlugin extends Plugin {
                     }
                 }
                 if (!batch.skipped.isEmpty() || !failed.isEmpty())
-                    android.util.Log.w("openGym", "Health Connect: " + batch.skipped.size() + " left out, " + failed.size() + " refused");
+                    android.util.Log.w("Habcore Gym", "Health Connect: " + batch.skipped.size() + " left out, " + failed.size() + " refused");
                 // lib/health-sync.js keeps both as written: a bad record is not tried at every sync.
                 JSObject out = new JSObject();
                 out.put("skipped", new JSArray(batch.skipped));
@@ -505,7 +505,7 @@ public class HealthConnectPlugin extends Plugin {
     }
 
     /**
-     * Exercise sessions since `since` (ms) that any app saved, openGym's own included (JS skips
+     * Exercise sessions since `since` (ms) that any app saved, Habcore Gym's own included (JS skips
      * those, lib/activities.js isOwnRecord), with the sport as lib/activities.js names it
      * (HealthRead.sportName). Only with READ_EXERCISE granted; distance needs a permission of its
      * own and is left out.
@@ -625,7 +625,7 @@ public class HealthConnectPlugin extends Plugin {
     }
 
     // Health Connect's own screen for the data apps wrote, where the user can look at and delete
-    // what openGym wrote. Without Health Connect (Android 13 and lower), its store page instead.
+    // what Habcore Gym wrote. Without Health Connect (Android 13 and lower), its store page instead.
     @PluginMethod
     public void openSettings(PluginCall call) {
         String status = sdkStatus();

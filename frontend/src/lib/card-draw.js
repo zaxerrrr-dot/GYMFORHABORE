@@ -1,11 +1,11 @@
-// What every shared picture of openGym has in common: the two formats, the light and dark looks
+// What every shared picture of Habcore Gym has in common: the two formats, the light and dark looks
 // and the logo in the corner. Pure drawing, no DOM: the workout card (lib/workout-card.js, after a
 // workout and in History) and Your year (lib/wrapped-cards.js) both paint with it, and
 // lib/share-image.js gets the picture out of the app. No exercise picture or clip is ever drawn
 // on a card (the licence keeps those inside the app, NOTICE.md).
 
 import { inkIn } from './accent.js'
-// Local patch: the cards carry the Habcore Gym logo instead of the openGym lockup. White
+// Local patch: the cards carry the Habcore Gym logo instead of the Habcore Gym lockup. White
 // lettering for dark paper, the same artwork recoloured dark (same alpha) for light paper. Both are
 // hashed assets of the build, so they follow the base path and the service worker caches them.
 import LOGO_LIGHT_URL from '../brand/habcore-logo-light.png'
@@ -147,7 +147,7 @@ export function brandNeedsBadge(bg) {
 }
 
 /**
- * The footer every card ends with: the Habcore Gym logo (local patch; it was the openGym
+ * The footer every card ends with: the Habcore Gym logo (local patch; it was the Habcore Gym
  * lockup) and the site at the other end. `y` is the text's baseline.
  * Drawn left to right whatever the language: it is a logo, and a logo does not mirror.
  */

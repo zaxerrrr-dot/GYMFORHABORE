@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-// openNutrition → openGym (gm-hooks): linking against a stand-in openNutrition, and where its numbers show.
+// openNutrition → Habcore Gym (gm-hooks): linking against a stand-in openNutrition, and where its numbers show.
 import { describe, it, expect, beforeEach } from 'vitest'
 import {
   cleanUrl, guessUrl, cleanDay, cleanSummary, cleanFasting, link, refresh, loadLink, unlink, daysIn, nutritionSummary,
@@ -48,7 +48,7 @@ const NOW = Date.parse('2026-11-04T08:00:00Z')
 beforeEach(async () => { localStorage.removeItem(NUTRITION_KEY); await unlink() })
 
 describe('sister-nutrition: reading what openNutrition says', () => {
-  it('cleans the address and guesses one from openGym\'s own', () => {
+  it('cleans the address and guesses one from Habcore Gym\'s own', () => {
     expect(cleanUrl('nutrition.example.com/')).toBe('https://nutrition.example.com')
     expect(cleanUrl('ftp://x')).toBe(null)
     expect(guessUrl('https://gym.example.com')).toBe('https://nutrition.example.com')
@@ -156,7 +156,7 @@ describe('sister-nutrition: where it shows', () => {
   })
 })
 
-describe('sister-nutrition: openGym Offline', () => {
+describe('sister-nutrition: Habcore Gym Offline', () => {
   it('never links, reads or shows anything in the build without the network', async () => {
     const { setOfflineBuild, OFFLINE_OFF_CARDS } = await import('./build-caps.js')
     expect(OFFLINE_OFF_CARDS).toContain('opennutrition')

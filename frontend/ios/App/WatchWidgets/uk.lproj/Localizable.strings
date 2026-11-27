@@ -1,4 +1,4 @@
-/* openGym on the Apple Watch, uk. Written by ios/ci/watch-strings.mjs: change that, not this. */
+/* Habcore Gym on the Apple Watch, uk. Written by ios/ci/watch-strings.mjs: change that, not this. */
 
 "Today" = "Сьогодні";
 "Start workout" = "Почати тренування";
@@ -50,7 +50,7 @@
 "Finish the workout now? Otherwise it ends by itself at %@." = "Завершити тренування зараз? Інакше воно завершиться саме о %@.";
 "No workout running" = "Тренування не триває";
 "Not synced yet" = "Ще не синхронізовано";
-"Open openGym on your iPhone once and your routines show up here." = "Відкрий openGym на iPhone один раз, і твої програми з’являться тут.";
+"Open Habcore Gym on your iPhone once and your routines show up here." = "Відкрий Habcore Gym на iPhone один раз, і твої програми з’являться тут.";
 "Start one on your iPhone and it shows up here." = "Почни його на iPhone, і воно з’явиться тут.";
 "All sets done" = "Усі підходи зроблено";
 "measuring" = "вимірюю …";
@@ -73,7 +73,7 @@
 "Tap to change it." = "Торкнись, щоб змінити.";
 "Added weight" = "Додаткова вага";
 "Your rest, your next set, or today's workout." = "Відпочинок, наступний підхід або сьогоднішнє тренування.";
-"Opens openGym." = "Відкриває openGym.";
+"Opens Habcore Gym." = "Відкриває Habcore Gym.";
 "Hold to finish" = "Утримуй, щоб завершити";
 "iPhone out of reach" = "iPhone поза зоною";
 "No set for %lld min. Still at it?" = "Жодного підходу %lld хв. Ще тренуєшся?";
@@ -85,7 +85,7 @@
 "No effort rated yet" = "Зусилля ще не оцінено";
 "max" = "макс.";
 "min" = "мін.";
-"Turn on Apple Health on your iPhone and openGym stays on screen through rests and holds." = "Увімкни Apple Здоров’я на iPhone, і openGym залишатиметься на екрані під час відпочинку та утримань.";
+"Turn on Apple Health on your iPhone and Habcore Gym stays on screen through rests and holds." = "Увімкни Apple Здоров’я на iPhone, і Habcore Gym залишатиметься на екрані під час відпочинку та утримань.";
 "No sets yet" = "Підходів ще немає";
 "+%lld more" = "ще %lld";
 "%@ sets" = "Підходів: %@";

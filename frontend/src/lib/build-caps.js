@@ -1,6 +1,6 @@
 // What this build of the app can do at all, as opposed to what a person switched on (Modules).
 //
-// openGym Offline (the Android flavour "offline", app/build.gradle) has no INTERNET permission:
+// Habcore Gym Offline (the Android flavour "offline", app/build.gradle) has no INTERNET permission:
 // Android refuses every connection it would try. So the page does not offer what would need one:
 // no server to connect or sync with (and so no sign-in, OIDC, trainer, API tokens or MCP, no
 // community library, no webhooks, Strava or calendar feed), no Coach, no WebDAV backup, no
@@ -22,7 +22,7 @@ export const OFFLINE_OFF_CARDS = ['hevy', 'strava', 'webdav', 'calendar', 'webho
 let offline = false
 const subs = new Set()
 
-/** Whether this is openGym Offline, the build without the INTERNET permission. */
+/** Whether this is Habcore Gym Offline, the build without the INTERNET permission. */
 export const offlineBuild = () => offline
 
 /** Whether something that needs the network may be offered in this build. */

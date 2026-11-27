@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-/* openGym MCP server — stdio transport. The LLM client (Claude Desktop, Cursor, …) spawns
+/* Habcore Gym MCP server — stdio transport. The LLM client (Claude Desktop, Cursor, …) spawns
    this process locally, talks JSON-RPC over stdin/stdout, tears it down when the session ends.
    No extra container. Two ways to read the profile:
 
    - the data folder (OPENGYM_DATA, or ./data): the read tools make no network call, and the write
-     tools, once paired, talk to your own openGym server and nothing else;
+     tools, once paired, talk to your own Habcore Gym server and nothing else;
    - the api (#880): with OPENGYM_URL and OPENGYM_TOKEN and no OPENGYM_DATA, everything goes
      through your server, so this process needs no access to ./data and can run on another
      machine. A scoped token (Settings → API tokens) then also decides which tools are listed.

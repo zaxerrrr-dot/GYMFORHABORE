@@ -181,7 +181,7 @@ describe('planSync', () => {
     expect(plan.weights.map(w => w.kg)).toEqual([79.5])
     expect(plan.sessions).toEqual([])
   })
-  it('removes what was deleted from openGym, and only what this phone wrote', () => {
+  it('removes what was deleted from Habcore Gym, and only what this phone wrote', () => {
     const { written } = planSync(records(), {})
     const plan = planSync({ sessions: [], weights: [] }, written)
     expect(plan.remove).toEqual({ sessions: ['opengym-w-w1'], weights: ['opengym-bw-2026-09-17'] })
@@ -270,7 +270,7 @@ describe('imported workouts and the health hub (#881)', async () => {
     expect(S.workouts.every(isImportedWorkout)).toBe(true)
     expect(healthRecords(S, opts).sessions).toEqual([])
   })
-  it('a copy written before is taken out, and only openGym\'s own', () => {
+  it('a copy written before is taken out, and only Habcore Gym\'s own', () => {
     const imported = { id: 'iwabc', d: '2026-09-01', start: 1000, end: 4000000, entries: [] }
     const S = { workouts: [imported, mine] }
     const written = { 'opengym-w-iwabc': { k: 'session', h: 'x' }, ['opengym-w-' + mine.id]: { k: 'session', h: 'y' } }

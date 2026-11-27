@@ -10,7 +10,7 @@ describe('settings search finds Use your subscription', () => {
       expect(hit.route).toBe('/assistants')
     }
   })
-  it('not in openGym Offline or the demo, where the row is not there either', () => {
+  it('not in Habcore Gym Offline or the demo, where the row is not there either', () => {
     expect(searchSettings('subscription', { offline: true }).some(h => h.route)).toBe(false)
     expect(searchSettings('subscription', { demo: true }).some(h => h.route)).toBe(false)
   })

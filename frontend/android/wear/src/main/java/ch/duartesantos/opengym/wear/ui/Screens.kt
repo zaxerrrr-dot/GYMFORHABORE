@@ -323,10 +323,10 @@ fun LogoMark() {
     }
 }
 
-/** "openGym 1.4.5 (10032)", small at the end of the start screen: which build is on the watch. */
+/** "Habcore Gym 1.4.5 (10032)", small at the end of the start screen: which build is on the watch. */
 @Composable
 fun VersionLine() {
-    Text("openGym ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})", color = Og.Label3, fontSize = 12.sp,
+    Text("Habcore Gym ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})", color = Og.Label3, fontSize = 12.sp,
         modifier = Modifier.padding(top = 6.dp).semantics { contentDescription = "" })
 }
 

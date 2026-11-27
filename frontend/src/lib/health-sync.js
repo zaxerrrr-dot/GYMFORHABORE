@@ -96,7 +96,7 @@ export function onHealthChange(cb) { listeners.add(cb); return () => listeners.d
 const told = h => { listeners.forEach(cb => { try { cb(h) } catch { /* a closed screen */ } }) }
 
 /**
- * Writes what changed since the last sync and removes what was deleted from openGym. A no-op
+ * Writes what changed since the last sync and removes what was deleted from Habcore Gym. A no-op
  * while it is off. Resolves with the file's content afterwards; `error` is 'permission' when
  * Health Connect refused (the user took the permission back), 'unavailable' when it is gone.
  */
@@ -125,7 +125,7 @@ export function syncHealth(S) {
   return running
 }
 
-// Whether the hub lets openGym write active energy (#724). Someone who turned Health on before
+// Whether the hub lets Habcore Gym write active energy (#724). Someone who turned Health on before
 // v1.4.5 never saw that permission: asked once, while the app is on screen, then never again.
 async function kcalAllowed(p, h) {
   const st = await p.HC.status().catch(() => null)
@@ -209,7 +209,7 @@ export async function enableHealth(S) {
 }
 
 /**
- * Turning it off stops the writing. With `removeWritten`, what openGym wrote is taken out of
+ * Turning it off stops the writing. With `removeWritten`, what Habcore Gym wrote is taken out of
  * Health Connect too; without it, it stays there as the user's own data. Rejects when the
  * removal fails, and then stays on, so nothing is left behind that the phone forgot it wrote.
  */
@@ -267,7 +267,7 @@ const RESUME_EVERY_MS = 2 * 60e3
 // permission); later ones from the newest seen, minus a margin for a scale that syncs late.
 export const WEIGHT_FIRST_MS = 30 * 24 * 3600e3
 // With Health Connect's history permission (Android, idea from #801) the first read goes back a
-// year instead, so a scale's weigh-ins from before openGym arrive too. Asked for with the weight;
+// year instead, so a scale's weigh-ins from before Habcore Gym arrive too. Asked for with the weight;
 // refused, the read simply stays at 30 days.
 export const WEIGHT_HISTORY_MS = 365 * 24 * 3600e3
 const WEIGHT_MARGIN_MS = 2 * 24 * 3600e3
@@ -437,7 +437,7 @@ async function readOnce(getState, force, now, applyFn) {
 
   // Sport: other apps' workouts since the newest seen (minus a margin for a watch that syncs late),
   // the last 30 days the first time. Into the log as activities (lib/activities.js), so they sync,
-  // count for the streak when asked and show in the calendar; openGym's own are skipped there.
+  // count for the streak when asked and show in the calendar; Habcore Gym's own are skipped there.
   if (h.readSport && (force ? now - lastSportRead >= RESUME_EVERY_MS : now - lastSportRead >= READ_EVERY_MS)) {
     try {
       const since = h.sCursor > 0 ? Math.max(h.sCursor - WEIGHT_MARGIN_MS, now - WEIGHT_FIRST_MS) : now - WEIGHT_FIRST_MS

@@ -198,7 +198,7 @@ export const localTZ = () => { try { return Intl.DateTimeFormat().resolvedOption
 export const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7)
 // What each accent is called, for a screen reader (Settings' swatches carry no text). The first
 // is the brand's own colour and what a new profile starts on (lib/accent.js NEW_ACCENT). Habcore
-// Gym (local patch 0006): the brand is the Habcore logo's red #ba1a18 (it was openGym's green
+// Gym (local patch 0006): the brand is the Habcore logo's red #ba1a18 (it was Habcore Gym's green
 // #a3e635), and it is also what a copy with no usable choice draws (DEFAULT_ACCENT). 'lime' is the
 // iOS green, kept as "Classic green" for whoever picked it.
 export const ACCENT_NAMES = { brand: 'Habcore red', lime: 'Classic green', sky: 'Blue', orange: 'Orange', violet: 'Purple', pink: 'Pink', red: 'Red', teal: 'Teal', gold: 'Yellow' }

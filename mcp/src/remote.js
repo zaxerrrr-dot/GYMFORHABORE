@@ -22,7 +22,7 @@ export function createRemoteProfile(cfg, { fetchImpl } = {}) {
       if (user && !fresh) return { user, scopes }
       const r = await apiFetch(cfg, paths.me, opts)
       const u = r.body?.user
-      if (!u || typeof u.id !== 'string') throw err('EAPI', `the openGym server did not say whose token this is (GET ${paths.me})`)
+      if (!u || typeof u.id !== 'string') throw err('EAPI', `the Habcore Gym server did not say whose token this is (GET ${paths.me})`)
       user = { id: u.id, name: typeof u.name === 'string' ? u.name : '' }
       scopes = r.body?.token?.scopes || null
       return { user, scopes }

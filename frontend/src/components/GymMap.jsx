@@ -38,7 +38,7 @@ export default function GymMap({ pos, radius, onMove, label }) {
       const zoom = pos ? zoomFor(rNow.current, start.lat, host.current.clientHeight || 300) : 2
       const map = L.map(host.current, { zoomControl: false, attributionControl: true, zoomSnap: 0.5, inertia: !still() }).setView([start.lat, start.lng], zoom)
       map.attributionControl.setPrefix('<a href="https://leafletjs.com" target="_blank" rel="noopener">Leaflet</a>')
-      // openGym Offline (lib/build-caps.js) loads no tiles: the pin and the circle on a plain card.
+      // Habcore Gym Offline (lib/build-caps.js) loads no tiles: the pin and the circle on a plain card.
       if (!offlineBuild()) L.tileLayer(TILES.url, { maxZoom: TILES.maxZoom, attribution: TILES.attribution, className: 'gym-tiles' }).addTo(map)
       const circle = L.circle([start.lat, start.lng], { radius: rNow.current, className: 'gym-radius', interactive: false }).addTo(map)
       // A move we made ourselves (a search, the locate button) is not one to report back.

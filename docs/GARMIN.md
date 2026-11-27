@@ -1,4 +1,4 @@
-# openGym on Garmin
+# Habcore Gym on Garmin
 
 A Connect IQ watch app for Garmin watches, the Apple Watch and Wear OS apps' little sibling: the
 phone stays the source of truth, the watch follows the workout the phone runs, logs sets on it and
@@ -20,7 +20,7 @@ behind the same `WatchBridge` plugin as the other watches, with Settings → Gar
 status. Both compile in CI; none of it has met a real Garmin yet. The watch app is in the
 [Connect IQ Store](https://apps.garmin.com/apps/62e66310-66de-4bdd-8e40-5d2c0d853a08) since
 November 2026; each release's `openGym.iq` goes up there by hand, together with the phone release
-(see "What the owner does" and `/root/uploads/opengym-146/garmin-store/`). It needs openGym 1.4.5
+(see "What the owner does" and `/root/uploads/opengym-146/garmin-store/`). It needs Habcore Gym 1.4.5
 or later on the phone, and the F-Droid build has no Garmin link at all.
 
 ## What it does
@@ -88,7 +88,7 @@ Garmin screens are small (176 to 454 px) and many are MIP (memory-in-pixel: 64 c
 sunlight) or, on the Instinct, black and white. So, like the other watches but fitted:
 
 - **Black, one accent, numbers in boxes.** The accent is the phone's (`settings.accent` in the
-  snapshot, openGym's green until the phone says): as is on AMOLED, each channel rounded to the
+  snapshot, Habcore Gym's green until the phone says): as is on AMOLED, each channel rounded to the
   MIP palette elsewhere (`Ui.onScreen`), the ink on it black or white by its lightness. AMOLED
   watches get the other watches' grey boxes (#1c1c1e); MIP watches outlines; the Instinct builds
   (`(:mono)` in `source/Ui.mc`, picked per device in `monkey.jungle`) white outlines, and the box
@@ -170,7 +170,7 @@ booleans on its own.
 
 Events wait in the watch's outbox (`ob`) until the phone's snapshot names them in `acked` (the
 1.4.5 outbox protocol of the other watches, `Core.ackOutbox`): `transmit` reporting a message
-delivered only means Garmin Connect took it, and with openGym on the phone not running it can go
+delivered only means Garmin Connect took it, and with Habcore Gym on the phone not running it can go
 nowhere. So `obn` counts the events at the front already sent; what is not confirmed a minute later
 goes again (`Link.retry`), what was never sent after 30 s. One sent twice is applied once (the page
 keeps the ids, and names a resent one again as the newest, so the short `acked` list of a Garmin,
@@ -212,7 +212,7 @@ counts sets (`Core.waiting`): a set rated or fixed after its tick is two events 
 as JavaScript (a port of `Core.mc`'s state, outbox and `applySnapshot` and of `App.mc`'s `Link`);
 `src/lib/garmin-link.e2e.test.js` runs it against the page's real sync with the bridge modelled
 on `GarminLink.java` (the queue file, the last snapshot, hello) and switches on what goes wrong:
-the watch out of range, openGym killed on the phone, an answer lost, a restart mid-queue, a
+the watch out of range, Habcore Gym killed on the phone, an answer lost, a restart mid-queue, a
 transmit that never calls back. `src/lib/garmin-contract.test.js` reads the Monkey C, Java, Swift
 and JavaScript sources and fails when a field name, an event type, a constant, the app id, the
 store id or an Info.plist entry stops matching between them (and so keeps the model honest).
@@ -231,9 +231,9 @@ asks once before Watch goes off while one is there (it remembers the last `statu
 `localStorage` `gym_garmin_link_v1`, `readGarminLink` in lib/watch-settings.js).
 
 **Settings → Garmin (v1.4.5, `views/GarminSettings.jsx`, words in `lib/garmin-view.js`).** In the
-phone apps (module Watch): the Garmins the phone knows (connected or not, openGym on them or not),
+phone apps (module Watch): the Garmins the phone knows (connected or not, Habcore Gym on them or not),
 "Choose watches" on the iPhone (Garmin Connect opens with its list and comes back) or "Look again"
-on Android (Garmin Connect's pairing is the list), "Get openGym for Garmin" while a watch lacks the
+on Android (Garmin Connect's pairing is the list), "Get Habcore Gym for Garmin" while a watch lacks the
 app (Garmin Connect opens the Connect IQ Store page; when it cannot, the page on the web,
 `GARMIN_STORE`), and
 the two switches every watch shares: send workouts, open on the watch. In a build without the link
@@ -250,12 +250,12 @@ Every state says what to do next (`garminView`, each with a test):
 | the link did not come up | could not reach Garmin Connect | Look again (starts it over) |
 | no watch in Garmin Connect / none picked | pair yours there first / pick it | Look again / Choose watches |
 | a watch, out of reach, never heard from | not in reach, bring it close with Bluetooth on | Look again |
-| a watch in reach without openGym | get it, then open it once on the watch | Get openGym for Garmin |
-| openGym on the watch, in reach / away | sets land here / it catches up when in reach | Look again |
+| a watch in reach without Habcore Gym | get it, then open it once on the watch | Get Habcore Gym for Garmin |
+| Habcore Gym on the watch, in reach / away | sets land here / it catches up when in reach | Look again |
 
-A watch that is out of reach cannot say whether it has the app: it is never told "openGym isn't on
+A watch that is out of reach cannot say whether it has the app: it is never told "Habcore Gym isn't on
 it yet" on a guess. The watch itself, before it ever heard from the phone, says "Not synced yet.
-In openGym on your phone, open Settings, then Garmin." (opening the app alone is not enough on
+In Habcore Gym on your phone, open Settings, then Garmin." (opening the app alone is not enough on
 Android: the link only starts once that page was opened).
 
 **The native half (done in v1.4.5).**
@@ -274,13 +274,13 @@ Android: the link only starts once that page was opened).
    to every connected Garmin with the app; the last one goes again when a watch connects or says
    hello. `status()` adds `garmin: true` when a Garmin has the app, and counts it as paired and
    installed so the page sends at all. `openOnWatch` also asks each connected Garmin to open the app
-   (`openApplication`: "open openGym?" on the watch, Settings → Garmin "Open on the watch").
+   (`openApplication`: "open Habcore Gym?" on the watch, Settings → Garmin "Open on the watch").
    Garmin Connect Mobile delivers messages while the app's process lives (the page may sleep); with
    the process gone they are lost on the phone, which is why the watch now keeps them until `acked`.
    When Garmin Connect itself goes away (updated by the Play Store, stopped, crashed), the SDK's
    link to it ends (`onSdkShutDown`) and Garmin Connect forgets which app wanted which watch's
    messages: `revive` then brings the SDK up from scratch and `refresh` registers every watch
-   again after each `onSdkReady` (before, sets from the wrist stopped arriving until openGym was
+   again after each `onSdkReady` (before, sets from the wrist stopped arriving until Habcore Gym was
    restarted, and Settings → Garmin stood on "Checking…"). A start that does not come up within
    15 s is tried three times, then the state is `error` and "Look again" starts over
    (`GarminUse`, with JVM tests). `onApplicationNotInstalled` only counts from a connected watch,
@@ -323,16 +323,16 @@ in Garmin Connect with its duration, heart rate and calories, and counts towards
 intensity minutes and the rest of Garmin's numbers. Saved at Finish, thrown away at Discard; if the
 app is closed mid-workout, what was recorded is kept and not started again for that workout.
 
-**Double counting.** openGym on the phone can write each workout to Health Connect (Android) or
+**Double counting.** Habcore Gym on the phone can write each workout to Health Connect (Android) or
 Apple Health (iPhone), and Garmin Connect can share its activities there too (Apple Health on the
 iPhone; Health Connect on Android, depending on the Garmin Connect version and its settings). With
 both on, the hub has the same workout twice and its calories add up twice. What the user can do
 today, and what the docs and the store listing should say:
 
-- keep openGym's Health Connect / Apple Health export on and turn Garmin Connect's sharing of
+- keep Habcore Gym's Health Connect / Apple Health export on and turn Garmin Connect's sharing of
   activities off, **or**
 - keep Garmin's sharing and turn the watch's "Also save to Garmin Connect" off, **or**
-- keep Garmin's recording and turn openGym's export off (Garmin then writes the workout, openGym
+- keep Garmin's recording and turn Habcore Gym's export off (Garmin then writes the workout, Habcore Gym
   only reads its heart rate back, which v1.4.3 already does for any watch).
 
 A better fix for later, on the phone: when the Garmin bridge reports that the watch recorded a
@@ -345,15 +345,15 @@ The **Garmin Connect Developer Program** (Health API, Activity API, Training API
 Courses) is separate from Connect IQ: it is a server-to-server integration with Garmin Connect, for
 companies. It needs an application to Garmin (company name, use case, privacy policy, a server that
 receives Garmin's pushes), Garmin's approval, and a signed agreement; approved partners get consumer
-keys. What it would give openGym:
+keys. What it would give Habcore Gym:
 
-| API | What | Use for openGym |
+| API | What | Use for Habcore Gym |
 | --- | --- | --- |
 | Activity API | every activity's summary and FIT file, pushed after each sync | import runs, rides and Garmin's own strength activities (with their sets) into the log, automatically |
-| Health API | daily summaries: steps, heart rate, resting HR, sleep, stress, Body Battery, body composition (Index scale weigh-ins) | weigh-ins and resting HR into openGym without a phone hub in between |
+| Health API | daily summaries: steps, heart rate, resting HR, sleep, stress, Body Battery, body composition (Index scale weigh-ins) | weigh-ins and resting HR into Habcore Gym without a phone hub in between |
 | Training API | push workouts (including strength workouts with exercises, sets and reps) to the user's Garmin Connect calendar | today's routine shows up in Garmin's native strength activity on every Garmin, no Connect IQ app needed |
 
-It does not fit openGym's model as it is: keys are per company, not per server, so every
+It does not fit Habcore Gym's model as it is: keys are per company, not per server, so every
 self-hosted instance would need the owner's keys, or the owner would run a relay server that every
 instance talks to. That is a third-party service in the middle, the opposite of "no third-party
 account, no telemetry". If it is ever done, it should be an opt-in relay with its own privacy note.
@@ -477,7 +477,7 @@ Hindi, Bengali or Persian, and one Portuguese (pt).
    it, usually within a few days (done: approved in November 2026). The app id in `manifest.xml`
    stays the same forever.
    Its store id (62e66310-66de-4bdd-8e40-5d2c0d853a08, https://apps.garmin.com/apps/62e66310-66de-4bdd-8e40-5d2c0d853a08)
-   is in `GarminLink.STORE_ID` (Android) and `GarminLink.storeId` (iPhone), so "Get openGym for Garmin" opens its store page. The listing text and a checklist are in
+   is in `GarminLink.STORE_ID` (Android) and `GarminLink.storeId` (iPhone), so "Get Habcore Gym for Garmin" opens its store page. The listing text and a checklist are in
    `/root/uploads/opengym-146/garmin-store/` on the release machine.
 7. Each release after that: `monkeyc … -e` with the same key and the new `version` in
    `manifest.xml`, uploaded as a new version of the same app.

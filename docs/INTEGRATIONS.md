@@ -1,6 +1,6 @@
 # Integrations
 
-Settings → **Integrations** is one page for everything openGym can talk to. It is short on purpose:
+Settings → **Integrations** is one page for everything Habcore Gym can talk to. It is short on purpose:
 a card only shows where it can do something on your device, and nothing on it does anything until
 you switch it on.
 
@@ -10,7 +10,7 @@ you switch it on.
 | **Health Connect** | Android app | The same, with Health Connect. |
 | **Hevy** | everywhere | A one-off import of your Hevy history with a Hevy Pro API key. |
 | **Import a file** | everywhere | Strong, FitNotes, Hevy CSV, GymMane or an Apple Health export, once ([details](DATA_IMPORTS.md)). |
-| **Spreadsheet (CSV)** | everywhere | Every set, weigh-in and measurement as a CSV openGym can read back. |
+| **Spreadsheet (CSV)** | everywhere | Every set, weigh-in and measurement as a CSV Habcore Gym can read back. |
 | **WebDAV backup** | everywhere | A copy of your data every day in your own Nextcloud or WebDAV folder, and restore on a new phone ([details](WEBDAV_BACKUP.md)). |
 | **Calendar feed** | needs your own server | Your planned sessions (and finished workouts) in Apple, Google or Outlook calendar ([details](CALENDAR.md)). |
 | **Strava** | needs your own server, with a Strava app of its own | Finished cardio workouts, and strength ones if you like, go up to Strava (below). |
@@ -24,8 +24,8 @@ are the same sheets Data & backup opens.
 
 ## Works with: Garmin, COROS, Polar, Fitbit, Samsung Health, Oura, Withings, Renpho
 
-None of these has a direct line to openGym, and none needs one. Their own apps save to Apple Health
-on iPhone or Health Connect on Android, and openGym reads from there:
+None of these has a direct line to Habcore Gym, and none needs one. Their own apps save to Apple Health
+on iPhone or Health Connect on Android, and Habcore Gym reads from there:
 
 - **Heart rate** during your workouts (Settings → Integrations → Apple Health / Health Connect →
   *Heart rate from your watch*): each set gets the heart rate your watch saved.
@@ -33,11 +33,11 @@ on iPhone or Health Connect on Android, and openGym reads from there:
   wins.
 
 Make sure the watch or scale app is allowed to write heart rate or weight to the phone's health
-store. What openGym writes goes to the health store, not back into the watch's own app.
+store. What Habcore Gym writes goes to the health store, not back into the watch's own app.
 
 ## Webhooks
 
-A webhook is a URL your other tool gives you. openGym's server sends it an HTTPS `POST` with a
+A webhook is a URL your other tool gives you. Habcore Gym's server sends it an HTTPS `POST` with a
 small JSON body when something happens, from whichever device you logged it on (the phone, the web
 app, the watch, the MCP server). The phone app without a server has no way to send them, so the
 card says *Needs your server* there.
@@ -50,7 +50,7 @@ card says *Needs your server* there.
    - **New personal record** (`workout.pr`)
    - **Weigh-in logged** (`weighin.logged`)
 3. **Add webhook**. The next screen shows the **signing secret** once. Paste it into your tool if it
-   checks signatures (below); openGym never shows it again. Lost it? Disconnect and add the URL
+   checks signatures (below); Habcore Gym never shows it again. Lost it? Disconnect and add the URL
    again for a new one.
 4. **Send test event** from the webhook's sheet. The sheet also shows the last delivery, the last
    error with a **Retry**, the activity log (the last 50 deliveries), a switch to pause it, and
@@ -62,7 +62,7 @@ webhook are sent, so restoring a backup or importing from another app does not r
 ### Examples
 
 **Home Assistant.** Create an automation with a *Webhook* trigger (allowed methods: POST, local
-only off if openGym reaches Home Assistant over the internet). Its URL looks like
+only off if Habcore Gym reaches Home Assistant over the internet). Its URL looks like
 `https://ha.example.com/api/webhook/opengym-workout-7f3a`. Use the payload in the action, for
 example a notification with `{{ trigger.json.data.workout.name }}` and
 `{{ trigger.json.data.workout.durationMin }}` minutes. Home Assistant on your home network, at
@@ -90,7 +90,7 @@ Every delivery has the same envelope:
 
 - `version` is the payload format, `1` today. A change that breaks a receiver gets a new number.
 - `id` is the delivery's own id, the same on every retry of it. Store it if you must never act
-  twice: openGym sends each event once, but a crash at the wrong moment can mean one more try
+  twice: Habcore Gym sends each event once, but a crash at the wrong moment can mean one more try
   (at least once, not exactly once).
 - `test: true` is added to a test event.
 
@@ -188,11 +188,11 @@ as both of them expect.
 - A timeout, a connection error, `408`, `425`, `429` or any `5xx` is tried again: after about 30 s,
   then 1, 2, 4, 8, 16 and 32 minutes, give or take a quarter, eight tries over about an hour. A
   `Retry-After` header is honoured (up to 6 hours).
-- Any other `4xx`, a redirect (`3xx`, never followed: use the final URL) or an address openGym will
+- Any other `4xx`, a redirect (`3xx`, never followed: use the final URL) or an address Habcore Gym will
   not call is not retried.
 - After the last try, or on a refusal, the card says **Needs attention** and the webhook's sheet
   shows the error in plain words. **Retry** sends the failed deliveries again once you fixed it.
-- `410 Gone` means "this webhook is gone": openGym pauses it and stops queueing for it.
+- `410 Gone` means "this webhook is gone": Habcore Gym pauses it and stops queueing for it.
 - Each webhook gets at most 30 deliveries a minute, the whole server 600.
 
 ## Strava
@@ -231,7 +231,7 @@ Strava hands out one API application per Strava account, so every server needs i
 3. Restart the api container. The card shows for everyone on the server.
 
 A new Strava app is limited to one athlete (its owner) until Strava reviews it ("Athlete capacity"
-on the app page). For a family server, ask Strava to raise it. openGym asks for the
+on the app page). For a family server, ask Strava to raise it. Habcore Gym asks for the
 `activity:write` scope only, never reads activities, and has no webhook subscription (an app gets
 one, and yours may already use it).
 
@@ -309,7 +309,7 @@ Not in this round, and what the framework leaves room for:
 - **Strava** (PR #478) will become the first `oauth` provider: `authorizeUrl` and `callback` for a
   `GET /api/integrations/oauth/callback` route, `refresh` for expired tokens, and its own
   `STRAVA_CLIENT_ID` / `STRAVA_CLIENT_SECRET`. Every self-hoster registers their own Strava app;
-  openGym ships no shared client secret.
+  Habcore Gym ships no shared client secret.
 - **Scoped API tokens** and **remote MCP** need token scopes first, and come after.
 
 The frontend cards are in `frontend/src/lib/integrations.js` (which card shows where, pure and

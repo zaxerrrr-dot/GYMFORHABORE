@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- openGym on Wear OS, lt. Written by frontend/android/wear/wear-strings.mjs: change that, not this. -->
+<!-- Habcore Gym on Wear OS, lt. Written by frontend/android/wear/wear-strings.mjs: change that, not this. -->
 <resources>
     <string name="add_birth_year">Įrašyk gimimo metus telefono programėlėje</string>
     <string name="added_weight">Papildomas svoris</string>
@@ -70,7 +70,7 @@
     <string name="not_now">Ne dabar</string>
     <string name="not_synced">Dar nesinchronizuota</string>
     <string name="notif_running">Treniruotė vyksta. Bakstelėk, kad grįžtum.</string>
-    <string name="open_phone_once">Kartą atidaryk openGym telefone ir tavo rutinos atsiras čia.</string>
+    <string name="open_phone_once">Kartą atidaryk Habcore Gym telefone ir tavo rutinos atsiras čia.</string>
     <string name="overview">Apžvalga</string>
     <string name="personal_records">Rekordai</string>
     <string name="phone_away">Telefonas nepasiekiamas. Tavo priėjimai laukia čia.</string>

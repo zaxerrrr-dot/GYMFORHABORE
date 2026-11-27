@@ -14,7 +14,7 @@ import org.junit.Test;
 /** The widget's set buttons (lib/widget-logger.js writes the logger block they walk through). */
 public class WidgetLoggerTest {
     private static JSONObject logger() throws Exception {
-        return new JSONObject("{\"wid\":\"w1\",\"more\":true,\"labels\":{\"logSet\":\"Log set\",\"allDone\":\"All sets done\",\"openApp\":\"Open openGym\"},"
+        return new JSONObject("{\"wid\":\"w1\",\"more\":true,\"labels\":{\"logSet\":\"Log set\",\"allDone\":\"All sets done\",\"openApp\":\"Open Habcore Gym\"},"
                 + "\"sets\":[{\"k\":\"w1:0:1\",\"exId\":\"0025\",\"entryIdx\":0,\"setIdx\":1,\"name\":\"Bench\",\"line\":\"Set 2 of 3\",\"mode\":\"reps\","
                 + "\"w\":{\"v\":[57.5,60,62.5],\"t\":[\"57.5 kg\",\"60 kg\",\"62.5 kg\"],\"i\":1},\"r\":{\"v\":8,\"step\":2}},"
                 + "{\"k\":\"w1:1:0\",\"exId\":\"plank\",\"entryIdx\":1,\"setIdx\":0,\"name\":\"Plank\",\"line\":\"Set 1 of 1\",\"mode\":\"time\",\"sec\":{\"v\":30,\"step\":5}}]}");
@@ -73,7 +73,7 @@ public class WidgetLoggerTest {
         assertFalse(ev[0].has("w"));
         WidgetLogger.View done = WidgetLogger.view(lg, st);
         assertTrue(done.allDone);
-        assertEquals("Open openGym", done.allDoneText);
+        assertEquals("Open Habcore Gym", done.allDoneText);
         // Nothing left to log: Log set does nothing more.
         ev[0] = null;
         WidgetLogger.press(lg, st, "log", "ev3", 0, ev);

@@ -1,8 +1,8 @@
-// The Side Service: openGym's part inside the Zepp phone app (docs/ZEPP_OS.md). openGym itself
-// cannot run in there, so this talks to the user's own openGym server instead, where the openGym
+// The Side Service: Habcore Gym's part inside the Zepp phone app (docs/ZEPP_OS.md). Habcore Gym itself
+// cannot run in there, so this talks to the user's own Habcore Gym server instead, where the Habcore Gym
 // page leaves its snapshot and picks up the watch's events (api/watch-relay.js):
 //
-//   watch  --'sync' {events}-->  here  --POST /api/watch/box-->  server  <--  openGym page
+//   watch  --'sync' {events}-->  here  --POST /api/watch/box-->  server  <--  Habcore Gym page
 //   watch  <--{accepted, json}--  here  <--{accepted, json}------
 //
 // Pairing: the settings page (setting/index.js) stores the server's address and a code; this

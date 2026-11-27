@@ -1,8 +1,8 @@
-<!-- openGym on Garmin, vie. Written by frontend/garmin/garmin-strings.mjs: change that, not this. -->
+<!-- Habcore Gym on Garmin, vie. Written by frontend/garmin/garmin-strings.mjs: change that, not this. -->
 <strings>
     <string id="all_sets_done">Đã xong tất cả hiệp</string>
     <string id="all_synced">Đã đồng bộ tất cả</string>
-    <string id="app_name">openGym</string>
+    <string id="app_name">Habcore Gym</string>
     <string id="cancel">Hủy</string>
     <string id="continue_workout">Tiếp tục buổi tập</string>
     <string id="discard_q">Hủy buổi tập?</string>
@@ -33,7 +33,7 @@
     <string id="no_set_for">Đã $1$ phút không có hiệp nào. Bạn còn tập không?</string>
     <string id="no_workout">Không có buổi tập nào đang chạy</string>
     <string id="not_synced">Chưa đồng bộ</string>
-    <string id="open_phone_once">Trong openGym trên điện thoại, mở Cài đặt rồi chọn Garmin.</string>
+    <string id="open_phone_once">Trong Habcore Gym trên điện thoại, mở Cài đặt rồi chọn Garmin.</string>
     <string id="overview">Tổng quan</string>
     <string id="paused">Đã tạm dừng</string>
     <string id="phone_out_of_reach">Điện thoại ngoài tầm</string>
@@ -62,7 +62,7 @@
     <string id="up_next">Tiếp theo</string>
     <string id="up_next_set">$1$, hiệp $2$</string>
     <string id="volume">Tổng khối lượng</string>
-    <string id="waiting_phone">Đang chờ điện thoại. Mở openGym trên đó nếu lâu quá.</string>
+    <string id="waiting_phone">Đang chờ điện thoại. Mở Habcore Gym trên đó nếu lâu quá.</string>
     <string id="waiting_sync">Đang chờ đồng bộ</string>
     <string id="warmup">Khởi động</string>
     <string id="weight">Mức tạ</string>

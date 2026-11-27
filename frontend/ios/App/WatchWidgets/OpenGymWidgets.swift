@@ -2,7 +2,7 @@ import SwiftUI
 import WidgetKit
 
 /*
- * openGym's complications and Smart Stack widget on the Apple Watch: the rest counting down while
+ * Habcore Gym's complications and Smart Stack widget on the Apple Watch: the rest counting down while
  * resting, otherwise the set up next, or today's workout to start. Read from what the watch app
  * wrote (WidgetState, App Group). Text and SF Symbols only.
  *
@@ -215,14 +215,14 @@ struct OpenGymWidget: Widget {
                 // A tap on "Start" opens the watch app and starts today's workout.
                 .widgetURL(entry.state.mode == "today" ? URL(string: "opengym-watch://start") : URL(string: "opengym-watch://open"))
         }
-        .configurationDisplayName("openGym")
+        .configurationDisplayName("Habcore Gym")
         .description("Your rest, your next set, or today's workout.")
         .supportedFamilies([.accessoryRectangular, .accessoryCircular, .accessoryInline, .accessoryCorner])
     }
 }
 
 /*
- * The plain one: openGym's logo on the watch face, a tap opens the app. For a face that should
+ * The plain one: Habcore Gym's logo on the watch face, a tap opens the app. For a face that should
  * always have the way in, whatever is going on (the other widget changes with the workout).
  */
 struct LauncherProvider: TimelineProvider {
@@ -248,9 +248,9 @@ struct LauncherView: View {
             OpenGymLogo()
                 .fill(OpenGymLogo.green)
                 .padding(4)
-                .widgetLabel { Text(verbatim: "openGym") }
+                .widgetLabel { Text(verbatim: "Habcore Gym") }
         case .accessoryInline:
-            Text(verbatim: "openGym")
+            Text(verbatim: "Habcore Gym")
         default:
             HStack(spacing: 8) {
                 OpenGymLogo().fill(OpenGymLogo.green).frame(width: 30, height: 15)
@@ -274,8 +274,8 @@ struct OpenGymLauncher: Widget {
                 .containerBackground(.black, for: .widget)
                 .widgetURL(URL(string: "opengym-watch://open"))
         }
-        .configurationDisplayName("openGym")
-        .description("Opens openGym.")
+        .configurationDisplayName("Habcore Gym")
+        .description("Opens Habcore Gym.")
         .supportedFamilies([.accessoryCircular, .accessoryCorner, .accessoryInline, .accessoryRectangular])
     }
 }

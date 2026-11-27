@@ -1,4 +1,4 @@
-// openGym on Garmin: the app, the link to the phone, the heart rate and the Garmin Connect copy.
+// Habcore Gym on Garmin: the app, the link to the phone, the heart rate and the Garmin Connect copy.
 // docs/GARMIN.md has the whole picture; Core.mc has the session logic.
 import Toybox.Activity;
 import Toybox.ActivityRecording;
@@ -192,7 +192,7 @@ class OpenGymApp extends Application.AppBase {
 
 //! Events to the phone (Communications.transmit), kept in the state until the phone has them: a set
 //! ticked with the phone away is not lost. Sent once, then kept until the snapshot names it
-//! (`acked`, Core.ackOutbox): a message Garmin Connect took while openGym on the phone was not
+//! (`acked`, Core.ackOutbox): a message Garmin Connect took while Habcore Gym on the phone was not
 //! running goes again after a minute. The phone applies each event once, by its id, so one sent
 //! twice does no harm.
 module Link {
@@ -392,7 +392,7 @@ module Workout {
         }
         try {
             session = ActivityRecording.createSession({
-                :name => Core.strOf(w["name"]).length() > 0 ? Core.strOf(w["name"]) : "openGym",
+                :name => Core.strOf(w["name"]).length() > 0 ? Core.strOf(w["name"]) : "Habcore Gym",
                 :sport => Activity.SPORT_TRAINING,
                 :subSport => Activity.SUB_SPORT_STRENGTH_TRAINING
             });

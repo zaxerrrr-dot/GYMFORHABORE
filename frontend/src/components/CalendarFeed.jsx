@@ -13,7 +13,7 @@ import Icon from './Icon.jsx'
    to. The server makes and keeps the address (api/integrations/calendar.js); this sheet turns it
    on, copies it, changes what it shows, makes a new one, or turns it off. */
 
-export const CALENDAR_DOCS = 'https://github.com/DuarteSantos8/openGym/blob/main/docs/CALENDAR.md'
+export const CALENDAR_DOCS = 'https://github.com/zaxerrrr-dot/GYMFORHABORE/blob/main/docs/CALENDAR.md'
 const toast = m => useUI.getState().toast(m)
 
 export const calendarSheet = onChange => useUI.getState().openSheet(close => <CalendarSheet close={close} onChange={onChange} />)

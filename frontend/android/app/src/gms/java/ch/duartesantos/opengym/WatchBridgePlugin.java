@@ -55,7 +55,7 @@ import org.json.JSONObject;
  * and nothing else happens: the page then sends nothing at all (lib/watch-sync.js checkLink).
  *
  * A Garmin rides along (GarminLink, src/ciq, docs/GARMIN.md): status says `garmin: true` when one
- * with the openGym app is there, the page then adds its cut-down snapshot (`garmin`) to each
+ * with the Habcore Gym app is there, the page then adds its cut-down snapshot (`garmin`) to each
  * sendSnapshot, and the Garmin's events land in the same queue file.
  *
  *   status()             { supported, activated, paired, installed, reachable, garmin }
@@ -139,7 +139,7 @@ public class WatchBridgePlugin extends Plugin {
             wear.put("reachable", reachable);
             wear.put("watches", watches);
             out.put("wear", wear);
-            // A Garmin with the openGym app counts as a watch for the page: it then sends snapshots.
+            // A Garmin with the Habcore Gym app counts as a watch for the page: it then sends snapshots.
             GarminLink g = GarminLink.get(getContext());
             boolean garmin = g.anyInstalled();
             out.put("supported", supported || garmin);
@@ -258,7 +258,7 @@ public class WatchBridgePlugin extends Plugin {
                     ok = true;
                 }
             } catch (Exception ignored) {}
-            // A Garmin with the app shows its own "open openGym?" prompt.
+            // A Garmin with the app shows its own "open Habcore Gym?" prompt.
             if (GarminLink.get(getContext()).open()) ok = true;
             call.resolve(new JSObject().put("ok", ok));
         });

@@ -1,6 +1,6 @@
 // Settings → Zepp OS watch (signed in to a server): pairing an Amazfit or other Zepp OS watch, and
-// the watches paired. The watch's Side Service lives in the Zepp app, so it reaches openGym through
-// this server (lib/watch-relay.js, docs/ZEPP_OS.md): the code below goes into the openGym watch
+// the watches paired. The watch's Side Service lives in the Zepp app, so it reaches Habcore Gym through
+// this server (lib/watch-relay.js, docs/ZEPP_OS.md): the code below goes into the Habcore Gym watch
 // app's settings page in the Zepp app, with the server's address.
 import { useEffect, useState } from 'react'
 import { t } from '../lib/i18n.js'
@@ -15,7 +15,7 @@ import { useUI } from '../store/useUI.js'
 import { connectServer } from '../components/ServerSync.jsx'
 
 // How to put the watch app on the watch while it is not in the Zepp App Store (docs/ZEPP_OS.md).
-export const ZEPP_INSTALL_DOCS = 'https://github.com/DuarteSantos8/openGym/blob/main/docs/ZEPP_OS.md#installing-it'
+export const ZEPP_INSTALL_DOCS = 'https://github.com/zaxerrrr-dot/GYMFORHABORE/blob/main/docs/ZEPP_OS.md#installing-it'
 
 /** The address the Zepp app's settings page wants: the paired server, else this page's own. */
 const pairedServer = () => { try { return remoteAuth() } catch { return null } }
@@ -28,7 +28,7 @@ export function serverAddress (remote = pairedServer(), loc = typeof location !=
 // Not in the Zepp App Store yet (Discord, jag86_ and might1338 looked for it): say so on the page,
 // with the way it installs until then.
 function StoreNote () {
-  return <Section footer={t('openGym isn’t in the Zepp App Store yet. Until it is, the watch app goes on through the Zepp app’s developer mode. The guide walks you through it.')}>
+  return <Section footer={t('Habcore Gym isn’t in the Zepp App Store yet. Until it is, the watch app goes on through the Zepp app’s developer mode. The guide walks you through it.')}>
     <Row icon="info" iconTint="var(--blue)" title={t('Install the watch app')} accessory="chevron"
       onClick={() => window.open(ZEPP_INSTALL_DOCS, '_blank', 'noopener,noreferrer')} />
   </Section>
@@ -79,18 +79,18 @@ export default function ZeppSettingsPage ({ api = { relayLinks, relayPairCode, r
   const copy = async text => { if (await copyText(text)) useUI.getState().toast(t('Copied')) }
 
   if (!online) return <>
-    <Section footer={t('A Zepp OS watch reaches openGym through your own openGym server, since its side of the app runs inside the Zepp app and not here. Connect this phone to your server and the pairing code shows up right here.')}>
-      <Row icon="cloud" iconTint="var(--indigo)" title={t('Connect to my server')} subtitle={t('Sync this device to your own self-hosted openGym instead.')} accessory="chevron"
+    <Section footer={t('A Zepp OS watch reaches Habcore Gym through your own Habcore Gym server, since its side of the app runs inside the Zepp app and not here. Connect this phone to your server and the pairing code shows up right here.')}>
+      <Row icon="cloud" iconTint="var(--indigo)" title={t('Connect to my server')} subtitle={t('Sync this device to your own self-hosted Habcore Gym instead.')} accessory="chevron"
         onClick={connectServer} />
     </Section>
     <StoreNote />
   </>
 
   return <>
-    <Section footer={err || t('Amazfit and other Zepp OS watches talk to openGym through this server. Pair one and your workouts show up on your wrist.')}>
+    <Section footer={err || t('Amazfit and other Zepp OS watches talk to Habcore Gym through this server. Pair one and your workouts show up on your wrist.')}>
       <Row icon="watch" iconTint="var(--orange)" title={t('Pair a watch')} accessory="chevron" onClick={busy ? undefined : newCode} />
     </Section>
-    {pair && <Section title={t('Pairing code')} footer={t('In the Zepp app, open the openGym watch app’s settings and type in this address and code. The code lasts ten minutes.')}>
+    {pair && <Section title={t('Pairing code')} footer={t('In the Zepp app, open the Habcore Gym watch app’s settings and type in this address and code. The code lasts ten minutes.')}>
       <Row icon="globe" iconTint="var(--blue)" title={t('Server address')} subtitle={<span className="zepp-copyable">{address}</span>}>
         <Button size="sm" variant="tinted" icon="copy" aria-label={t('Copy address')} title={t('Copy address')} onClick={() => copy(address)} />
       </Row>

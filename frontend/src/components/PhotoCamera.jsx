@@ -148,7 +148,7 @@ export default function PhotoCamera({ photos = [], onUse, close }) {
           ? <div className="pc-msg">
               <Icon name="camera" />
               <p>{status === 'denied'
-                ? t('The camera is switched off for openGym. Allow it in your settings, or use the camera app instead.')
+                ? t('The camera is switched off for Habcore Gym. Allow it in your settings, or use the camera app instead.')
                 : t('No live camera here (a browser only offers one on HTTPS). The camera app still works.')}</p>
               <Button variant="tinted" icon="camera" onClick={() => fileRef.current?.click()}>{t('Use the camera app')}</Button>
             </div>

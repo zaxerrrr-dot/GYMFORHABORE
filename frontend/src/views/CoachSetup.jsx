@@ -1,6 +1,6 @@
 // Mobile build only: how the Coach should run on this phone.
 //
-// Two answers. "Use my self-hosted openGym" hands the whole thing to the paired server — the
+// Two answers. "Use my self-hosted Habcore Gym" hands the whole thing to the paired server — the
 // same Coach the web app has, with whatever provider its admin configured; the phone only has
 // to be paired. "Bring my own API key" runs the pipeline on the phone against Anthropic,
 // OpenAI, Gemini or an OpenAI-compatible endpoint, with a key that stays in secure storage.
@@ -235,7 +235,7 @@ export default function CoachSetup() {
     toast(t('The Coach is off'))
   }
 
-  const current = coachLocal?.mode === 'server' ? t('Runs on your openGym server')
+  const current = coachLocal?.mode === 'server' ? t('Runs on your Habcore Gym server')
     : coachLocal?.mode === 'byok' ? t('Runs on this phone with your own API key')
     : t('Off. Choose how the Coach should run.')
 
@@ -245,13 +245,13 @@ export default function CoachSetup() {
       <div style={{ flex: 1, marginInlineStart: 12 }}><h1>{t('AI Coach')}</h1></div>
     </div>
 
-    <Section footer={t('No API key needed: Claude, ChatGPT or Gemini come to openGym as a connector, on the plan you already pay for.')}>
-      <Row icon="chat" iconTint="var(--acc)" title={t('Use your Claude, ChatGPT or Gemini plan')} subtitle={t('Add openGym to the assistant app you already pay for')}
+    <Section footer={t('No API key needed: Claude, ChatGPT or Gemini come to Habcore Gym as a connector, on the plan you already pay for.')}>
+      <Row icon="chat" iconTint="var(--acc)" title={t('Use your Claude, ChatGPT or Gemini plan')} subtitle={t('Add Habcore Gym to the assistant app you already pay for')}
         accessory="chevron" onClick={() => nav('/assistants')} />
     </Section>
 
     <Section title={t('How should the Coach run?')} footer={current}>
-      <Row icon="rocket" iconTint="var(--indigo)" title={t('Use my self-hosted openGym')}
+      <Row icon="rocket" iconTint="var(--indigo)" title={t('Use my self-hosted Habcore Gym')}
         subtitle={user ? (serverHasCoach ? t('Your server runs the Coach with whatever provider its admin set up. Nothing new leaves this phone beyond what already syncs.') : config == null ? t('Loading…') : t('Your server has no Coach enabled. Ask its admin, or bring your own key below.')) : t('Connect to my server')}
         accessory="chevron" onClick={() => { if (!user || serverHasCoach) useServer(); else setChoice('server') }} />
       <Row icon="key" iconTint="var(--acc)" title={t('Bring my own API key')}
@@ -278,7 +278,7 @@ export default function CoachSetup() {
         </div>
       </Section>
 
-      {card === 'local' && <Section title={t('On my network')} footer={t('Looks for Ollama, LM Studio and llama.cpp on the machine running your openGym server and on this phone.')}>
+      {card === 'local' && <Section title={t('On my network')} footer={t('Looks for Ollama, LM Studio and llama.cpp on the machine running your Habcore Gym server and on this phone.')}>
         <Row icon="magnifier" iconTint="var(--teal)" title={t('Find it for me')} accessory="chevron" onClick={busy ? undefined : findLocal} />
         {found && !found.length && <div className="muted small" style={{ padding: '4px 12px 10px' }}>{t('Nothing answered. Type its address below, like http://192.168.1.20:11434.')}</div>}
         {(found || []).map(f => <Row key={f.base} icon="check" iconTint="var(--green)" title={f.kind} subtitle={f.base + ' · ' + tn('{0} model', '{0} models', f.models.length)} accessory="chevron" onClick={() => useFound(f)} />)}
@@ -311,7 +311,7 @@ export default function CoachSetup() {
         {provider === 'gemini' && <ol className="cs-steps">
           <li>{t('Open Google AI Studio and sign in with your Google account.')}</li>
           <li>{t('Press Create API key and copy it.')}</li>
-          <li>{t('Come back and paste it. openGym tests it on its own.')}</li>
+          <li>{t('Come back and paste it. Habcore Gym tests it on its own.')}</li>
         </ol>}
         {meta.keyUrl && <Row icon="link" iconTint="var(--acc)" title={provider === 'gemini' ? t('Open Google AI Studio') : t('Get a key from {0}', meta.label)} subtitle={hostOf(meta.keyUrl)} accessory="chevron" onClick={() => window.open(meta.keyUrl, '_blank', 'noopener')} />}
         {provider === 'anthropic' && <Row icon="lightbulb" iconTint="var(--yellow)" title={t('Got Claude Max? Your plan includes monthly API credits: create a key here')}

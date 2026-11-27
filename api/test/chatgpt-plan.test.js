@@ -18,7 +18,7 @@ test('the first sign-in registers a dynamic agent with PKCE, the plan scopes and
   assert.equal(u.origin + u.pathname, 'https://auth.openai.com/api/accounts/authorize');
   const q = u.searchParams;
   assert.equal(q.get('client_id'), 'dynamic_agent_client');
-  assert.equal(q.get('agent_name_hint'), 'openGym');
+  assert.equal(q.get('agent_name_hint'), 'Habcore Gym');
   assert.equal(q.get('ext_agent_host_id'), 'urn:uuid:1');
   assert.equal(q.get('redirect_uri'), 'http://127.0.0.1:1455/auth/callback');
   assert.equal(q.get('scope'), 'openid profile email offline_access resource.invoke chatgpt.tokens.use.direct');

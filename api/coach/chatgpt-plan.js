@@ -12,7 +12,7 @@
  *
  * The callback is a loopback address on the computer running the browser, never the server. So
  * the admin signs in in their own browser, lands on a page that does not load
- * (http://127.0.0.1:1455/auth/callback?code=…), and pastes that address back into openGym, which
+ * (http://127.0.0.1:1455/auth/callback?code=…), and pastes that address back into Habcore Gym, which
  * finishes the exchange on the server. OpenAI's own self-hosted guide does the same thing by
  * copying the credential file over; this keeps the PKCE verifier on the server.
  *
@@ -28,7 +28,7 @@ export const RESOURCE = 'https://api.openai.com/v1';
 export const REDIRECT_URI = 'http://127.0.0.1:1455/auth/callback';
 export const SCOPE = 'openid profile email offline_access resource.invoke chatgpt.tokens.use.direct';
 export const PLAN_SCOPE = 'chatgpt.tokens.use.direct';
-export const AGENT_NAME = 'openGym';
+export const AGENT_NAME = 'Habcore Gym';
 export const USAGE_URL = 'https://chatgpt.com/settings/usage';
 export const PENDING_TTL_MS = 15 * 60000;
 /** Refresh this long before the access token runs out. */
@@ -125,7 +125,7 @@ export function verifyIdToken(idToken, jwks, { audience, nonce, now = Date.now()
 /** Whether a token response granted plan usage (a valid ID token alone does not, per the docs). */
 export const planGranted = scope => String(scope || '').split(/\s+/).includes(PLAN_SCOPE);
 
-/** The credential openGym files, encrypted, as the Coach's instance credential. */
+/** The credential Habcore Gym files, encrypted, as the Coach's instance credential. */
 export function credentialOf(tokens, { clientId, hostId, claims, now = Date.now() }) {
   return {
     token: tokens.access_token, refresh: tokens.refresh_token || null, idToken: tokens.id_token || null,

@@ -18,7 +18,7 @@ import java.io.OutputStream;
 
 /**
  * Saves a picture the app drew (the share card after a workout, a progress comparison) into the
- * gallery, under Pictures/openGym. MediaStore needs no permission for the app's own new files on
+ * gallery, under Pictures/Habcore Gym. MediaStore needs no permission for the app's own new files on
  * Android 10 and later; older phones answer "unsupported" and the page offers the share sheet.
  *
  *   const SaveImage = registerPlugin('SaveImage')
@@ -40,7 +40,7 @@ public class SaveImagePlugin extends Plugin {
         ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.DISPLAY_NAME, name);
         values.put(MediaStore.Images.Media.MIME_TYPE, mime);
-        values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/openGym");
+        values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/Habcore Gym");
         values.put(MediaStore.Images.Media.IS_PENDING, 1);
         Uri item = resolver.insert(MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY), values);
         if (item == null) { call.reject("Could not save"); return; }

@@ -27,7 +27,7 @@ export const PAGES = {
   // The phones' watch pages under one row (#1105); the web has Zepp only, so its row stays on the root.
   watches: { title: 'Watches', icon: 'watch', tint: 'var(--grey)', mod: 'watch', kw: 'watch watches apple garmin zepp amazfit wrist pair' },
   watch: { title: 'Apple Watch', icon: 'watch', tint: 'var(--grey)', mod: 'watch', parent: 'watches' },
-  // Settings → Integrations (v1.4.4): the directory of what openGym talks to (views/Integrations.jsx).
+  // Settings → Integrations (v1.4.4): the directory of what Habcore Gym talks to (views/Integrations.jsx).
   integrations: { title: 'Integrations', icon: 'plug', tint: 'var(--indigo)', kw: 'integrations connect apps services webhook webhooks home assistant n8n ntfy node-red zapier automation garmin fitbit strava opennutrition nutrition calories sync api mcp' },
   // The Garmin link (docs/GARMIN.md, views/GarminSettings.jsx): the phone apps only.
   // The Android app: the Wear OS watch app is its own package next to it (views/WearSettings.jsx).
@@ -38,6 +38,8 @@ export const PAGES = {
   about: { title: 'About & updates', icon: 'info', tint: 'var(--grey)' },
   // The phone app's own list of what it sent where this session (lib/net-log.js, views/NetworkLog.jsx).
   network: { title: 'Network log', icon: 'shield', tint: 'var(--green)', parent: 'about', kw: 'network log requests privacy internet offline connections traffic tracking telemetry data sent who what' },
+  // Habcore Gym (local patch 0010): the licences, the source code and the notices.
+  licenses: { title: 'Licences', icon: 'info', tint: 'var(--grey)', parent: 'about', kw: 'licence license licences licenses source code open source agpl notice notices copyright' },
   account: { title: 'Account', icon: 'personCircle', tint: 'var(--grey)' },
   advanced: { title: 'Fine-tuning', icon: 'wrench', tint: 'var(--grey)', parent: 'workout' },
   // The live workout widget (components/LiveWidgetSettings.jsx, lib/live-glance.js, v1.4.5).
@@ -63,7 +65,7 @@ export const PAGES = {
 export const PAGE_IDS = Object.keys(PAGES)
 
 // The root, top to bottom, under headings (#1105): what you change week to week, what you set once,
-// what openGym talks to, then housekeeping. Whether a row shows is onRoot's call.
+// what Habcore Gym talks to, then housekeeping. Whether a row shows is onRoot's call.
 export const ROOT_GROUPS = [
   { title: 'Training', ids: ['workout', 'alerts', 'plan', 'reminders'] },
   { title: 'Set once', ids: ['units', 'equipment', 'look', 'modules'] },
@@ -88,7 +90,7 @@ export function pageVisible(page, ctx) {
   if (page === 'coach') return !!ctx.mobile && !ctx.offline
   // The phone app's network log: there only (a browser has its own developer tools for that).
   if (page === 'network') return !!ctx.mobile
-  // openGym Offline (lib/build-caps.js) has no network: nothing that needs a server or a connection.
+  // Habcore Gym Offline (lib/build-caps.js) has no network: nothing that needs a server or a connection.
   if (ctx.offline && (page === 'zepp' || page === 'api-tokens' || page === 'trainer')) return false
   // Only on a server that offers trainers, signed in: there is nobody to share with otherwise.
   if (page === 'trainer') return !!ctx.trainers && !!ctx.user && !ctx.demo
@@ -102,7 +104,7 @@ export function pageVisible(page, ctx) {
   if (page === 'wear') return !!ctx.mobile && !!ctx.android && !ctx.demo
   // The Garmin link lives in the phone apps (Connect IQ Mobile SDK); the page says when a build has none.
   if (page === 'garmin') return !!ctx.mobile && !ctx.demo
-  // A Zepp OS watch reaches openGym through a server (lib/watch-relay.js). Signed in, the page pairs
+  // A Zepp OS watch reaches Habcore Gym through a server (lib/watch-relay.js). Signed in, the page pairs
   // one; a phone on its own gets the page too, saying why it needs a server and how to connect
   // (Discord, ravk_: on three Android phones the page was simply not there).
   if (page === 'zepp') return !ctx.demo && (!!ctx.user || !!ctx.mobile)
@@ -150,7 +152,7 @@ export const SEARCH = [
   ...MODULES.map(m => ({ page: 'modules', title: m.title, icon: m.icon, tint: m.tint,
     // Community is a row only where the server has a library (views/Modules.jsx).
     ...(m.id === 'community' ? { when: c => !!c.library } : {}),
-    // Not built into openGym Offline at all (lib/build-caps.js).
+    // Not built into Habcore Gym Offline at all (lib/build-caps.js).
     ...(OFFLINE_OFF_MODULES.includes(m.id) ? { net: true } : {}),
     get kw() { return MODULE_KW[m.id] + (m.id === 'seasonal' ? ' ' + seasonKw() : '') + ' module turn on off hide' } })),
   { page: 'modules', title: 'Start from', icon: 'slider', tint: 'var(--blue)', kw: 'preset just training body everything custom modules' },
@@ -232,7 +234,7 @@ export const SEARCH = [
   { page: 'reminders', title: 'Nudge me when I skip a planned workout', icon: 'bell', tint: 'var(--red)', kw: 'nudge skip missed motivation', when: c => remind(c) && c.reminderOn, via: PUSH },
   { page: 'reminders', title: 'Nudge tone', icon: 'chat', tint: 'var(--blue)', kw: 'nudge tone friendly guilt drill sergeant', opts: ['Friendly', 'Guilt trip', 'Drill sergeant'], when: c => remind(c) && c.reminderOn && c.nudge, via: PUSH },
   { page: 'reminders', title: 'Check-in reminders', icon: 'ruler', tint: 'var(--teal)', kw: 'measurement measure tape photo progress picture weigh weight blood pressure remind every two weeks', when: remind, via: PUSH },
-  { page: 'reminders', title: 'Your year in openGym', icon: 'sparkles', tint: 'var(--acc)', mod: 'motivation', kw: 'year recap wrapped review december notification', when: remind, via: PUSH },
+  { page: 'reminders', title: 'Your year in Habcore Gym', icon: 'sparkles', tint: 'var(--acc)', mod: 'motivation', kw: 'year recap wrapped review december notification', when: remind, via: PUSH },
   { page: 'reminders', title: 'Gym reminder', icon: 'mapPin', tint: 'var(--green)', kw: 'gym location arrive arrival geofence place map nearby', when: c => !!c.mobile && c.gymReminder !== false },
   { page: 'reminders', title: 'Send test notification', icon: 'bell', tint: 'var(--red)', kw: 'test push notification try', when: c => !c.mobile && c.pushOK, via: PUSH },
   // Plan & schedule
@@ -330,13 +332,13 @@ export const SEARCH = [
   { page: 'integrations', mod: 'health', title: 'Renpho', icon: 'scale', tint: 'var(--grey)', kw: 'renpho scale weight body' },
   // About & updates
   { page: 'about', title: 'Check for updates', net: true, icon: 'download', tint: 'var(--green)', kw: 'update apk android version', when: c => c.mobile && c.android },
-  { page: 'about', title: 'Get the Android app', icon: 'download', tint: 'var(--green)', kw: 'apk android download app', when: c => !c.mobile },
   { page: 'about', title: 'Show the tour again', icon: 'lightbulb', tint: 'var(--yellow)', kw: 'tour tutorials intro introduction tutorial walkthrough guide help onboarding how to start' },
   { page: 'about', title: 'Build your first plan', icon: 'calendar', tint: 'var(--yellow)', kw: 'tutorial guide routine plan create first help how to' },
   { page: 'about', title: 'Create your own exercise', icon: 'plusCircle', tint: 'var(--yellow)', kw: 'tutorial guide custom exercise own new help how to' },
   { page: 'about', title: 'Edit your data', icon: 'pencil', tint: 'var(--yellow)', kw: 'tutorial guide edit fix change workout weigh-in history correct help how to' },
   { page: 'about', title: 'Export & import', icon: 'folder', tint: 'var(--yellow)', kw: 'tutorial guide export import backup restore csv strong hevy sync help how to' },
   { page: 'about', title: 'Version', icon: 'info', tint: 'var(--grey)', kw: 'version about licence license source code open source' },
+  { page: 'about', title: 'Licences', icon: 'info', tint: 'var(--grey)', kw: 'licence license licences licenses source code open source agpl notice notices copyright' },
   { page: 'about', title: 'In Chrome: ⋮ menu → Add to Home screen', icon: 'share', tint: 'var(--blue)', kw: 'install app home screen tip pwa', when: c => c.installTip && c.androidWeb },
   { page: 'about', title: 'In Safari: Share → Add to Home Screen', icon: 'share', tint: 'var(--blue)', kw: 'install app home screen tip pwa', when: c => c.installTip && !c.androidWeb && !c.desktopWeb },
   { page: 'about', title: 'In Chrome or Edge: the install icon in the address bar', icon: 'share', tint: 'var(--blue)', kw: 'install app home screen tip pwa desktop', when: c => c.installTip && c.desktopWeb },
@@ -433,13 +435,13 @@ export function searchSettings(query, ctx, tr = t) {
     // A page under another that its own module hides (Look & Home → Seasonal themes).
     if (PAGES[e.page].mod && !pageVisible(e.page, ctx)) continue
     if (e.when && !e.when(ctx)) continue
-    // A row that needs the network is not there in openGym Offline (lib/build-caps.js).
+    // A row that needs the network is not there in Habcore Gym Offline (lib/build-caps.js).
     if (e.net && ctx.offline) continue
     if (e.mod && ctx.mod && !ctx.mod(e.mod)) continue
     consider(e, false)
   }
   // The root's "Use your subscription" row (Connections) opens a screen of its own (views/Assistants.jsx), not a
-  // settings page; it is found like one. Not in openGym Offline or the demo, as on the root.
+  // settings page; it is found like one. Not in Habcore Gym Offline or the demo, as on the root.
   if (!ctx.offline && !ctx.demo) {
     consider({ page: 'look', route: '/assistants', title: 'Use your subscription', icon: 'chat', tint: 'var(--acc)',
       kw: 'claude chatgpt gemini mcp connector assistant ai plan subscription' }, true)   // a root row: its trail is Settings

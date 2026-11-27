@@ -1,4 +1,4 @@
-// Local patch (Habcore Gym): the app shows the Habcore Gym logo where upstream drew the openGym
+// Local patch (Habcore Gym): the app shows the Habcore Gym logo where upstream drew the Habcore Gym
 // mark and lockup. Pictures, not drawn shapes: src/brand/habcore-{logo,mark}-{light,dark}.png,
 // "light" being the white artwork (for dark backgrounds) and "dark" the dark one (for light ones).
 // The mark is the logo without its "powered by" line, for the small places. With variant 'auto'
@@ -28,7 +28,7 @@ export function BrandMark({ height = 24, variant = 'auto', className, style }) {
   )
 }
 
-/** The whole logo (the Habcore Gym barbell), sized from `size` as the openGym lockup's type was. */
+/** The whole logo (the Habcore Gym barbell), sized from `size` as the Habcore Gym lockup's type was. */
 export default function BrandLogo({ size = 34, as: Tag = 'span', className = '', style, variant = 'auto' }) {
   const height = Math.round(size * 2.6)
   const width = Math.round(height * LOGO_ASPECT)

@@ -8,7 +8,7 @@
  * app's "Authorization Callback Domain" set to the host of ORIGIN. docs/INTEGRATIONS.md, Strava.
  *
  * Two choices follow from that one app being shared with whatever else its owner runs:
- *   - no webhook subscription (an app gets one; openGym taking it would take it from the other)
+ *   - no webhook subscription (an app gets one; Habcore Gym taking it would take it from the other)
  *   - Disconnect forgets the tokens here and never calls /oauth/deauthorize, which would end the
  *     app's access for that athlete everywhere
  *
@@ -86,7 +86,7 @@ export function activityFor(w, { strength = false } = {}) {
   if (asStrength && w.totals?.volume) lines.push('', `Volume ${fmt(w.totals.volume)}${unit}, ${w.totals.sets} sets`);
   if (Array.isArray(w.records) && w.records.length) lines.push(`PRs: ${w.records.map(r => r.name).join(', ')}`);
   if (w.note) lines.push('', w.note);
-  lines.push('', 'Logged with openGym');
+  lines.push('', 'Logged with Habcore Gym');
   const name = (w.name || (asStrength ? 'Strength training' : main?.name) || 'Workout').slice(0, 120);
   return {
     name,
@@ -232,7 +232,7 @@ export function stravaProvider({ env = process.env, fetchFn = globalThis.fetch, 
       if (res.status === 201 || res.status === 200) return { ok: true, status: res.status, ms: res.ms };
       if (res.status === 429) return { ok: false, retry: true, retryAfterMs: 15 * 60_000, status: 429, code: 'rate', msg: 'Strava says slow down, trying again in 15 minutes.' };
       if (res.status >= 500) return { ok: false, retry: true, status: res.status, code: 'http', msg: `Strava answered ${res.status}.` };
-      if (res.status === 403 || res.status === 401) return { ok: false, retry: false, gone: true, status: res.status, code: 'reconnect', msg: 'Reconnect Strava: it no longer lets openGym upload.' };
+      if (res.status === 403 || res.status === 401) return { ok: false, retry: false, gone: true, status: res.status, code: 'reconnect', msg: 'Reconnect Strava: it no longer lets Habcore Gym upload.' };
       return { ok: false, retry: false, status: res.status, code: 'http', msg: `Strava refused the activity (${res.status}).` };
     },
   };

@@ -14,7 +14,7 @@ import Icon from './Icon.jsx'
    the name and password, a daily backup on this device, Back up now and Restore. The rules and
    the client are lib/webdav.js; the runs lib/webdav-run.js. */
 
-export const WEBDAV_DOCS = 'https://github.com/DuarteSantos8/openGym/blob/main/docs/WEBDAV_BACKUP.md'
+export const WEBDAV_DOCS = 'https://github.com/zaxerrrr-dot/GYMFORHABORE/blob/main/docs/WEBDAV_BACKUP.md'
 
 /** This device's WebDAV settings, with `foreign` while another account than the one active set them up. */
 export function useWebdavConfig() {
@@ -102,7 +102,7 @@ export function WebDavSetup({ close, cfg = null }) {
     <p className="intg-lead">{t('A copy of everything, once a day, in a folder of your own: Nextcloud, ownCloud, a NAS, anything that speaks WebDAV. Your server, nobody else’s.')}</p>
     <label className="intg-label" htmlFor="dav-url">{t('Folder address')}</label>
     <TextField id="dav-url" type="url" inputMode="url" autoCapitalize="off" autoCorrect="off" spellCheck={false}
-      placeholder="https://cloud.example.com/remote.php/dav/files/me/openGym/" value={url} onChange={e => setUrl(e.target.value)} />
+      placeholder="https://cloud.example.com/remote.php/dav/files/me/HabcoreGym/" value={url} onChange={e => setUrl(e.target.value)} />
     {problem && <div className="small" style={{ color: 'var(--red)', marginTop: 4 }}>{t(problem)}</div>}
     <label className="intg-label" htmlFor="dav-user">{t('User name')}</label>
     <TextField id="dav-user" autoCapitalize="off" autoCorrect="off" spellCheck={false} autoComplete="username" value={user} onChange={e => setUser(e.target.value)} />
@@ -134,7 +134,7 @@ function WebDavManage({ cfg, close }) {
     let list
     try { list = await listBackups() } catch (e) { setBusy(false); toast(t(errorText(e))); return }
     setBusy(false)
-    if (!list.length) { toast(t('No openGym backups in that folder yet.')); return }
+    if (!list.length) { toast(t('No Habcore Gym backups in that folder yet.')); return }
     useUI.getState().openSheet(c => <RestoreList list={list} close={c} />)
   }
   const forget = confirmForget

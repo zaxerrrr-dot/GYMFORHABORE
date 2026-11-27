@@ -142,7 +142,7 @@ export function voiceLabel (v, ui = speechLang()) {
 /**
  * The voices this device has for `lang`, as [{ id, name, lang, online }], sorted by name with the
  * exact region first. `online`: the voice needs the internet (some of Chrome's, a few of
- * Android's); `offline: true` leaves those out (openGym Offline has no network at all).
+ * Android's); `offline: true` leaves those out (Habcore Gym Offline has no network at all).
  * The phone's own list in the apps, the browser's elsewhere.
  */
 export async function listVoices({ lang = speechLang(), offline = false } = {}) {

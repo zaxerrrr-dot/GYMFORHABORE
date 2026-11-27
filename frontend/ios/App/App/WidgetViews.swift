@@ -290,7 +290,7 @@ struct WidgetEmpty: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             OpenGymMark(width: 30)
-            Text("Open openGym once to see your plan here.").font(.caption).foregroundStyle(.secondary)
+            Text("Open Habcore Gym once to see your plan here.").font(.caption).foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
@@ -526,7 +526,7 @@ struct NextInlineView: View {
     }
 }
 
-// MARK: - the configurable widget ("openGym": what to show, OpenGymWidgets.swift)
+// MARK: - the configurable widget ("Habcore Gym": what to show, OpenGymWidgets.swift)
 
 /// What the configurable widget can show. The menu's words are in OpenGymWidgets.swift (AppEnum).
 enum GymWidgetKind: String, CaseIterable, Codable {
@@ -807,7 +807,7 @@ extension WorkoutActivityAttributes {
     /// The line with no set to show: all done, or sets left that the activity does not carry
     /// (many taps with the page asleep), where "All sets done" was simply wrong (Discord).
     func noSetText(_ state: ContentState) -> String {
-        state.done < state.total ? (labels.openApp ?? "Open openGym for the next set") : labels.allDone
+        state.done < state.total ? (labels.openApp ?? "Open Habcore Gym for the next set") : labels.allDone
     }
 
     /// The word over the clock: the count-in, the hold, or the rest.
@@ -1565,7 +1565,7 @@ struct GlanceIslandBottom: View {
 
 // MARK: - the logo
 
-/// openGym's logo mark (assets/logo/opengym-mark.svg): five plain rectangles on a 352 x 174 grid,
+/// Habcore Gym's logo mark (assets/logo/opengym-mark.svg): five plain rectangles on a 352 x 174 grid,
 /// square corners. Where the app shows who it is (the Dynamic Island, an empty widget), not an SF Symbol.
 struct OpenGymMarkShape: Shape {
     func path(in rect: CGRect) -> Path {

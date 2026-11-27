@@ -1,4 +1,4 @@
-/* openGym on the Apple Watch, es. Written by ios/ci/watch-strings.mjs: change that, not this. */
+/* Habcore Gym on the Apple Watch, es. Written by ios/ci/watch-strings.mjs: change that, not this. */
 
 "Today" = "Hoy";
 "Start workout" = "Empezar entrenamiento";
@@ -50,7 +50,7 @@
 "Finish the workout now? Otherwise it ends by itself at %@." = "¿Terminar el entreno ahora? Si no, termina solo a las %@.";
 "No workout running" = "Ningún entreno en curso";
 "Not synced yet" = "Aún sin sincronizar";
-"Open openGym on your iPhone once and your routines show up here." = "Abre openGym una vez en tu iPhone y tus rutinas aparecerán aquí.";
+"Open Habcore Gym on your iPhone once and your routines show up here." = "Abre Habcore Gym una vez en tu iPhone y tus rutinas aparecerán aquí.";
 "Start one on your iPhone and it shows up here." = "Empieza uno en tu iPhone y aparecerá aquí.";
 "All sets done" = "Todas las series hechas";
 "measuring" = "midiendo …";
@@ -73,7 +73,7 @@
 "Tap to change it." = "Toca para cambiarlo.";
 "Added weight" = "Peso añadido";
 "Your rest, your next set, or today's workout." = "Tu descanso, tu próxima serie o el entreno de hoy.";
-"Opens openGym." = "Abre openGym.";
+"Opens Habcore Gym." = "Abre Habcore Gym.";
 "Hold to finish" = "Mantén para terminar";
 "iPhone out of reach" = "iPhone fuera de alcance";
 "No set for %lld min. Still at it?" = "Ninguna serie en %lld min. ¿Sigues?";
@@ -85,7 +85,7 @@
 "No effort rated yet" = "Aún sin esfuerzo valorado";
 "max" = "máx.";
 "min" = "mín.";
-"Turn on Apple Health on your iPhone and openGym stays on screen through rests and holds." = "Activa Apple Salud en tu iPhone y openGym se queda en pantalla durante descansos y aguantes.";
+"Turn on Apple Health on your iPhone and Habcore Gym stays on screen through rests and holds." = "Activa Apple Salud en tu iPhone y Habcore Gym se queda en pantalla durante descansos y aguantes.";
 "No sets yet" = "Aún sin series";
 "+%lld more" = "+%lld más";
 "%@ sets" = "%@ series";

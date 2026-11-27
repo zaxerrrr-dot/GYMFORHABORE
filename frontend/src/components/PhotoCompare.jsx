@@ -114,7 +114,7 @@ export default function PhotoCompare({ photos, close, toast }) {
       if (items.some(it => !it.url)) { toast?.(t('Still loading the photos. Try again in a second.')); return }
       const blob = await renderCompare({ items, rows: slider ? [1] : rows, aspect, mode: slider ? 'slider' : 'side', pct, caption })
       if (!blob) { toast?.(t('This device could not draw the picture.')); return }
-      await (save ? saveImage : shareImage)(blob, `opengym-progress-${first.d}-${last.d}.png`, t('Progress photos'), toast)
+      await (save ? saveImage : shareImage)(blob, `habcore-gym-progress-${first.d}-${last.d}.png`, t('Progress photos'), toast)
     } finally { setSharing(false) }
   }
 

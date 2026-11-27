@@ -2,7 +2,7 @@
  * requirements in sub-connect-146).
  *
  * Claude and ChatGPT add a custom connector by URL and then sign in with OAuth; neither lets a
- * person paste a header on most plans. So openGym is its own small authorization server, and what
+ * person paste a header on most plans. So Habcore Gym is its own small authorization server, and what
  * it issues is nothing new: the same scoped `ogt_` token Settings → API tokens makes, created only
  * when the signed-in person approves it on a consent screen, listed and revocable with the others.
  *
@@ -77,12 +77,12 @@ export function authServerMetadata(issuer) {
     scopes_supported: [...SCOPES, 'offline_access'],
     client_id_metadata_document_supported: true,
     authorization_response_iss_parameter_supported: true,
-    service_documentation: 'https://github.com/DuarteSantos8/openGym/blob/main/docs/MCP_REMOTE.md'
+    service_documentation: 'https://github.com/zaxerrrr-dot/GYMFORHABORE/blob/main/docs/MCP_REMOTE.md'
   };
 }
 /** `issuer` is ORIGIN plus BASE_PATH; the resource is the address the person pastes. */
 export function protectedResourceMetadata(issuer, mcpPath = '/mcp') {
-  return { resource: issuer + mcpPath, authorization_servers: [issuer], scopes_supported: SCOPES, bearer_methods_supported: ['header'], resource_name: 'openGym', resource_documentation: 'https://github.com/DuarteSantos8/openGym/blob/main/docs/MCP_REMOTE.md' };
+  return { resource: issuer + mcpPath, authorization_servers: [issuer], scopes_supported: SCOPES, bearer_methods_supported: ['header'], resource_name: 'Habcore Gym', resource_documentation: 'https://github.com/zaxerrrr-dot/GYMFORHABORE/blob/main/docs/MCP_REMOTE.md' };
 }
 
 /* A redirect URI a client may register: https anywhere, or http on the loopback (Claude Code,
@@ -194,7 +194,7 @@ export const _clearCimdCache = () => cimdCache.clear();
 
 function getJson(url, lookup) {
   return new Promise((resolve, reject) => {
-    const req = https.get(url, { headers: { Accept: 'application/json', 'User-Agent': 'openGym' }, timeout: 5000, ...(lookup ? { lookup } : {}) }, res => {
+    const req = https.get(url, { headers: { Accept: 'application/json', 'User-Agent': 'Habcore Gym' }, timeout: 5000, ...(lookup ? { lookup } : {}) }, res => {
       if (res.statusCode !== 200) { res.resume(); return reject(new Error('HTTP ' + res.statusCode)); }
       let size = 0; const chunks = [];
       res.on('data', d => { size += d.length; if (size > 5120) { req.destroy(new Error('larger than 5 KB')); return; } chunks.push(d); });
@@ -230,7 +230,7 @@ export function startAuthorize(db, q, pending, now = Date.now(), opts = {}) {
   if (q.get('response_type') !== 'code') return back('unsupported_response_type', 'response_type must be code');
   const challenge = q.get('code_challenge') || '';
   if (q.get('code_challenge_method') !== 'S256' || !/^[A-Za-z0-9_-]{43,128}$/.test(challenge)) return back('invalid_request', 'PKCE with code_challenge_method S256 is required');
-  if (!resourceOk(q.get('resource'), opts.resource)) return back('invalid_target', 'resource is not this openGym\'s MCP address');
+  if (!resourceOk(q.get('resource'), opts.resource)) return back('invalid_target', 'resource is not this Habcore Gym\'s MCP address');
   for (const [k, v] of pending) if (now - v.at > REQUEST_TTL_MS) pending.delete(k);
   if (pending.size > 1000) pending.delete(pending.keys().next().value);
   const id = rnd(18);

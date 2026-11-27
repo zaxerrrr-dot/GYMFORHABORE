@@ -107,7 +107,7 @@ export function buildLogger (S) {
     labels: {
       logSet: t('Log set'),
       allDone: t('All sets done'),
-      openApp: t('Open openGym for the next set'),
+      openApp: t('Open Habcore Gym for the next set'),
       less: t('Decrease'),
       more: t('Increase'),
     },

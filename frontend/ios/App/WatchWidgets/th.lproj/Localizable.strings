@@ -1,4 +1,4 @@
-/* openGym on the Apple Watch, th. Written by ios/ci/watch-strings.mjs: change that, not this. */
+/* Habcore Gym on the Apple Watch, th. Written by ios/ci/watch-strings.mjs: change that, not this. */
 
 "Today" = "วันนี้";
 "Start workout" = "เริ่มออกกำลังกาย";
@@ -50,7 +50,7 @@
 "Finish the workout now? Otherwise it ends by itself at %@." = "จบการฝึกตอนนี้เลยไหม? ไม่งั้นจะจบเองเวลา %@";
 "No workout running" = "ไม่มีการฝึกที่กำลังทำอยู่";
 "Not synced yet" = "ยังไม่ได้ซิงค์";
-"Open openGym on your iPhone once and your routines show up here." = "เปิด openGym บน iPhone สักครั้ง แล้วรูทีนของคุณจะแสดงที่นี่";
+"Open Habcore Gym on your iPhone once and your routines show up here." = "เปิด Habcore Gym บน iPhone สักครั้ง แล้วรูทีนของคุณจะแสดงที่นี่";
 "Start one on your iPhone and it shows up here." = "เริ่มบน iPhone แล้วจะแสดงที่นี่";
 "All sets done" = "ครบทุกเซ็ตแล้ว";
 "measuring" = "กำลังวัด …";
@@ -73,7 +73,7 @@
 "Tap to change it." = "แตะเพื่อเปลี่ยน";
 "Added weight" = "น้ำหนักเพิ่ม";
 "Your rest, your next set, or today's workout." = "ช่วงพัก เซ็ตถัดไป หรือการฝึกวันนี้";
-"Opens openGym." = "เปิด openGym";
+"Opens Habcore Gym." = "เปิด Habcore Gym";
 "Hold to finish" = "กดค้างเพื่อจบ";
 "iPhone out of reach" = "iPhone อยู่นอกระยะ";
 "No set for %lld min. Still at it?" = "ไม่มีเซ็ตมา %lld นาทีแล้ว ยังฝึกอยู่ไหม";
@@ -85,7 +85,7 @@
 "No effort rated yet" = "ยังไม่ได้ให้คะแนนความหนัก";
 "max" = "สูงสุด";
 "min" = "ต่ำสุด";
-"Turn on Apple Health on your iPhone and openGym stays on screen through rests and holds." = "เปิด Apple Health บน iPhone แล้ว openGym จะอยู่บนหน้าจอตลอดช่วงพักและท่าค้าง";
+"Turn on Apple Health on your iPhone and Habcore Gym stays on screen through rests and holds." = "เปิด Apple Health บน iPhone แล้ว Habcore Gym จะอยู่บนหน้าจอตลอดช่วงพักและท่าค้าง";
 "No sets yet" = "ยังไม่มีเซ็ต";
 "+%lld more" = "+%lld อื่นๆ";
 "%@ sets" = "%@ เซ็ต";

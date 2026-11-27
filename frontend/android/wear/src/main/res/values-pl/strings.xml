@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- openGym on Wear OS, pl. Written by frontend/android/wear/wear-strings.mjs: change that, not this. -->
+<!-- Habcore Gym on Wear OS, pl. Written by frontend/android/wear/wear-strings.mjs: change that, not this. -->
 <resources>
     <string name="add_birth_year">Dodaj rok urodzenia w aplikacji na telefonie</string>
     <string name="added_weight">Dodatkowy ciężar</string>
@@ -70,7 +70,7 @@
     <string name="not_now">Nie teraz</string>
     <string name="not_synced">Jeszcze nie zsynchronizowano</string>
     <string name="notif_running">Trening trwa. Stuknij, by wrócić.</string>
-    <string name="open_phone_once">Otwórz raz openGym na telefonie, a twoje plany pojawią się tutaj.</string>
+    <string name="open_phone_once">Otwórz raz Habcore Gym na telefonie, a twoje plany pojawią się tutaj.</string>
     <string name="overview">Przegląd</string>
     <string name="personal_records">Rekordy</string>
     <string name="phone_away">Telefon poza zasięgiem. Twoje serie czekają tutaj.</string>

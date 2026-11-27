@@ -73,7 +73,7 @@ export function cleanEntry(raw) {
 
 /** A whole index, normalised: { entries } with the broken ones left out, or { entries: [], error }. */
 export function normalizeIndex(raw) {
-  if (!isMap(raw) || raw.format !== FORMAT) return { entries: [], error: 'not an openGym routines index' };
+  if (!isMap(raw) || raw.format !== FORMAT) return { entries: [], error: 'not an Habcore Gym routines index' };
   if (raw.version !== FORMAT_VERSION) return { entries: [], error: `index version ${raw.version} is not ${FORMAT_VERSION}` };
   const seen = new Set();
   const entries = [];
@@ -109,7 +109,7 @@ export function builtinIndex() {
   builtin = Object.entries(STARTER_PLANS).map(([key, plan]) => {
     const keys = plan.routines.map(r => r[0]);
     return cleanEntry({
-      id: 'starter/' + key, author: 'openGym', language: 'en',
+      id: 'starter/' + key, author: 'Habcore Gym', language: 'en',
       ...STARTER_META[key],
       days: plan.schedule.length,
       duration: 45,

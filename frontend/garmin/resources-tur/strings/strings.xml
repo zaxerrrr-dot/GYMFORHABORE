@@ -1,8 +1,8 @@
-<!-- openGym on Garmin, tur. Written by frontend/garmin/garmin-strings.mjs: change that, not this. -->
+<!-- Habcore Gym on Garmin, tur. Written by frontend/garmin/garmin-strings.mjs: change that, not this. -->
 <strings>
     <string id="all_sets_done">Tüm setler tamam</string>
     <string id="all_synced">Her şey eşitlendi</string>
-    <string id="app_name">openGym</string>
+    <string id="app_name">Habcore Gym</string>
     <string id="cancel">İptal</string>
     <string id="continue_workout">Antrenmana devam et</string>
     <string id="discard_q">Antrenman iptal edilsin mi?</string>
@@ -33,7 +33,7 @@
     <string id="no_set_for">$1$ dakikadır set yok. Hâlâ orada mısın?</string>
     <string id="no_workout">Devam eden antrenman yok</string>
     <string id="not_synced">Henüz eşitlenmedi</string>
-    <string id="open_phone_once">Telefonundaki openGym’de Ayarlar’ı, sonra Garmin’i aç.</string>
+    <string id="open_phone_once">Telefonundaki Habcore Gym’de Ayarlar’ı, sonra Garmin’i aç.</string>
     <string id="overview">Genel bakış</string>
     <string id="paused">Duraklatıldı</string>
     <string id="phone_out_of_reach">Telefon menzil dışında</string>
@@ -62,7 +62,7 @@
     <string id="up_next">Sıradaki</string>
     <string id="up_next_set">$1$, set $2$</string>
     <string id="volume">Hacim</string>
-    <string id="waiting_phone">Telefonun bekleniyor. Uzun sürerse orada openGym’i aç.</string>
+    <string id="waiting_phone">Telefonun bekleniyor. Uzun sürerse orada Habcore Gym’i aç.</string>
     <string id="waiting_sync">Eşitlenmeyi bekliyor</string>
     <string id="warmup">Isınma</string>
     <string id="weight">Ağırlık</string>

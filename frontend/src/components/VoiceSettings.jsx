@@ -33,7 +33,7 @@ const fmtX = n => `${Math.round(n * 100) / 100}×`
 
 /** Why the microphone could not be used, as a sentence. */
 export function micErrorText(e) {
-  if (e && (e.name === 'NotAllowedError' || e.name === 'SecurityError')) return t('The microphone is off for openGym. Allow it in your phone’s settings and try again.')
+  if (e && (e.name === 'NotAllowedError' || e.name === 'SecurityError')) return t('The microphone is off for Habcore Gym. Allow it in your phone’s settings and try again.')
   return t('No microphone here. Pick a file instead.')
 }
 
@@ -200,7 +200,7 @@ function MomentClips({ moment }) {
       ? <Row icon="stop" iconTint="var(--red)" title={t('Stop recording')} subtitle={t('{0} of {1} seconds', rec.secs, CLIP_SEC)} className="voice-rec" onClick={stopRec} />
       : <Row icon={busy ? 'hourglass' : 'mic'} iconTint="var(--red)" title={busy ? t('Loading…') : t('Record a clip')} onClick={() => { if (!busy) startRec() }} />)}
     {/* Your own voice from somewhere else, or someone else's (TestFlight 11-08): any audio file this
-        device decodes, cut to CLIP_SEC and kept like a recording. openGym ships no voices of its own. */}
+        device decodes, cut to CLIP_SEC and kept like a recording. Habcore Gym ships no voices of its own. */}
     {!full && !rec && <Row icon="folder" iconTint="var(--pink)" title={t('Pick an audio file')} subtitle={t('MP3, M4A, WAV, AAC or OGG. Yours, or a friend’s with their OK.')}
       onClick={() => { if (!busy) file.current?.click() }} />}
     <input ref={file} type="file" accept="audio/*,audio/mpeg,audio/mp4,audio/x-m4a,audio/aac,audio/wav,audio/x-wav,audio/ogg,.mp3,.m4a,.aac,.wav,.ogg,.oga,.opus" hidden onChange={onFile} data-voice-clip-input />

@@ -233,14 +233,14 @@ function LiveHelpSheet ({ close, os }) {
     <div className="muted small" style={{ marginBottom: 12 }}>{t('It shows up when a workout starts and leaves when you finish.')}</div>
     {os === 'android'
       ? <Section footer={NOTE.android()}>
-        <Row icon="bell" iconTint="var(--red)" title={t('Allow notifications')} subtitle={t('Android Settings, Apps, openGym, Notifications.')}
+        <Row icon="bell" iconTint="var(--red)" title={t('Allow notifications')} subtitle={t('Android Settings, Apps, Habcore Gym, Notifications.')}
           value={word(status?.allowed)} accessory="chevron" onClick={() => openAppSettings()} />
       </Section>
       : <Section>
-        <Row icon="layout" iconTint="var(--green)" title={t('Allow Live Activities')} subtitle={t('iPhone Settings, openGym, Live Activities.')}
+        <Row icon="layout" iconTint="var(--green)" title={t('Allow Live Activities')} subtitle={t('iPhone Settings, Habcore Gym, Live Activities.')}
           value={word(status?.supported)} accessory="chevron" onClick={() => openAppSettings()} />
         <Row icon="lock" iconTint="var(--grey)" title={t('Allow it on a locked phone')} subtitle={t('iPhone Settings, the passcode page, then Live Activities under Allow Access When Locked.')} />
-        {status?.island && <Row icon="phoneScreen" iconTint="var(--blue)" title={t('Leave the app')} subtitle={t('The Dynamic Island only shows it while openGym is not on screen.')} />}
+        {status?.island && <Row icon="phoneScreen" iconTint="var(--blue)" title={t('Leave the app')} subtitle={t('The Dynamic Island only shows it while Habcore Gym is not on screen.')} />}
         <Row icon="stopwatch" iconTint="var(--orange)" title={t('Gone after a swipe or a very long session')} subtitle={t('iOS ends it after 8 hours, and a swipe removes it. It comes back with your next set.')} />
       </Section>}
     <div style={{ height: 14 }} />
@@ -319,9 +319,9 @@ export default function LiveWidgetSettings () {
         <Switch aria-label={t('Live widget')} checked={!off} disabled={!status} onChange={master} />
       </Row>}
       {blocked === 'old' && <Row className="gl-warn" icon="warning" iconTint="var(--orange)" title={t('This needs iOS 17 or later. This iPhone is on an older version.')} />}
-      {blocked === 'ios' && <Row className="gl-warn" icon="warning" iconTint="var(--orange)" title={t('Live Activities are off for openGym. Turn them on in the iPhone’s Settings.')}
+      {blocked === 'ios' && <Row className="gl-warn" icon="warning" iconTint="var(--orange)" title={t('Live Activities are off for Habcore Gym. Turn them on in the iPhone’s Settings.')}
         accessory="chevron" onClick={() => openAppSettings()} />}
-      {blocked === 'android' && <Row className="gl-warn" icon="warning" iconTint="var(--orange)" title={t('Notifications are off for openGym, so Android has nowhere to show this.')}
+      {blocked === 'android' && <Row className="gl-warn" icon="warning" iconTint="var(--orange)" title={t('Notifications are off for Habcore Gym, so Android has nowhere to show this.')}
         accessory="chevron" onClick={() => allowNotifications(recheck)} />}
       {!off && (healthy || !status) && <TryIt S={S} G={G} sample={sample} os={os} status={status} recheck={recheck} />}
     </Section>}

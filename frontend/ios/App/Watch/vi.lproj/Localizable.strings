@@ -1,4 +1,4 @@
-/* openGym on the Apple Watch, vi. Written by ios/ci/watch-strings.mjs: change that, not this. */
+/* Habcore Gym on the Apple Watch, vi. Written by ios/ci/watch-strings.mjs: change that, not this. */
 
 "Today" = "Hôm nay";
 "Start workout" = "Bắt đầu buổi tập";
@@ -50,7 +50,7 @@
 "Finish the workout now? Otherwise it ends by itself at %@." = "Kết thúc buổi tập ngay? Nếu không, nó tự kết thúc lúc %@.";
 "No workout running" = "Không có buổi tập nào đang chạy";
 "Not synced yet" = "Chưa đồng bộ";
-"Open openGym on your iPhone once and your routines show up here." = "Mở openGym trên iPhone một lần, các lịch tập sẽ hiện ở đây.";
+"Open Habcore Gym on your iPhone once and your routines show up here." = "Mở Habcore Gym trên iPhone một lần, các lịch tập sẽ hiện ở đây.";
 "Start one on your iPhone and it shows up here." = "Bắt đầu trên iPhone và nó sẽ hiện ở đây.";
 "All sets done" = "Đã xong tất cả hiệp";
 "measuring" = "đang đo …";
@@ -73,7 +73,7 @@
 "Tap to change it." = "Chạm để thay đổi.";
 "Added weight" = "Tạ thêm";
 "Your rest, your next set, or today's workout." = "Thời gian nghỉ, hiệp tiếp theo hoặc buổi tập hôm nay.";
-"Opens openGym." = "Mở openGym.";
+"Opens Habcore Gym." = "Mở Habcore Gym.";
 "Hold to finish" = "Giữ để kết thúc";
 "iPhone out of reach" = "iPhone ngoài tầm kết nối";
 "No set for %lld min. Still at it?" = "Đã %lld phút không có hiệp nào. Bạn còn tập không?";
@@ -85,7 +85,7 @@
 "No effort rated yet" = "Chưa đánh giá mức nỗ lực";
 "max" = "tối đa";
 "min" = "tối thiểu";
-"Turn on Apple Health on your iPhone and openGym stays on screen through rests and holds." = "Bật Apple Sức khỏe trên iPhone để openGym luôn ở trên màn hình khi nghỉ và giữ tư thế.";
+"Turn on Apple Health on your iPhone and Habcore Gym stays on screen through rests and holds." = "Bật Apple Sức khỏe trên iPhone để Habcore Gym luôn ở trên màn hình khi nghỉ và giữ tư thế.";
 "No sets yet" = "Chưa có hiệp nào";
 "+%lld more" = "+%lld nữa";
 "%@ sets" = "%@ hiệp";

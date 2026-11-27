@@ -84,7 +84,7 @@ export function connectionView(sync, { mobile = MOBILE, online = isOnline(), off
       }
     case 'error':
       return err.code === 'bad-response'
-        ? { tone: 'bad', icon: 'warning', action: 'retry', line: t('Not an openGym answer (HTTP {0})', err.status), banner: t('Your server’s address answered with something other than openGym (HTTP {0}). Your changes are kept here.', err.status) }
+        ? { tone: 'bad', icon: 'warning', action: 'retry', line: t('Not an Habcore Gym answer (HTTP {0})', err.status), banner: t('Your server’s address answered with something other than Habcore Gym (HTTP {0}). Your changes are kept here.', err.status) }
         : { tone: 'bad', icon: 'warning', action: 'retry', line: t('Server error (HTTP {0})', err.status), banner: t('Your server answered with an error (HTTP {0}). Your changes are kept here.', err.status) }
     case 'auth':
       if (!mobile) return { tone: 'bad', icon: 'lock', action: 'signin', line: t('The server refuses this browser'), banner: t('Your server no longer accepts this browser. Your changes are kept here.') }
@@ -97,8 +97,8 @@ export function connectionView(sync, { mobile = MOBILE, online = isOnline(), off
     // Settings still says it and offers Connect, the bar stays away. A guest in a browser is on a
     // server it could sign in to, so it still hears that its data stays in this browser.
     default:
-      // openGym Offline (lib/build-caps.js) has nothing to connect to: no button for it.
-      if (mobile && offline) return { tone: 'quiet', icon: 'lock', action: null, line: t('openGym Offline: on this phone, and only here'), banner: null }
+      // Habcore Gym Offline (lib/build-caps.js) has nothing to connect to: no button for it.
+      if (mobile && offline) return { tone: 'quiet', icon: 'lock', action: null, line: t('Habcore Gym Offline: on this phone, and only here'), banner: null }
       return mobile
         ? { tone: 'quiet', icon: 'lock', action: 'connect', line: t('On this phone only, not connected to a server'), banner: null }
         : { tone: 'quiet', icon: 'lock', action: canSignIn() ? 'signin' : null, line: t('Guest mode: your data lives only in this browser.'), banner: t('Guest mode: your data lives only in this browser.') }
@@ -306,7 +306,7 @@ export function KeptChangesRows() {
     const state = await useStore.getState().keptState(k.server, k.uid)
     if (!state) return
     const json = JSON.stringify(state, null, 2)
-    const name = 'opengym-kept-' + String(k.name || k.uid).replace(/[^\w-]+/g, '_') + '-' + new Date().toISOString().slice(0, 10) + '.json'
+    const name = 'habcore-gym-kept-' + String(k.name || k.uid).replace(/[^\w-]+/g, '_') + '-' + new Date().toISOString().slice(0, 10) + '.json'
     if (MOBILE) { try { await shareExport(json, name); useUI.getState().toast(t('Backup exported')) } catch { /* share sheet dismissed */ } return }
     const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([json], { type: 'application/json' })); a.download = name; a.click()
     setTimeout(() => URL.revokeObjectURL(a.href), 60000)

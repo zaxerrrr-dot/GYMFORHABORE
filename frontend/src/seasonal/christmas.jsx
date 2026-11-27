@@ -624,7 +624,7 @@ function AdventCard() {
 
 const treeLabel = ({ hung, lit }) => tn('{0} bauble on the tree, {1} lit', '{0} baubles on the tree, {1} lit', hung, lit)
 
-// Each door's picture: openGym's own icon, or the emoji with Settings → Icons on Emoji (Glyph).
+// Each door's picture: Habcore Gym's own icon, or the emoji with Settings → Icons on Emoji (Glyph).
 const KIND = {
   finisher: [['timer', '⏱️'], 'Quick finisher'],
   count: [['target', '🎯'], 'Count it up'],
@@ -1044,7 +1044,7 @@ function SpecialDoor({ S, year, close, did }) {
       <div><b>{fmtVol(Math.round(st.volume), st.unit)}</b><span>{t('Volume')}</span></div>
       <div><b>{tn('{0} week', '{0} weeks', st.streak?.weeks || 0)}</b><span>{t('Longest streak')}</span></div>
     </div>}
-    <p className="xm-reveal-text">{t('Whatever you celebrate, even if it is mostly a day on the sofa: thank you for training with openGym this year. Rest well, eat well, see you in the new year.')}</p>
+    <p className="xm-reveal-text">{t('Whatever you celebrate, even if it is mostly a day on the sofa: thank you for training with Habcore Gym this year. Rest well, eat well, see you in the new year.')}</p>
     <div className="xm-gift">
       <span className="xm-gift-i" aria-hidden="true"><Icon name={FESTIVE_FLAME.v} /></span>
       <div className="xm-gift-t">

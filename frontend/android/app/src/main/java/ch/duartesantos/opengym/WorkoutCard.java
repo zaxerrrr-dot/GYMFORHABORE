@@ -314,7 +314,7 @@ final class WorkoutCard {
         String name = state.optString("name", "");
         if ("done".equals(ph)) {
             int done = state.optInt("done", 0), total = state.optInt("total", 0);
-            return new String[] {done < total ? label(attrs, "openApp", "Open openGym for the next set") : label(attrs, "allDone", "All sets done"), name};
+            return new String[] {done < total ? label(attrs, "openApp", "Open Habcore Gym for the next set") : label(attrs, "allDone", "All sets done"), name};
         }
         java.util.List<String> parts = new java.util.ArrayList<>();
         if ("rest".equals(ph) || "between".equals(ph)) {

@@ -12,7 +12,7 @@ openrouterSpec.body = args => ({
 });
 // App attribution, as OpenRouter asks apps to send it. No user data in either.
 const chatHeaders = openrouterSpec.headers;
-openrouterSpec.headers = key => ({ ...chatHeaders(key), 'http-referer': 'https://opengym.ch', 'x-title': 'openGym' });
+openrouterSpec.headers = key => ({ ...chatHeaders(key), 'http-referer': 'https://opengym.ch', 'x-title': 'Habcore Gym' });
 // The listing carries USD prices per token, which the model picker shows as a hint.
 openrouterSpec.readPrices = data => {
   const out = {};

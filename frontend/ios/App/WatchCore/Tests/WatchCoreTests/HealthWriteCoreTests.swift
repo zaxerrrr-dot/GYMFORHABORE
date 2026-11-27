@@ -1,7 +1,7 @@
 import XCTest
 @testable import WatchCore
 
-/// openGym v1.4.5 (TestFlight 59): every value HealthKit would raise an uncatchable exception for,
+/// Habcore Gym v1.4.5 (TestFlight 59): every value HealthKit would raise an uncatchable exception for,
 /// and every number that would trap in Swift, is turned away before it gets there.
 final class HealthWriteCoreTests: XCTestCase {
     let now: Double = 1_793_000_000_000            // 2026-10-26

@@ -72,7 +72,7 @@ describe('Settings → Garmin', () => {
     expect(garminView({ supported: true, state: 'ready', devices: [null, { name: 'x' }] }).devices).toEqual([])
   })
 
-  it('each watch: connected, away, or without openGym', () => {
+  it('each watch: connected, away, or without Habcore Gym', () => {
     expect(garminDeviceLine(dev())).toBe('connected')
     expect(garminDeviceLine(dev({ connected: false }))).toBe('away')
     expect(garminDeviceLine(dev({ installed: false }))).toBe('not-installed')

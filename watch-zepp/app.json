@@ -2,15 +2,15 @@
   "configVersion": "v3",
   "app": {
     "appId": 9990145,
-    "appName": "openGym",
+    "appName": "Habcore Gym",
     "appType": "app",
     "version": {
       "code": 10405,
       "name": "1.4.5"
     },
     "icon": "icon.png",
-    "vender": "openGym",
-    "description": "openGym on your wrist: start a routine, log sets with the crown, rest with a ring. Pairs with your own openGym server."
+    "vender": "Habcore Gym",
+    "description": "Habcore Gym on your wrist: start a routine, log sets with the crown, rest with a ring. Pairs with your own Habcore Gym server."
   },
   "permissions": [
     "data:os.device.info",
@@ -38,7 +38,7 @@
             {
               "path": "app-widget/index",
               "icon": "icon.png",
-              "name": "openGym",
+              "name": "Habcore Gym",
               "runtime": {
                 "type": "js"
               }
@@ -66,64 +66,64 @@
   },
   "i18n": {
     "en-US": {
-      "appName": "openGym"
+      "appName": "Habcore Gym"
     },
     "de-DE": {
-      "appName": "openGym"
+      "appName": "Habcore Gym"
     },
     "fr-FR": {
-      "appName": "openGym"
+      "appName": "Habcore Gym"
     },
     "es-ES": {
-      "appName": "openGym"
+      "appName": "Habcore Gym"
     },
     "it-IT": {
-      "appName": "openGym"
+      "appName": "Habcore Gym"
     },
     "pt-PT": {
-      "appName": "openGym"
+      "appName": "Habcore Gym"
     },
     "pt-BR": {
-      "appName": "openGym"
+      "appName": "Habcore Gym"
     },
     "pl-PL": {
-      "appName": "openGym"
+      "appName": "Habcore Gym"
     },
     "hu-HU": {
-      "appName": "openGym"
+      "appName": "Habcore Gym"
     },
     "tr-TR": {
-      "appName": "openGym"
+      "appName": "Habcore Gym"
     },
     "ru-RU": {
-      "appName": "openGym"
+      "appName": "Habcore Gym"
     },
     "uk-UA": {
-      "appName": "openGym"
+      "appName": "Habcore Gym"
     },
     "ar-EG": {
-      "appName": "openGym"
+      "appName": "Habcore Gym"
     },
     "hi-IN": {
-      "appName": "openGym"
+      "appName": "Habcore Gym"
     },
     "bn-BD": {
-      "appName": "openGym"
+      "appName": "Habcore Gym"
     },
     "th-TH": {
-      "appName": "openGym"
+      "appName": "Habcore Gym"
     },
     "ko-KR": {
-      "appName": "openGym"
+      "appName": "Habcore Gym"
     },
     "sv-SE": {
-      "appName": "openGym"
+      "appName": "Habcore Gym"
     },
     "zh-CN": {
-      "appName": "openGym"
+      "appName": "Habcore Gym"
     },
     "zh-TW": {
-      "appName": "openGym"
+      "appName": "Habcore Gym"
     }
   },
   "defaultLanguage": "en-US"

@@ -1,15 +1,15 @@
 # Sister apps: openNutrition and openRunning
 
-openGym has two sister apps: **openNutrition** (food, in private beta: the repository is not public yet) and
+Habcore Gym has two sister apps: **openNutrition** (food, in private beta: the repository is not public yet) and
 **openRunning** (runs and rides, planned, working name). They stay separate apps with separate
-data. openGym only ever **reads** from them, only after you link them, and every link can be
+data. Habcore Gym only ever **reads** from them, only after you link them, and every link can be
 undone from both sides.
 
-This page is the contract: what openGym reads, from where, and what each sister app has to
-serve. The openGym side is in `frontend/src/lib/sister-nutrition.js` (openNutrition) and
+This page is the contract: what Habcore Gym reads, from where, and what each sister app has to
+serve. The Habcore Gym side is in `frontend/src/lib/sister-nutrition.js` (openNutrition) and
 `frontend/src/lib/activities.js` (runs and other sport, from any source).
 
-| | Where in openGym | Off by default | Network |
+| | Where in Habcore Gym | Off by default | Network |
 |---|---|---|---|
 | openNutrition link | Settings → Integrations → Sister apps → openNutrition | yes (nothing until linked) | yes |
 | Nutrition in the performance report | Stats / History → Performance report (PDF), section "Nutrition" | linked + switch "Performance report" | cached |
@@ -21,11 +21,11 @@ serve. The openGym side is in `frontend/src/lib/sister-nutrition.js` (openNutrit
 | Sport days from imports | Settings → Data → Import (Apple Health export.xml workouts; Hevy / Strong sessions that were only sport) | the import itself is the opt-in | no |
 | Sport in the calendar and History | Stats → calendar (blue dot), History rows, a day's sheet ("Log an activity") | shows whatever came in | no |
 
-**openGym Offline** (the Android flavour without the INTERNET permission, `lib/build-caps.js`)
+**Habcore Gym Offline** (the Android flavour without the INTERNET permission, `lib/build-caps.js`)
 cannot reach openNutrition, so the openNutrition card belongs in `OFFLINE_OFF_CARDS`
 (card id `opennutrition`). The health-store read and imports work offline.
 
-## Activities: the data openGym keeps
+## Activities: the data Habcore Gym keeps
 
 Sport that is not a gym workout is an **activity**, stored per session in the profile document:
 
@@ -51,19 +51,19 @@ S.activities = {
   and the per-session cap of 12 sets.
 - Scoped tokens and the MCP server see them under the `workouts` category (`api/tokens.js`).
 
-## openNutrition → openGym
+## openNutrition → Habcore Gym
 
-### Linking (the same pattern as openNutrition → openGym, mirrored)
+### Linking (the same pattern as openNutrition → Habcore Gym, mirrored)
 
-openNutrition already links to openGym: openGym shows a pairing code (Settings → Account →
+openNutrition already links to Habcore Gym: Habcore Gym shows a pairing code (Settings → Account →
 "Pair the mobile app"), openNutrition redeems it at `POST /api/pair/redeem` and keeps the token
 server side. The other direction works the same way, with the roles swapped and a narrower token:
 
-1. openNutrition, Settings → Connected apps → **Link openGym**: shows an 8-character code,
+1. openNutrition, Settings → Connected apps → **Link Habcore Gym**: shows an 8-character code,
    valid 10 minutes, for the scope `summary:read`.
-2. openGym, Settings → Integrations → Sister apps → openNutrition: the openNutrition address
+2. Habcore Gym, Settings → Integrations → Sister apps → openNutrition: the openNutrition address
    (guessed as `nutrition.<your domain>`) and the code.
-3. openGym redeems it:
+3. Habcore Gym redeems it:
 
    ```http
    POST /api/v1/integration/pair/redeem
@@ -77,7 +77,7 @@ server side. The other direction works the same way, with the roles swapped and 
    ```
 
    A wrong or expired code answers 401. Rate limited like any sign-in.
-4. openGym reads the summary once with the token before it keeps anything, then keeps the token
+4. Habcore Gym reads the summary once with the token before it keeps anything, then keeps the token
    in the phone's secure storage (the browser's storage on the web), **never** in the synced
    profile or a backup. Each device links on its own.
 
@@ -85,7 +85,7 @@ server side. The other direction works the same way, with the roles swapped and 
 personal token with `summary:read`. Pasting that `on_…` token into the same field works the same,
 so the link is usable now against any openNutrition that serves the summary.
 
-### What openGym reads
+### What Habcore Gym reads
 
 ```http
 GET /api/v1/integration/summary?from=YYYY-MM-DD&to=YYYY-MM-DD
@@ -94,14 +94,14 @@ Authorization: Bearer on_…
 
 The schema `opennutrition.summary.v1` as openNutrition serves it today
 (`docs/integration-opengym.md` in openNutrition): `days[]` with `date`, `energy`, `protein`,
-`carbohydrate`, `fat`, `complete`, `targets: { energy, protein }`. openGym uses energy, protein
+`carbohydrate`, `fat`, `complete`, `targets: { energy, protein }`. Habcore Gym uses energy, protein
 and the targets, and says so in the report when a day was `complete: false`.
 
-Two **additive** fields openGym reads when they are there (v1 stays v1: older openNutrition
+Two **additive** fields Habcore Gym reads when they are there (v1 stays v1: older openNutrition
 simply does not send them and the cards leave those lines out):
 
 - `days[].proteinMeals`: how many meals that day reached openNutrition's protein-meal threshold
-  (its "Protein meals" dots, 0.4 g per kg body weight), an integer 0 to 12. openGym never guesses
+  (its "Protein meals" dots, 0.4 g per kg body weight), an integer 0 to 12. Habcore Gym never guesses
   it from the day's total.
 - `fasting`: the fasting timer, or absent when it is off:
 
@@ -114,7 +114,7 @@ simply does not send them and the cards leave those lines out):
   }
   ```
 
-  `startedAt` is the running fast (null when none runs). `window` is optional: without it openGym
+  `startedAt` is the running fast (null when none runs). `window` is optional: without it Habcore Gym
   takes the eating window as the end of the last fast plus `24 - goalHours` hours.
 
 How often: when a screen that shows it opens and the last read is older than 30 minutes, the
@@ -124,7 +124,7 @@ report sheet for its range, the month story for its month. The answer is cached 
 ### CORS
 
 The phone apps ask from native code (`lib/capacitor-fetch.js` nativeFetch): no CORS involved.
-The **web** app runs on openGym's own origin and needs openNutrition to allow it on the
+The **web** app runs on Habcore Gym's own origin and needs openNutrition to allow it on the
 integration routes:
 
 ```
@@ -138,9 +138,9 @@ for `OPTIONS` and the real request on `/api/v1/integration/summary` and
 `/api/v1/integration/pair/redeem`, with the allow-list from openNutrition's environment
 (`INTEGRATION_ORIGINS`, defaulting to its own `OPENGYM_URL`).
 
-### Errors openGym tells apart
+### Errors Habcore Gym tells apart
 
-| Answer | openGym says |
+| Answer | Habcore Gym says |
 |---|---|
 | network error, CORS refused | could not reach it (check the address) |
 | 401 / 403 | revoked: link again |
@@ -148,8 +148,8 @@ for `OPTIONS` and the real request on `/api/v1/integration/summary` and
 | 429 | slow down |
 | anything not `opennutrition.summary.v1` | not openNutrition |
 
-Unlinking in openGym forgets the token and the cached days. Revoking the token in openNutrition
-ends access; openGym shows "Needs attention" on the card and keeps the old numbers until unlinked.
+Unlinking in Habcore Gym forgets the token and the cached days. Revoking the token in openNutrition
+ends access; Habcore Gym shows "Needs attention" on the card and keeps the old numbers until unlinked.
 
 ### The trainer dashboard
 
@@ -159,9 +159,9 @@ reads the same summary. Its `cleanDay` reads both openNutrition's names (`energy
 dashboard gets the member's token) is not built: the device link above keeps the token on the
 phone on purpose.
 
-## openRunning → openGym (planned)
+## openRunning → Habcore Gym (planned)
 
-openRunning does not exist yet. Until it does, runs, rides and matches reach openGym through the
+openRunning does not exist yet. Until it does, runs, rides and matches reach Habcore Gym through the
 phone's health store (any app that writes workouts there: Strava, Garmin, Apple Workout, Runna,
 Polar, Zepp) and through imports. When openRunning is built, it can feed the same activities
 directly, with this contract. Its concept (`openStride`, KONZEPT.md) plans one account and one
@@ -174,10 +174,10 @@ The same as openNutrition, scope `activities:read`:
 
 - `POST /run/api/v1/integration/pair/redeem { code, app: 'opengym', scopes: ['activities:read'] }`
   → `{ token: 'or_…', scopes }`.
-- On a shared server with a shared login, no pairing: openGym reads with its own session once the
+- On a shared server with a shared login, no pairing: Habcore Gym reads with its own session once the
   user allowed it in openRunning's settings (consent stays explicit and revocable).
 
-### What openGym reads
+### What Habcore Gym reads
 
 ```http
 GET /run/api/v1/integration/activities?since=<cursor>
@@ -197,22 +197,22 @@ Authorization: Bearer or_…
 }
 ```
 
-- `sport` uses openGym's names above (`run`, `ride`, …); anything else is `other`.
+- `sport` uses Habcore Gym's names above (`run`, `ride`, …); anything else is `other`.
 - `load.trimp` (optional) scales the recovery load instead of the minutes; `muscles` (optional)
-  overrides openGym's own `SPORT_LOAD` for that activity.
-- `deleted: true` removes it in openGym too (stamped, so it stays gone).
-- No GPS track, no heart-rate stream, no photos: openGym needs the day, the time and the effort.
-- openGym stores each as an activity with `src: 'or'` and the id `or<uuid>`. When the same
+  overrides Habcore Gym's own `SPORT_LOAD` for that activity.
+- `deleted: true` removes it in Habcore Gym too (stamped, so it stays gone).
+- No GPS track, no heart-rate stream, no photos: Habcore Gym needs the day, the time and the effort.
+- Habcore Gym stores each as an activity with `src: 'or'` and the id `or<uuid>`. When the same
   session also arrives through the health store, openRunning's copy wins (openRunning writes
-  `clientRecordId` / `HKMetadataKeySyncIdentifier` = `openrunning-<uuid>` so openGym can match it).
+  `clientRecordId` / `HKMetadataKeySyncIdentifier` = `openrunning-<uuid>` so Habcore Gym can match it).
 
 ### Deep links
 
-openGym opens an activity in openRunning with `https://opengym.ch/r/a/<id>` (KONZEPT.md 7.2);
+Habcore Gym opens an activity in openRunning with `https://opengym.ch/r/a/<id>` (KONZEPT.md 7.2);
 without the app installed, the link goes to the web version of the instance.
 
-### openGym → openRunning
+### Habcore Gym → openRunning
 
-Out of openGym's scope here: openRunning reads strength days the way openNutrition does today
-(an openGym pairing code, `POST /api/pair/redeem`, then `/api/data`), better with a scoped
+Out of Habcore Gym's scope here: openRunning reads strength days the way openNutrition does today
+(an Habcore Gym pairing code, `POST /api/pair/redeem`, then `/api/data`), better with a scoped
 `ogt_` token (`docs/API_TOKENS.md`, category `workouts`, read only).

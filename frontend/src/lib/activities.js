@@ -169,20 +169,20 @@ export function activityStimuli(S, now = Date.now(), windowMs = 30 * 86400e3) {
 
 // The names the native readWorkouts answer with (HealthConnectPlugin.java / AppleHealthPlugin.swift
 // sportName): the sports above, plus three that are not activities. 'strength' and 'gym' (an
-// elliptical, a stair machine, a treadmill, a spin bike, HIIT) belong in a workout, where openGym
+// elliptical, a stair machine, a treadmill, a spin bike, HIIT) belong in a workout, where Habcore Gym
 // logs them itself; 'walk' would bring every stroll a watch noticed.
 export const NOT_ACTIVITY = new Set(['strength', 'gym', 'walk'])
 
-// openGym's own records in the hub, and the watch app's: never read back as activities.
+// Habcore Gym's own records in the hub, and the watch app's: never read back as activities.
 const OWN_ORIGIN = /^(ch\.duartesantos\.opengym|ch\.opengym\.app)(\.|$)/
 
-/** Whether a health-store workout record is one openGym (or its watch) wrote itself. */
+/** Whether a health-store workout record is one Habcore Gym (or its watch) wrote itself. */
 export const isOwnRecord = rec => /^opengym-/.test(String(rec?.clientId || '')) || OWN_ORIGIN.test(String(rec?.origin || ''))
 
 /** The id an activity read from the store gets: the same record always the same id. */
 export const healthActivityId = (rec, src) => src + hashId(String(rec?.id || `${rec?.start}|${rec?.sport}`))
 
-// A workout logged in openGym over the same time (a treadmill run the watch also saved as a run).
+// A workout logged in Habcore Gym over the same time (a treadmill run the watch also saved as a run).
 function overlapsWorkout(S, start, end) {
   for (const w of Array.isArray(S?.workouts) ? S.workouts : []) {
     const ws = Number(w?.start), we = Number(w?.end) || ws
@@ -195,7 +195,7 @@ const isoLocal = t => { const d = new Date(t); return `${d.getFullYear()}-${Stri
 
 /**
  * One workout record from the health store (`{ id, sport, start, end, title?, km?, origin?, clientId? }`)
- * as an activity, or null when it is not one: openGym's own, strength or gym cardio, a walk, under
+ * as an activity, or null when it is not one: Habcore Gym's own, strength or gym cardio, a walk, under
  * five minutes, in the future, or over a workout logged here.
  */
 export function activityFromHealth(rec, S, src, now = Date.now()) {
@@ -287,7 +287,7 @@ const UNIT_KM = { km: 1, m: 0.001, mi: 1.609344, ft: 0.0003048, yd: 0.0009144 }
 
 /**
  * The workouts of an Apple Health export (`export.xml`) that are sport, as activities to import:
- * [{ id, d, sport, min, km?, at, src: 'import' }]. openGym's own (sourceName openGym), strength,
+ * [{ id, d, sport, min, km?, at, src: 'import' }]. Habcore Gym's own (sourceName Habcore Gym), strength,
  * gym cardio and walks are left out, like the live read does. A scan, not a DOM: the file can be
  * hundreds of MB (lib/import-csv.js parseBodyweight reads the weigh-ins the same way).
  */
@@ -299,7 +299,7 @@ export function activitiesFromHealthExport(text) {
   let m
   while ((m = re.exec(s))) {
     const tag = m[0]
-    if (/opengym/i.test(attr(tag, 'sourceName') || '')) continue
+    if (/opengym|habcore/i.test(attr(tag, 'sourceName') || '')) continue
     const sport = hkSportName(attr(tag, 'workoutActivityType'))
     if (NOT_ACTIVITY.has(sport)) continue
     const start = Date.parse(String(attr(tag, 'startDate') || '').replace(' ', 'T').replace(/ ([+-]\d{2})(\d{2})$/, '$1:$2'))

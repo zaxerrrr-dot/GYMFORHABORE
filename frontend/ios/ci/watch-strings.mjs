@@ -91,7 +91,7 @@ const OWN = {
     'zh-Hans': '没有进行中的训练', 'zh-Hant': '沒有進行中的訓練',
     cs: 'Žádný trénink neběží', fa: 'هیچ تمرینی در جریان نیست', id: 'Tidak ada latihan berjalan', lt: 'Treniruotė nevyksta', sv: 'Inget pass pågår', vi: 'Không có buổi tập nào đang chạy',
   },
-  // The start screen before anything came from the phone (it sends only while openGym runs there).
+  // The start screen before anything came from the phone (it sends only while Habcore Gym runs there).
   'Not synced yet': {
     de: 'Noch nicht synchronisiert', fr: 'Pas encore synchronisé', es: 'Aún sin sincronizar', it: 'Non ancora sincronizzato',
     'pt-PT': 'Ainda não sincronizado', 'pt-BR': 'Ainda não sincronizado', pl: 'Jeszcze nie zsynchronizowano', hu: 'Még nincs szinkronizálva',
@@ -100,26 +100,26 @@ const OWN = {
     'zh-Hans': '尚未同步', 'zh-Hant': '尚未同步',
     cs: 'Zatím nesynchronizováno', fa: 'هنوز همگام نشده', id: 'Belum disinkronkan', lt: 'Dar nesinchronizuota', sv: 'Inte synkat än', vi: 'Chưa đồng bộ',
   },
-  'Open openGym on your iPhone once and your routines show up here.': {
-    de: 'Öffne openGym einmal auf dem iPhone, dann tauchen deine Routinen hier auf.',
-    fr: 'Ouvre openGym une fois sur ton iPhone et tes routines apparaissent ici.',
-    es: 'Abre openGym una vez en tu iPhone y tus rutinas aparecerán aquí.',
-    it: 'Apri openGym una volta sull’iPhone e le tue routine compariranno qui.',
-    'pt-PT': 'Abre o openGym uma vez no iPhone e as tuas rotinas aparecem aqui.',
-    'pt-BR': 'Abra o openGym uma vez no iPhone e suas rotinas aparecem aqui.',
-    pl: 'Otwórz raz openGym na iPhonie, a twoje plany pojawią się tutaj.',
-    hu: 'Nyisd meg egyszer az openGymet az iPhone-on, és itt lesznek a rutinjaid.',
-    tr: 'openGym’i iPhone’unda bir kez aç, rutinlerin burada görünür.',
-    ru: 'Откройте openGym на iPhone один раз, и ваши программы появятся здесь.',
-    uk: 'Відкрий openGym на iPhone один раз, і твої програми з’являться тут.',
-    ar: 'افتح openGym على iPhone مرة واحدة وستظهر تمارينك الروتينية هنا.',
-    hi: 'iPhone पर openGym एक बार खोलें, आपके रूटीन यहाँ दिखेंगे।',
-    bn: 'iPhone-এ openGym একবার খুলুন, আপনার রুটিন এখানে দেখা যাবে।',
-    th: 'เปิด openGym บน iPhone สักครั้ง แล้วรูทีนของคุณจะแสดงที่นี่',
-    ko: 'iPhone에서 openGym을 한 번 열면 루틴이 여기에 나타나요.',
-    'zh-Hans': '在 iPhone 上打开一次 openGym，你的训练计划就会出现在这里。',
-    'zh-Hant': '在 iPhone 上打開一次 openGym，你的訓練計畫就會出現在這裡。',
-    cs: 'Otevři openGym jednou na iPhonu a tvoje rutiny se objeví tady.', fa: 'یک بار openGym را در iPhone باز کنید تا روال‌هایتان اینجا نمایش داده شوند.', id: 'Buka openGym sekali di iPhone kamu, rutinitasmu akan muncul di sini.', lt: 'Vieną kartą atidarykite „openGym“ iPhone ir jūsų rutinos atsiras čia.', sv: 'Öppna openGym på din iPhone en gång så dyker dina rutiner upp här.', vi: 'Mở openGym trên iPhone một lần, các lịch tập sẽ hiện ở đây.',
+  'Open Habcore Gym on your iPhone once and your routines show up here.': {
+    de: 'Öffne Habcore Gym einmal auf dem iPhone, dann tauchen deine Routinen hier auf.',
+    fr: 'Ouvre Habcore Gym une fois sur ton iPhone et tes routines apparaissent ici.',
+    es: 'Abre Habcore Gym una vez en tu iPhone y tus rutinas aparecerán aquí.',
+    it: 'Apri Habcore Gym una volta sull’iPhone e le tue routine compariranno qui.',
+    'pt-PT': 'Abre o Habcore Gym uma vez no iPhone e as tuas rotinas aparecem aqui.',
+    'pt-BR': 'Abra o Habcore Gym uma vez no iPhone e suas rotinas aparecem aqui.',
+    pl: 'Otwórz raz Habcore Gym na iPhonie, a twoje plany pojawią się tutaj.',
+    hu: 'Nyisd meg egyszer az Habcore Gymet az iPhone-on, és itt lesznek a rutinjaid.',
+    tr: 'Habcore Gym’i iPhone’unda bir kez aç, rutinlerin burada görünür.',
+    ru: 'Откройте Habcore Gym на iPhone один раз, и ваши программы появятся здесь.',
+    uk: 'Відкрий Habcore Gym на iPhone один раз, і твої програми з’являться тут.',
+    ar: 'افتح Habcore Gym على iPhone مرة واحدة وستظهر تمارينك الروتينية هنا.',
+    hi: 'iPhone पर Habcore Gym एक बार खोलें, आपके रूटीन यहाँ दिखेंगे।',
+    bn: 'iPhone-এ Habcore Gym একবার খুলুন, আপনার রুটিন এখানে দেখা যাবে।',
+    th: 'เปิด Habcore Gym บน iPhone สักครั้ง แล้วรูทีนของคุณจะแสดงที่นี่',
+    ko: 'iPhone에서 Habcore Gym을 한 번 열면 루틴이 여기에 나타나요.',
+    'zh-Hans': '在 iPhone 上打开一次 Habcore Gym，你的训练计划就会出现在这里。',
+    'zh-Hant': '在 iPhone 上打開一次 Habcore Gym，你的訓練計畫就會出現在這裡。',
+    cs: 'Otevři Habcore Gym jednou na iPhonu a tvoje rutiny se objeví tady.', fa: 'یک بار Habcore Gym را در iPhone باز کنید تا روال‌هایتان اینجا نمایش داده شوند.', id: 'Buka Habcore Gym sekali di iPhone kamu, rutinitasmu akan muncul di sini.', lt: 'Vieną kartą atidarykite „Habcore Gym“ iPhone ir jūsų rutinos atsiras čia.', sv: 'Öppna Habcore Gym på din iPhone en gång så dyker dina rutiner upp här.', vi: 'Mở Habcore Gym trên iPhone một lần, các lịch tập sẽ hiện ở đây.',
   },
   'Start one on your iPhone and it shows up here.': {
     de: 'Starte eins auf dem iPhone, dann taucht es hier auf.', fr: 'Lance-en une sur ton iPhone et elle apparaît ici.',
@@ -225,9 +225,9 @@ const OWN = {
     de: 'Deine Pause, dein nächster Satz oder das Training von heute.', fr: 'Ton repos, ta prochaine série ou la séance du jour.', es: 'Tu descanso, tu próxima serie o el entreno de hoy.', it: 'Il tuo recupero, la prossima serie o l’allenamento di oggi.', 'pt-PT': 'O teu descanso, a próxima série ou o treino de hoje.', 'pt-BR': 'Seu descanso, a próxima série ou o treino de hoje.', pl: 'Twoja przerwa, następna seria albo dzisiejszy trening.', hu: 'A pihenőd, a következő sorozat vagy a mai edzés.', tr: 'Dinlenmen, sıradaki setin ya da bugünkü antrenman.', ru: 'Отдых, следующий подход или сегодняшняя тренировка.', uk: 'Відпочинок, наступний підхід або сьогоднішнє тренування.', ar: 'راحتك، أو مجموعتك التالية، أو تمرين اليوم.', hi: 'आपका आराम, अगला सेट, या आज का वर्कआउट।', bn: 'আপনার বিশ্রাম, পরের সেট, বা আজকের ওয়ার্কআউট।', th: 'ช่วงพัก เซ็ตถัดไป หรือการฝึกวันนี้', ko: '휴식, 다음 세트, 또는 오늘의 운동.', 'zh-Hans': '你的休息、下一组或今天的训练。', 'zh-Hant': '你的休息、下一組或今天的訓練。',
     cs: 'Tvoje pauza, další série nebo dnešní trénink.', fa: 'استراحت شما، ست بعدی یا تمرین امروز.', id: 'Istirahatmu, set berikutnya, atau latihan hari ini.', lt: 'Jūsų poilsis, kita serija arba šiandienos treniruotė.', sv: 'Din vila, ditt nästa set eller dagens pass.', vi: 'Thời gian nghỉ, hiệp tiếp theo hoặc buổi tập hôm nay.',
   },
-  'Opens openGym.': {
-    de: 'Öffnet openGym.', fr: 'Ouvre openGym.', es: 'Abre openGym.', it: 'Apre openGym.', 'pt-PT': 'Abre o openGym.', 'pt-BR': 'Abre o openGym.', pl: 'Otwiera openGym.', hu: 'Megnyitja az openGymet.', tr: 'openGym’i açar.', ru: 'Открывает openGym.', uk: 'Відкриває openGym.', ar: 'يفتح openGym.', hi: 'openGym खोलता है।', bn: 'openGym খোলে।', th: 'เปิด openGym', ko: 'openGym을 열어요.', 'zh-Hans': '打开 openGym。', 'zh-Hant': '打開 openGym。',
-    cs: 'Otevře openGym.', fa: 'openGym را باز می‌کند.', id: 'Membuka openGym.', lt: 'Atidaro „openGym“.', sv: 'Öppnar openGym.', vi: 'Mở openGym.',
+  'Opens Habcore Gym.': {
+    de: 'Öffnet Habcore Gym.', fr: 'Ouvre Habcore Gym.', es: 'Abre Habcore Gym.', it: 'Apre Habcore Gym.', 'pt-PT': 'Abre o Habcore Gym.', 'pt-BR': 'Abre o Habcore Gym.', pl: 'Otwiera Habcore Gym.', hu: 'Megnyitja az Habcore Gymet.', tr: 'Habcore Gym’i açar.', ru: 'Открывает Habcore Gym.', uk: 'Відкриває Habcore Gym.', ar: 'يفتح Habcore Gym.', hi: 'Habcore Gym खोलता है।', bn: 'Habcore Gym খোলে।', th: 'เปิด Habcore Gym', ko: 'Habcore Gym을 열어요.', 'zh-Hans': '打开 Habcore Gym。', 'zh-Hant': '打開 Habcore Gym。',
+    cs: 'Otevře Habcore Gym.', fa: 'Habcore Gym را باز می‌کند.', id: 'Membuka Habcore Gym.', lt: 'Atidaro „Habcore Gym“.', sv: 'Öppnar Habcore Gym.', vi: 'Mở Habcore Gym.',
   },
   'Hold to finish': {
     de: 'Halten zum Beenden', fr: 'Maintiens pour terminer', es: 'Mantén para terminar', it: 'Tieni premuto per finire', 'pt-PT': 'Mantém premido para terminar', 'pt-BR': 'Segure para terminar', pl: 'Przytrzymaj, by zakończyć', hu: 'Tartsd nyomva a befejezéshez', tr: 'Bitirmek için basılı tut', ru: 'Удерживайте, чтобы завершить', uk: 'Утримуй, щоб завершити', ar: 'اضغط مطولًا للإنهاء', hi: 'खत्म करने के लिए दबाए रखें', bn: 'শেষ করতে চেপে ধরুন', th: 'กดค้างเพื่อจบ', ko: '길게 눌러 끝내기', 'zh-Hans': '按住以结束', 'zh-Hant': '按住以結束', cs: 'Podrž pro dokončení', fa: 'برای پایان نگه دارید', id: 'Tahan untuk selesai', lt: 'Palaikykite, kad baigtumėte', sv: 'Håll in för att avsluta', vi: 'Giữ để kết thúc',
@@ -268,8 +268,8 @@ const OWN = {
   'max': { ar: 'الأقصى', bn: 'সর্বোচ্চ', cs: 'max', de: 'max', es: 'máx.', fa: 'بیشینه', fr: 'max', hi: 'अधिकतम', hu: 'max.', id: 'maks', it: 'max', ko: '최대', lt: 'maks.', pl: 'maks.', 'pt-BR': 'máx.', 'pt-PT': 'máx.', ru: 'макс.', sv: 'max', th: 'สูงสุด', tr: 'maks.', uk: 'макс.', vi: 'tối đa', 'zh-Hans': '最高', 'zh-Hant': '最高' },
   'min': { ar: 'الأدنى', bn: 'সর্বনিম্ন', cs: 'min', de: 'min', es: 'mín.', fa: 'کمینه', fr: 'min', hi: 'न्यूनतम', hu: 'min.', id: 'min', it: 'min', ko: '최소', lt: 'min.', pl: 'min.', 'pt-BR': 'mín.', 'pt-PT': 'mín.', ru: 'мин.', sv: 'min', th: 'ต่ำสุด', tr: 'min.', uk: 'мін.', vi: 'tối thiểu', 'zh-Hans': '最低', 'zh-Hant': '最低' },
   // watch-apple (#883): with Apple Health off nothing keeps the app in front during a workout.
-  'Turn on Apple Health on your iPhone and openGym stays on screen through rests and holds.': {
-    de: 'Schalte auf dem iPhone Apple Health ein, dann bleibt openGym in Pausen und beim Halten im Vordergrund.', fr: 'Active Apple Santé sur ton iPhone et openGym reste à l’écran pendant les repos et les gainages.', es: 'Activa Apple Salud en tu iPhone y openGym se queda en pantalla durante descansos y aguantes.', it: 'Attiva Apple Salute sull’iPhone e openGym resta sullo schermo durante recuperi e tenute.', 'pt-PT': 'Ativa o Apple Saúde no iPhone e o openGym fica no ecrã durante descansos e isometrias.', 'pt-BR': 'Ative o Apple Saúde no iPhone e o openGym fica na tela durante descansos e isometrias.', pl: 'Włącz Apple Zdrowie na iPhonie, a openGym zostanie na ekranie podczas przerw i utrzymań.', hu: 'Kapcsold be az Apple Egészséget az iPhone-on, és az openGym a pihenők és tartások alatt is a képernyőn marad.', tr: 'iPhone’da Apple Sağlık’ı aç, openGym dinlenmelerde ve tutuşlarda ekranda kalsın.', ru: 'Включи Apple Здоровье на iPhone, и openGym останется на экране во время отдыха и удержаний.', uk: 'Увімкни Apple Здоров’я на iPhone, і openGym залишатиметься на екрані під час відпочинку та утримань.', ar: 'فعّل Apple صحتي على iPhone ليبقى openGym على الشاشة خلال الراحة والثبات.', hi: 'iPhone पर Apple Health चालू करो, फिर आराम और होल्ड के दौरान openGym स्क्रीन पर बना रहेगा।', bn: 'iPhone-এ Apple Health চালু করো, তাহলে বিশ্রাম আর হোল্ডের সময় openGym স্ক্রিনে থাকবে।', th: 'เปิด Apple Health บน iPhone แล้ว openGym จะอยู่บนหน้าจอตลอดช่วงพักและท่าค้าง', ko: 'iPhone에서 Apple 건강을 켜면 휴식과 버티기 중에도 openGym이 화면에 남아 있어요.', 'zh-Hans': '在 iPhone 上打开 Apple 健康，休息和静力保持时 openGym 就会一直留在屏幕上。', 'zh-Hant': '在 iPhone 上開啟 Apple 健康，休息和靜態支撐時 openGym 就會一直留在螢幕上。', cs: 'Zapni na iPhonu Apple Zdraví a openGym zůstane na displeji i při pauzách a výdržích.', fa: 'Apple Health را در iPhone روشن کن تا openGym هنگام استراحت و نگه\u200cداشتن روی صفحه بماند.', id: 'Nyalakan Apple Kesehatan di iPhone, dan openGym tetap di layar saat istirahat dan tahanan.', lt: 'Įjunk Apple Health iPhone ir openGym liks ekrane per poilsį ir išlaikymus.', sv: 'Slå på Apple Hälsa på iPhone så stannar openGym kvar på skärmen under vila och hållningar.', vi: 'Bật Apple Sức khỏe trên iPhone để openGym luôn ở trên màn hình khi nghỉ và giữ tư thế.',
+  'Turn on Apple Health on your iPhone and Habcore Gym stays on screen through rests and holds.': {
+    de: 'Schalte auf dem iPhone Apple Health ein, dann bleibt Habcore Gym in Pausen und beim Halten im Vordergrund.', fr: 'Active Apple Santé sur ton iPhone et Habcore Gym reste à l’écran pendant les repos et les gainages.', es: 'Activa Apple Salud en tu iPhone y Habcore Gym se queda en pantalla durante descansos y aguantes.', it: 'Attiva Apple Salute sull’iPhone e Habcore Gym resta sullo schermo durante recuperi e tenute.', 'pt-PT': 'Ativa o Apple Saúde no iPhone e o Habcore Gym fica no ecrã durante descansos e isometrias.', 'pt-BR': 'Ative o Apple Saúde no iPhone e o Habcore Gym fica na tela durante descansos e isometrias.', pl: 'Włącz Apple Zdrowie na iPhonie, a Habcore Gym zostanie na ekranie podczas przerw i utrzymań.', hu: 'Kapcsold be az Apple Egészséget az iPhone-on, és az Habcore Gym a pihenők és tartások alatt is a képernyőn marad.', tr: 'iPhone’da Apple Sağlık’ı aç, Habcore Gym dinlenmelerde ve tutuşlarda ekranda kalsın.', ru: 'Включи Apple Здоровье на iPhone, и Habcore Gym останется на экране во время отдыха и удержаний.', uk: 'Увімкни Apple Здоров’я на iPhone, і Habcore Gym залишатиметься на екрані під час відпочинку та утримань.', ar: 'فعّل Apple صحتي على iPhone ليبقى Habcore Gym على الشاشة خلال الراحة والثبات.', hi: 'iPhone पर Apple Health चालू करो, फिर आराम और होल्ड के दौरान Habcore Gym स्क्रीन पर बना रहेगा।', bn: 'iPhone-এ Apple Health চালু করো, তাহলে বিশ্রাম আর হোল্ডের সময় Habcore Gym স্ক্রিনে থাকবে।', th: 'เปิด Apple Health บน iPhone แล้ว Habcore Gym จะอยู่บนหน้าจอตลอดช่วงพักและท่าค้าง', ko: 'iPhone에서 Apple 건강을 켜면 휴식과 버티기 중에도 Habcore Gym이 화면에 남아 있어요.', 'zh-Hans': '在 iPhone 上打开 Apple 健康，休息和静力保持时 Habcore Gym 就会一直留在屏幕上。', 'zh-Hant': '在 iPhone 上開啟 Apple 健康，休息和靜態支撐時 Habcore Gym 就會一直留在螢幕上。', cs: 'Zapni na iPhonu Apple Zdraví a Habcore Gym zůstane na displeji i při pauzách a výdržích.', fa: 'Apple Health را در iPhone روشن کن تا Habcore Gym هنگام استراحت و نگه\u200cداشتن روی صفحه بماند.', id: 'Nyalakan Apple Kesehatan di iPhone, dan Habcore Gym tetap di layar saat istirahat dan tahanan.', lt: 'Įjunk Apple Health iPhone ir Habcore Gym liks ekrane per poilsį ir išlaikymus.', sv: 'Slå på Apple Hälsa på iPhone så stannar Habcore Gym kvar på skärmen under vila och hållningar.', vi: 'Bật Apple Sức khỏe trên iPhone để Habcore Gym luôn ở trên màn hình khi nghỉ và giữ tư thế.',
   },
   // The Muscles page of Metrics.
   'No sets yet': { de: 'Noch keine Sätze', fr: 'Aucune série', es: 'Aún sin series', it: 'Ancora nessuna serie', 'pt-PT': 'Ainda sem séries', 'pt-BR': 'Nenhuma série ainda', pl: 'Jeszcze bez serii', hu: 'Még nincs sorozat', tr: 'Henüz set yok', ru: 'Подходов пока нет', uk: 'Підходів ще немає', ar: 'لا مجموعات بعد', hi: 'अभी कोई सेट नहीं', bn: 'এখনো কোনো সেট নেই', th: 'ยังไม่มีเซ็ต', ko: '아직 세트가 없어요', 'zh-Hans': '还没有组', 'zh-Hant': '還沒有組', cs: 'Zatím žádné série', fa: 'هنوز ستی نیست', id: 'Belum ada set', lt: 'Dar nėra serijų', sv: 'Inga set än', vi: 'Chưa có hiệp nào' },
@@ -280,55 +280,55 @@ const OWN = {
 // Info.plist's own (the Apple Health permission prompts), into InfoPlist.strings.
 const PLIST = {
   NSHealthShareUsageDescription: {
-    ar: 'يعرض openGym نبضك أثناء التمرين وبجانب كل مجموعة، ويستخدم تاريخ ميلادك لنطاقات النبض.',
-    bn: 'openGym ওয়ার্কআউটের সময় এবং প্রতিটি সেটের পাশে তোমার হার্ট রেট দেখায়, এবং হার্ট রেট জোনের জন্য তোমার জন্মতারিখ ব্যবহার করে।',
-    cs: 'openGym ukazuje tvůj tep během tréninku a u každé série a pro tepové zóny používá tvé datum narození.',
-    de: 'openGym zeigt deinen Puls während des Trainings und neben jedem Satz und nutzt dein Geburtsdatum für die Pulszonen.',
-    es: 'openGym muestra tu pulso durante el entreno y junto a cada serie, y usa tu fecha de nacimiento para las zonas de pulso.',
-    fa: 'openGym ضربان قلبت را حین تمرین و کنار هر ست نشان می\u200cدهد و برای ناحیه\u200cهای ضربان از تاریخ تولدت استفاده می\u200cکند.',
-    fr: 'openGym affiche ton pouls pendant la séance et à côté de chaque série, et utilise ta date de naissance pour les zones cardiaques.',
-    hi: 'openGym वर्कआउट के दौरान और हर सेट के पास तुम्हारी हार्ट रेट दिखाता है, और हार्ट रेट ज़ोन के लिए तुम्हारी जन्मतिथि इस्तेमाल करता है।',
-    hu: 'Az openGym edzés közben és minden sorozat mellett mutatja a pulzusodat, a pulzuszónákhoz pedig a születési dátumodat használja.',
-    id: 'openGym menampilkan detak jantungmu selama latihan dan di samping setiap set, dan memakai tanggal lahirmu untuk zona detak jantung.',
-    it: "openGym mostra il tuo battito durante l'allenamento e accanto a ogni serie, e usa la tua data di nascita per le zone cardiache.",
-    ko: 'openGym은 운동 중과 각 세트 옆에 심박수를 보여 주고, 심박수 구간에 생년월일을 사용합니다.',
-    lt: 'openGym rodo tavo pulsą treniruotės metu ir prie kiekvienos serijos, o pulso zonoms naudoja tavo gimimo datą.',
-    pl: 'openGym pokazuje twoje tętno podczas treningu i przy każdej serii, a do stref tętna używa twojej daty urodzenia.',
-    'pt-BR': 'O openGym mostra sua frequência cardíaca durante o treino e ao lado de cada série, e usa sua data de nascimento para as zonas cardíacas.',
-    'pt-PT': 'O openGym mostra a tua frequência cardíaca durante o treino e junto a cada série, e usa a tua data de nascimento para as zonas cardíacas.',
-    ru: 'openGym показывает пульс во время тренировки и рядом с каждым подходом, а для пульсовых зон использует твою дату рождения.',
-    sv: 'openGym visar din puls under passet och vid varje set och använder ditt födelsedatum för pulszonerna.',
-    th: 'openGym แสดงอัตราการเต้นของหัวใจระหว่างออกกำลังกายและข้างแต่ละเซ็ต และใช้วันเกิดของคุณสำหรับโซนหัวใจ',
-    tr: 'openGym antrenman sırasında ve her setin yanında nabzını gösterir, nabız bölgeleri için doğum tarihini kullanır.',
-    uk: 'openGym показує пульс під час тренування і біля кожного підходу, а для пульсових зон використовує твою дату народження.',
-    vi: 'openGym hiển thị nhịp tim của bạn trong lúc tập và cạnh mỗi hiệp, và dùng ngày sinh của bạn cho các vùng nhịp tim.',
-    'zh-Hans': 'openGym 会在训练中和每组旁显示你的心率，并用你的出生日期计算心率区间。',
-    'zh-Hant': 'openGym 會在訓練中和每組旁顯示你的心率，並用你的出生日期計算心率區間。',
+    ar: 'يعرض Habcore Gym نبضك أثناء التمرين وبجانب كل مجموعة، ويستخدم تاريخ ميلادك لنطاقات النبض.',
+    bn: 'Habcore Gym ওয়ার্কআউটের সময় এবং প্রতিটি সেটের পাশে তোমার হার্ট রেট দেখায়, এবং হার্ট রেট জোনের জন্য তোমার জন্মতারিখ ব্যবহার করে।',
+    cs: 'Habcore Gym ukazuje tvůj tep během tréninku a u každé série a pro tepové zóny používá tvé datum narození.',
+    de: 'Habcore Gym zeigt deinen Puls während des Trainings und neben jedem Satz und nutzt dein Geburtsdatum für die Pulszonen.',
+    es: 'Habcore Gym muestra tu pulso durante el entreno y junto a cada serie, y usa tu fecha de nacimiento para las zonas de pulso.',
+    fa: 'Habcore Gym ضربان قلبت را حین تمرین و کنار هر ست نشان می\u200cدهد و برای ناحیه\u200cهای ضربان از تاریخ تولدت استفاده می\u200cکند.',
+    fr: 'Habcore Gym affiche ton pouls pendant la séance et à côté de chaque série, et utilise ta date de naissance pour les zones cardiaques.',
+    hi: 'Habcore Gym वर्कआउट के दौरान और हर सेट के पास तुम्हारी हार्ट रेट दिखाता है, और हार्ट रेट ज़ोन के लिए तुम्हारी जन्मतिथि इस्तेमाल करता है।',
+    hu: 'Az Habcore Gym edzés közben és minden sorozat mellett mutatja a pulzusodat, a pulzuszónákhoz pedig a születési dátumodat használja.',
+    id: 'Habcore Gym menampilkan detak jantungmu selama latihan dan di samping setiap set, dan memakai tanggal lahirmu untuk zona detak jantung.',
+    it: "Habcore Gym mostra il tuo battito durante l'allenamento e accanto a ogni serie, e usa la tua data di nascita per le zone cardiache.",
+    ko: 'Habcore Gym은 운동 중과 각 세트 옆에 심박수를 보여 주고, 심박수 구간에 생년월일을 사용합니다.',
+    lt: 'Habcore Gym rodo tavo pulsą treniruotės metu ir prie kiekvienos serijos, o pulso zonoms naudoja tavo gimimo datą.',
+    pl: 'Habcore Gym pokazuje twoje tętno podczas treningu i przy każdej serii, a do stref tętna używa twojej daty urodzenia.',
+    'pt-BR': 'O Habcore Gym mostra sua frequência cardíaca durante o treino e ao lado de cada série, e usa sua data de nascimento para as zonas cardíacas.',
+    'pt-PT': 'O Habcore Gym mostra a tua frequência cardíaca durante o treino e junto a cada série, e usa a tua data de nascimento para as zonas cardíacas.',
+    ru: 'Habcore Gym показывает пульс во время тренировки и рядом с каждым подходом, а для пульсовых зон использует твою дату рождения.',
+    sv: 'Habcore Gym visar din puls under passet och vid varje set och använder ditt födelsedatum för pulszonerna.',
+    th: 'Habcore Gym แสดงอัตราการเต้นของหัวใจระหว่างออกกำลังกายและข้างแต่ละเซ็ต และใช้วันเกิดของคุณสำหรับโซนหัวใจ',
+    tr: 'Habcore Gym antrenman sırasında ve her setin yanında nabzını gösterir, nabız bölgeleri için doğum tarihini kullanır.',
+    uk: 'Habcore Gym показує пульс під час тренування і біля кожного підходу, а для пульсових зон використовує твою дату народження.',
+    vi: 'Habcore Gym hiển thị nhịp tim của bạn trong lúc tập và cạnh mỗi hiệp, và dùng ngày sinh của bạn cho các vùng nhịp tim.',
+    'zh-Hans': 'Habcore Gym 会在训练中和每组旁显示你的心率，并用你的出生日期计算心率区间。',
+    'zh-Hant': 'Habcore Gym 會在訓練中和每組旁顯示你的心率，並用你的出生日期計算心率區間。',
   },
   NSHealthUpdateUsageDescription: {
-    de: 'openGym speichert deine Trainings in Apple Health, wenn du das einschaltest.', fr: 'openGym enregistre tes séances dans Apple Santé si tu l’actives.',
-    es: 'openGym guarda tus entrenos en Apple Salud si lo activas.', it: 'openGym salva i tuoi allenamenti in Apple Salute se lo attivi.',
-    'pt-PT': 'O openGym guarda os teus treinos no Apple Saúde se o ativares.', 'pt-BR': 'O openGym salva seus treinos no Apple Saúde se você ativar.',
-    pl: 'openGym zapisuje treningi w Apple Zdrowie, jeśli to włączysz.', hu: 'Az openGym az Apple Egészség appba menti az edzéseidet, ha bekapcsolod.',
-    tr: 'Açarsan openGym antrenmanlarını Apple Sağlık’a kaydeder.', ru: 'openGym сохраняет тренировки в Apple Здоровье, если вы это включите.',
-    uk: 'openGym зберігає тренування в Apple Здоров’я, якщо ти це ввімкнеш.', ar: 'يحفظ openGym تمارينك في Apple صحتي إذا فعّلت ذلك.',
-    hi: 'चालू करने पर openGym आपके वर्कआउट Apple Health में सहेजता है।', bn: 'চালু করলে openGym আপনার ওয়ার্কআউট Apple Health-এ সেভ করে।',
-    th: 'openGym บันทึกการฝึกลงใน Apple Health เมื่อคุณเปิดใช้', ko: '켜면 openGym이 운동을 Apple 건강에 저장해요.',
-    'zh-Hans': '打开后，openGym 会把训练保存到 Apple 健康。', 'zh-Hant': '開啟後，openGym 會把訓練儲存到 Apple 健康。',
-    cs: 'openGym ukládá tvoje tréninky do Apple Zdraví, když to zapneš.', fa: 'اگر روشن کنید، openGym تمرین‌هایتان را در Apple Health ذخیره می‌کند.', id: 'openGym menyimpan latihanmu ke Apple Kesehatan jika kamu menyalakannya.', lt: 'Jei įjungsite, „openGym“ išsaugos jūsų treniruotes „Apple Health“.', sv: 'openGym sparar dina pass i Apple Hälsa om du slår på det.', vi: 'openGym lưu buổi tập của bạn vào Apple Sức khỏe khi bạn bật tính năng này.',
+    de: 'Habcore Gym speichert deine Trainings in Apple Health, wenn du das einschaltest.', fr: 'Habcore Gym enregistre tes séances dans Apple Santé si tu l’actives.',
+    es: 'Habcore Gym guarda tus entrenos en Apple Salud si lo activas.', it: 'Habcore Gym salva i tuoi allenamenti in Apple Salute se lo attivi.',
+    'pt-PT': 'O Habcore Gym guarda os teus treinos no Apple Saúde se o ativares.', 'pt-BR': 'O Habcore Gym salva seus treinos no Apple Saúde se você ativar.',
+    pl: 'Habcore Gym zapisuje treningi w Apple Zdrowie, jeśli to włączysz.', hu: 'Az Habcore Gym az Apple Egészség appba menti az edzéseidet, ha bekapcsolod.',
+    tr: 'Açarsan Habcore Gym antrenmanlarını Apple Sağlık’a kaydeder.', ru: 'Habcore Gym сохраняет тренировки в Apple Здоровье, если вы это включите.',
+    uk: 'Habcore Gym зберігає тренування в Apple Здоров’я, якщо ти це ввімкнеш.', ar: 'يحفظ Habcore Gym تمارينك في Apple صحتي إذا فعّلت ذلك.',
+    hi: 'चालू करने पर Habcore Gym आपके वर्कआउट Apple Health में सहेजता है।', bn: 'চালু করলে Habcore Gym আপনার ওয়ার্কআউট Apple Health-এ সেভ করে।',
+    th: 'Habcore Gym บันทึกการฝึกลงใน Apple Health เมื่อคุณเปิดใช้', ko: '켜면 Habcore Gym이 운동을 Apple 건강에 저장해요.',
+    'zh-Hans': '打开后，Habcore Gym 会把训练保存到 Apple 健康。', 'zh-Hant': '開啟後，Habcore Gym 會把訓練儲存到 Apple 健康。',
+    cs: 'Habcore Gym ukládá tvoje tréninky do Apple Zdraví, když to zapneš.', fa: 'اگر روشن کنید، Habcore Gym تمرین‌هایتان را در Apple Health ذخیره می‌کند.', id: 'Habcore Gym menyimpan latihanmu ke Apple Kesehatan jika kamu menyalakannya.', lt: 'Jei įjungsite, „Habcore Gym“ išsaugos jūsų treniruotes „Apple Health“.', sv: 'Habcore Gym sparar dina pass i Apple Hälsa om du slår på det.', vi: 'Habcore Gym lưu buổi tập của bạn vào Apple Sức khỏe khi bạn bật tính năng này.',
   },
 }
 
 // Danish (#1039): the watch's own lines.
-OWN['Turn on Apple Health on your iPhone and openGym stays on screen through rests and holds.'].da = 'Slå Apple Sundhed til på din iPhone, så bliver openGym på skærmen under pauser og hold.'
-for (const [k, v] of Object.entries({"No workout running": "Ingen træning i gang", "Not synced yet": "Ikke synkroniseret endnu", "Open openGym on your iPhone once and your routines show up here.": "Åbn openGym på din iPhone én gang, så dukker dine rutiner op her.", "Start one on your iPhone and it shows up here.": "Start en på din iPhone, så dukker den op her.", "All sets done": "Alle sæt klaret", "measuring": "måler …", "%@, set %lld": "%@, sæt %lld", "Calories": "Kalorier", "Heart rate": "Puls", "Hold": "Hold", "Stop": "Stop", "Start hold": "Start hold", "Workout saved": "Træning gemt", "Ended on your iPhone": "Afsluttet på din iPhone", "Log this one on your iPhone.": "Log den her på din iPhone.", "All done?": "Færdig?", "Lock": "Lås", "Skip this set?": "Spring dette sæt over?", "Turn the Digital Crown to change it.": "Drej på Digital Crown for at ændre det.", "%lld avg · %lld max": "snit %lld · maks %lld", "Set %lld of %lld": "Sæt %lld af %lld", "%lld of %lld sets": "%lld af %lld sæt", "Tap to change it.": "Tryk for at ændre det.", "Added weight": "Ekstra vægt", "Your rest, your next set, or today's workout.": "Din pause, dit næste sæt eller dagens træning.", "Opens openGym.": "Åbner openGym.", "Hold to finish": "Hold inde for at afslutte", "iPhone out of reach": "iPhone uden for rækkevidde", "No set for %lld min. Still at it?": "Intet sæt i %lld min. Er du stadig i gang?", "A skipped set is still waiting.": "Et sprunget sæt venter stadig.", "avg": "gns.", "No effort rated yet": "Ingen anstrengelse vurderet endnu", "max": "maks.", "min": "min.", "No sets yet": "Ingen sæt endnu", "+%lld more": "+%lld mere", "%@ sets": "%@ sæt"})) OWN[k].da = v
-for (const [k, v] of Object.entries({"NSHealthShareUsageDescription": "openGym viser din puls under træningen og ved hvert sæt og bruger din fødselsdato til pulszonerne.", "NSHealthUpdateUsageDescription": "openGym gemmer dine træninger i Apple Sundhed, hvis du slår det til."})) PLIST[k].da = v
+OWN['Turn on Apple Health on your iPhone and Habcore Gym stays on screen through rests and holds.'].da = 'Slå Apple Sundhed til på din iPhone, så bliver Habcore Gym på skærmen under pauser og hold.'
+for (const [k, v] of Object.entries({"No workout running": "Ingen træning i gang", "Not synced yet": "Ikke synkroniseret endnu", "Open Habcore Gym on your iPhone once and your routines show up here.": "Åbn Habcore Gym på din iPhone én gang, så dukker dine rutiner op her.", "Start one on your iPhone and it shows up here.": "Start en på din iPhone, så dukker den op her.", "All sets done": "Alle sæt klaret", "measuring": "måler …", "%@, set %lld": "%@, sæt %lld", "Calories": "Kalorier", "Heart rate": "Puls", "Hold": "Hold", "Stop": "Stop", "Start hold": "Start hold", "Workout saved": "Træning gemt", "Ended on your iPhone": "Afsluttet på din iPhone", "Log this one on your iPhone.": "Log den her på din iPhone.", "All done?": "Færdig?", "Lock": "Lås", "Skip this set?": "Spring dette sæt over?", "Turn the Digital Crown to change it.": "Drej på Digital Crown for at ændre det.", "%lld avg · %lld max": "snit %lld · maks %lld", "Set %lld of %lld": "Sæt %lld af %lld", "%lld of %lld sets": "%lld af %lld sæt", "Tap to change it.": "Tryk for at ændre det.", "Added weight": "Ekstra vægt", "Your rest, your next set, or today's workout.": "Din pause, dit næste sæt eller dagens træning.", "Opens Habcore Gym.": "Åbner Habcore Gym.", "Hold to finish": "Hold inde for at afslutte", "iPhone out of reach": "iPhone uden for rækkevidde", "No set for %lld min. Still at it?": "Intet sæt i %lld min. Er du stadig i gang?", "A skipped set is still waiting.": "Et sprunget sæt venter stadig.", "avg": "gns.", "No effort rated yet": "Ingen anstrengelse vurderet endnu", "max": "maks.", "min": "min.", "No sets yet": "Ingen sæt endnu", "+%lld more": "+%lld mere", "%@ sets": "%@ sæt"})) OWN[k].da = v
+for (const [k, v] of Object.entries({"NSHealthShareUsageDescription": "Habcore Gym viser din puls under træningen og ved hvert sæt og bruger din fødselsdato til pulszonerne.", "NSHealthUpdateUsageDescription": "Habcore Gym gemmer dine træninger i Apple Sundhed, hvis du slår det til."})) PLIST[k].da = v
 
 const esc = s => String(s).replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n')
 let problems = 0
 for (const [pack, lproj] of Object.entries(LANGS)) {
   const { default: dict } = await import(pathToFileURL(join(root, 'src', 'locales', pack + '.js')).href)
-  const lines = [`/* openGym on the Apple Watch, ${lproj}. Written by ios/ci/watch-strings.mjs: change that, not this. */`, '']
+  const lines = [`/* Habcore Gym on the Apple Watch, ${lproj}. Written by ios/ci/watch-strings.mjs: change that, not this. */`, '']
   const put = (k, v) => {
     if (!v) { console.error(`${lproj}: no word for "${k}"`); problems++; return }
     if (/—/.test(v)) { console.error(`${lproj}: em dash in "${k}"`); problems++ }
@@ -342,7 +342,7 @@ for (const [pack, lproj] of Object.entries(LANGS)) {
   // The widget says a few of the same words (Rest, Start workout).
   mkdirSync(join(widgets, `${lproj}.lproj`), { recursive: true })
   writeFileSync(join(widgets, `${lproj}.lproj`, 'Localizable.strings'), lines.join('\n') + '\n')
-  const plist = [`/* openGym on the Apple Watch, ${lproj}: Info.plist. Written by ios/ci/watch-strings.mjs. */`, '']
+  const plist = [`/* Habcore Gym on the Apple Watch, ${lproj}: Info.plist. Written by ios/ci/watch-strings.mjs. */`, '']
   for (const [k, tr] of Object.entries(PLIST)) {
     if (!tr[lproj] || /—/.test(tr[lproj])) { console.error(`${lproj}: ${k} missing or with an em dash`); problems++; continue }
     plist.push(`"${k}" = "${esc(tr[lproj])}";`)
@@ -353,7 +353,7 @@ for (const [pack, lproj] of Object.entries(LANGS)) {
 // that language's words to an app in English.
 {
   const keys = [...Object.keys(FROM_APP), ...Object.keys(COMPOSED), ...Object.keys(OWN)]
-  const lines = ['/* openGym on the Apple Watch, en. Written by ios/ci/watch-strings.mjs: change that, not this. */', '']
+  const lines = ['/* Habcore Gym on the Apple Watch, en. Written by ios/ci/watch-strings.mjs: change that, not this. */', '']
   for (const k of keys) lines.push(`"${esc(k)}" = "${esc(k)}";`)
   for (const dir of [out, widgets]) {
     mkdirSync(join(dir, 'en.lproj'), { recursive: true })

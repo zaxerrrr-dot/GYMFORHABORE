@@ -51,7 +51,7 @@ export const HTTP_PROVIDERS = Object.freeze({
     keyUrl: 'https://platform.minimax.io/user-center/basic-information/interface-key'
   }),
   // One sign-in for Claude, GPT, Gemini and the rest, through OpenRouter's own OAuth PKCE flow:
-  // the person approves openGym on openrouter.ai and gets back an API key of their own, billed to
+  // the person approves Habcore Gym on openrouter.ai and gets back an API key of their own, billed to
   // their OpenRouter credits (core/openrouter-oauth.js). A pasted key works the same.
   openrouter: Object.freeze({
     label: 'OpenRouter', runtime: 'HTTPS', http: true,

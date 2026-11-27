@@ -42,14 +42,14 @@ export default function Connect() {
   if (gone) return <div className="narrow connect">
     <h1>{t('This sign-in has expired')}</h1>
     <p className="intg-lead">{t('Start it again from the assistant. It only waits ten minutes.')}</p>
-    <Button onClick={() => nav('/home')}>{t('Back to openGym')}</Button>
+    <Button onClick={() => nav('/home')}>{t('Back to Habcore Gym')}</Button>
   </div>
   if (!req || !scopes) return <div className="narrow connect"><p className="intg-lead">{t('Loading…')}</p></div>
 
   return <div className="narrow connect">
     <div className="connect-head">
       <span className="connect-i"><Icon name="plug" /></span>
-      <h1>{t('{0} wants to use your openGym', req.client)}</h1>
+      <h1>{t('{0} wants to use your Habcore Gym', req.client)}</h1>
       <p className="intg-lead">{t('After you say yes, it goes back to {0}. Only say yes if you just started this there.', req.redirectHost)}</p>
       {req.loopback && <p className="intg-problem" role="note">{t('This goes back to a program on this computer, not to a website. Only allow it if you started it there yourself just now.')}</p>}
     </div>

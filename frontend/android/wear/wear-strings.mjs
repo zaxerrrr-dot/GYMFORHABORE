@@ -72,26 +72,26 @@ const FROM_WATCH = {
 // Only this watch says these ("phone", not "iPhone"; the crown is not a Digital Crown).
 const OWN = {
   open_phone_once: {
-    en: 'Open openGym on your phone once and your routines show up here.',
-    de: 'Öffne openGym einmal auf dem Handy, dann tauchen deine Routinen hier auf.',
-    fr: 'Ouvre openGym une fois sur ton téléphone et tes routines apparaissent ici.',
-    es: 'Abre openGym una vez en tu móvil y tus rutinas aparecerán aquí.',
-    it: 'Apri openGym una volta sul telefono e le tue routine compaiono qui.',
-    pt: 'Abre o openGym uma vez no telemóvel e as tuas rotinas aparecem aqui.',
-    'pt-BR': 'Abra o openGym uma vez no celular e suas rotinas aparecem aqui.',
-    pl: 'Otwórz raz openGym na telefonie, a twoje plany pojawią się tutaj.',
-    hu: 'Nyisd meg egyszer az openGymet a telefonon, és itt lesznek a rutinjaid.',
-    tr: 'openGym’i telefonunda bir kez aç, rutinlerin burada görünür.',
-    ru: 'Откройте openGym на телефоне один раз, и ваши программы появятся здесь.',
-    uk: 'Відкрий openGym на телефоні один раз, і твої програми з’являться тут.',
-    ar: 'افتح openGym على هاتفك مرة واحدة وستظهر تمارينك الروتينية هنا.',
-    hi: 'फ़ोन पर openGym एक बार खोलें, आपके रूटीन यहाँ दिखेंगे।',
-    bn: 'ফোনে openGym একবার খুলুন, আপনার রুটিন এখানে দেখা যাবে।',
-    th: 'เปิด openGym บนโทรศัพท์สักครั้ง แล้วรูทีนของคุณจะแสดงที่นี่',
-    ko: '휴대폰에서 openGym을 한 번 열면 루틴이 여기에 나타나요.',
-    sv: 'Öppna openGym på telefonen en gång så dyker dina rutiner upp här.',
-    zh: '在手机上打开一次 openGym，你的训练计划就会出现在这里。',
-    'zh-TW': '在手機上打開一次 openGym，你的訓練計畫就會出現在這裡。',
+    en: 'Open Habcore Gym on your phone once and your routines show up here.',
+    de: 'Öffne Habcore Gym einmal auf dem Handy, dann tauchen deine Routinen hier auf.',
+    fr: 'Ouvre Habcore Gym une fois sur ton téléphone et tes routines apparaissent ici.',
+    es: 'Abre Habcore Gym una vez en tu móvil y tus rutinas aparecerán aquí.',
+    it: 'Apri Habcore Gym una volta sul telefono e le tue routine compaiono qui.',
+    pt: 'Abre o Habcore Gym uma vez no telemóvel e as tuas rotinas aparecem aqui.',
+    'pt-BR': 'Abra o Habcore Gym uma vez no celular e suas rotinas aparecem aqui.',
+    pl: 'Otwórz raz Habcore Gym na telefonie, a twoje plany pojawią się tutaj.',
+    hu: 'Nyisd meg egyszer az Habcore Gymet a telefonon, és itt lesznek a rutinjaid.',
+    tr: 'Habcore Gym’i telefonunda bir kez aç, rutinlerin burada görünür.',
+    ru: 'Откройте Habcore Gym на телефоне один раз, и ваши программы появятся здесь.',
+    uk: 'Відкрий Habcore Gym на телефоні один раз, і твої програми з’являться тут.',
+    ar: 'افتح Habcore Gym على هاتفك مرة واحدة وستظهر تمارينك الروتينية هنا.',
+    hi: 'फ़ोन पर Habcore Gym एक बार खोलें, आपके रूटीन यहाँ दिखेंगे।',
+    bn: 'ফোনে Habcore Gym একবার খুলুন, আপনার রুটিন এখানে দেখা যাবে।',
+    th: 'เปิด Habcore Gym บนโทรศัพท์สักครั้ง แล้วรูทีนของคุณจะแสดงที่นี่',
+    ko: '휴대폰에서 Habcore Gym을 한 번 열면 루틴이 여기에 나타나요.',
+    sv: 'Öppna Habcore Gym på telefonen en gång så dyker dina rutiner upp här.',
+    zh: '在手机上打开一次 Habcore Gym，你的训练计划就会出现在这里。',
+    'zh-TW': '在手機上打開一次 Habcore Gym，你的訓練計畫就會出現在這裡。',
   },
   start_on_phone: {
     en: 'Start one on your phone and it shows up here.',
@@ -208,7 +208,7 @@ const OWN = {
 
 // 1.4.5: the five languages the watch learned, and the few lines only Wear OS says in the redesign
 // ("phone", not "iPhone"; a remote for the music instead of Apple's Now Playing).
-Object.assign(OWN.open_phone_once, {"cs": "Otevři jednou openGym v telefonu a tvoje rutiny se tu objeví.", "fa": "یک بار openGym را روی گوشی باز کن تا روال‌هایت اینجا بیایند.", "id": "Buka openGym sekali di ponselmu, rutinitasmu akan muncul di sini.", "lt": "Kartą atidaryk openGym telefone ir tavo rutinos atsiras čia.", "vi": "Mở openGym trên điện thoại một lần là các bài tập của bạn sẽ hiện ở đây."})
+Object.assign(OWN.open_phone_once, {"cs": "Otevři jednou Habcore Gym v telefonu a tvoje rutiny se tu objeví.", "fa": "یک بار Habcore Gym را روی گوشی باز کن تا روال‌هایت اینجا بیایند.", "id": "Buka Habcore Gym sekali di ponselmu, rutinitasmu akan muncul di sini.", "lt": "Kartą atidaryk Habcore Gym telefone ir tavo rutinos atsiras čia.", "vi": "Mở Habcore Gym trên điện thoại một lần là các bài tập của bạn sẽ hiện ở đây."})
 Object.assign(OWN.start_on_phone, {"cs": "Spusť ho v telefonu a objeví se tady.", "fa": "روی گوشی شروعش کن تا اینجا بیاید.", "id": "Mulai di ponselmu, nanti muncul di sini.", "lt": "Pradėk telefone ir jis atsiras čia.", "vi": "Bắt đầu trên điện thoại là nó hiện ở đây."})
 Object.assign(OWN.ended_on_phone, {"cs": "Ukončeno v telefonu", "fa": "روی گوشی تمام شد", "id": "Diakhiri di ponsel", "lt": "Baigta telefone", "vi": "Đã kết thúc trên điện thoại"})
 Object.assign(OWN.log_on_phone, {"cs": "Tohle zapiš v telefonu.", "fa": "این یکی را روی گوشی ثبت کن.", "id": "Yang ini dicatat di ponsel.", "lt": "Šitą įrašyk telefone.", "vi": "Bài này ghi trên điện thoại nhé."})
@@ -248,7 +248,7 @@ OWN.n_more = {"en":"+%1$d more","de":"+%1$d weitere","fr":"+%1$d autres","es":"+
 OWN.n_sets = {"en":"%1$s sets","de":"%1$s Sätze","fr":"%1$s séries","es":"%1$s series","it":"%1$s serie","pt":"%1$s séries","pt-BR":"%1$s séries","pl":"Serie: %1$s","hu":"%1$s sorozat","tr":"%1$s set","ru":"Подходов: %1$s","uk":"Підходів: %1$s","ar":"%1$s مجموعات","hi":"%1$s सेट","bn":"%1$s সেট","th":"%1$s เซ็ต","ko":"%1$s세트","zh":"%1$s 组","zh-TW":"%1$s 組","cs":"Sérií: %1$s","fa":"%1$s ست","id":"%1$s set","lt":"Serijų: %1$s","sv":"%1$s set","vi":"%1$s hiệp"}
 
 // Danish (#1039): the lines only Wear OS says.
-for (const [k, v] of Object.entries({"open_phone_once": "Åbn openGym på telefonen én gang, så dukker dine rutiner op her.", "start_on_phone": "Start en på telefonen, så dukker den op her.", "ended_on_phone": "Afsluttet på telefonen", "log_on_phone": "Log den her på telefonen.", "crown_hint": "Drej på kronen for at ændre det.", "quick_start": "Hurtig start", "rest_day": "Intet planlagt. Det er dit valg.", "tile_desc": "Din streak og dagens plan.", "complication_desc": "Dine sæt indtil nu, eller din streak.", "notif_running": "Træning i gang. Tryk for at hoppe ind igen.", "hr_why": "Tillad puls for at se den ved hvert sæt.", "phone_away": "Telefonen er uden for rækkevidde. Dine sæt venter her.", "phone_out_of_reach": "Telefonen uden for rækkevidde", "media_title": "Musik", "media_prev": "Forrige nummer", "media_play": "Afspil eller pause", "media_next": "Næste nummer", "media_quieter": "Lavere", "media_louder": "Højere", "media_now_playing": "Afspilles nu", "media_on_watch": "Afspilles på dit ur", "media_phone_hint": "Musik på telefonen? Den findes i Mediekontroller.", "media_open": "Åbn Mediekontroller", "no_sets_yet": "Ingen sæt endnu", "n_more": "+%1$d mere", "n_sets": "%1$s sæt"})) OWN[k].da = v
+for (const [k, v] of Object.entries({"open_phone_once": "Åbn Habcore Gym på telefonen én gang, så dukker dine rutiner op her.", "start_on_phone": "Start en på telefonen, så dukker den op her.", "ended_on_phone": "Afsluttet på telefonen", "log_on_phone": "Log den her på telefonen.", "crown_hint": "Drej på kronen for at ændre det.", "quick_start": "Hurtig start", "rest_day": "Intet planlagt. Det er dit valg.", "tile_desc": "Din streak og dagens plan.", "complication_desc": "Dine sæt indtil nu, eller din streak.", "notif_running": "Træning i gang. Tryk for at hoppe ind igen.", "hr_why": "Tillad puls for at se den ved hvert sæt.", "phone_away": "Telefonen er uden for rækkevidde. Dine sæt venter her.", "phone_out_of_reach": "Telefonen uden for rækkevidde", "media_title": "Musik", "media_prev": "Forrige nummer", "media_play": "Afspil eller pause", "media_next": "Næste nummer", "media_quieter": "Lavere", "media_louder": "Højere", "media_now_playing": "Afspilles nu", "media_on_watch": "Afspilles på dit ur", "media_phone_hint": "Musik på telefonen? Den findes i Mediekontroller.", "media_open": "Åbn Mediekontroller", "no_sets_yet": "Ingen sæt endnu", "n_more": "+%1$d mere", "n_sets": "%1$s sæt"})) OWN[k].da = v
 
 // watch-wear (#1180): max and min heart rate, kept here so the Wear strings do not wait on the Apple Watch's
 // Localizable.strings having them (#1100).
@@ -288,7 +288,7 @@ function write (folder, strings, comment) {
   mkdirSync(dir, { recursive: true })
   const body = Object.keys(strings).sort().map(k => `    <string name="${k}">${resEscape(strings[k])}</string>`).join('\n')
   writeFileSync(join(dir, 'strings.xml'), `<?xml version="1.0" encoding="utf-8"?>
-<!-- openGym on Wear OS, ${comment}. Written by frontend/android/wear/wear-strings.mjs: change that, not this. -->
+<!-- Habcore Gym on Wear OS, ${comment}. Written by frontend/android/wear/wear-strings.mjs: change that, not this. -->
 <resources>
 ${body}
 </resources>
@@ -298,7 +298,7 @@ ${body}
 /* ---------- writing ---------- */
 
 const enWatch = readLproj('en')
-const en = { app_name: 'openGym Beta' }
+const en = { app_name: 'Habcore Gym Beta' }
 for (const [name, key] of Object.entries(FROM_APP)) en[name] = key
 for (const [name, [key, fmt]] of Object.entries(COMPOSED)) en[name] = fmt(key)
 for (const [name, key] of Object.entries(FROM_WATCH)) en[name] = androidFormat(enWatch[key] || key)

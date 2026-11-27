@@ -39,7 +39,7 @@ export const MODULES = [
   { id: 'health', group: 'body', icon: 'heart', tint: 'var(--red)', title: 'Health',
     desc: 'Apple Health or Health Connect, heart rate and recovery tips.' },
   { id: 'motivation', group: 'extras', icon: 'flame', tint: 'var(--orange)', title: 'Motivation',
-    desc: 'Streaks, challenges, badges, recaps and your year in openGym.' },
+    desc: 'Streaks, challenges, badges, recaps and your year in Habcore Gym.' },
   { id: 'coach', group: 'extras', icon: 'sparkles', tint: 'var(--green)', title: 'AI Coach',
     desc: 'Reviews your training and suggests changes. You still say yes or no.' },
   { id: 'integrations', group: 'extras', icon: 'webhook', tint: 'var(--indigo)', title: 'Integrations',
@@ -70,7 +70,7 @@ export const PRESET = Object.fromEntries(PRESETS.map(p => [p.id, p]))
 const isMap = v => !!v && typeof v === 'object' && !Array.isArray(v)
 
 // Modules this build cannot have at all (lib/build-caps.js: the Coach, Integrations and Community
-// in openGym Offline, which has no network). Off whatever S.modules says, and not offered on the
+// in Habcore Gym Offline, which has no network). Off whatever S.modules says, and not offered on the
 // Modules page; the choice itself is kept, so the same profile on a normal build is unchanged.
 let unavailable = new Set()
 export function setUnavailableModules(ids) { unavailable = new Set(Array.isArray(ids) ? ids : []) }

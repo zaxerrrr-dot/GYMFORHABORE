@@ -2,7 +2,7 @@ import Foundation
 
 /*
  * What may go to Apple Health, and the number and JSON guards the native code uses everywhere it
- * takes a value from the page or the phone (openGym v1.4.5, after TestFlight 59 died at every
+ * takes a value from the page or the phone (Habcore Gym v1.4.5, after TestFlight 59 died at every
  * launch on a forgotten workout).
  *
  * HealthKit raises an Objective-C exception for a sample it will not take (an end before the start,

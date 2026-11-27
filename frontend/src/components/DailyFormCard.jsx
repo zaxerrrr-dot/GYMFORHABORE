@@ -87,7 +87,7 @@ export default function DailyFormCard({ S }) {
   const setOn = v => useStore.getState().update(s => { s.dailyForm = v })
   if (offer && !days.length && !anyVital) return <div className="card dform-card" data-daily-form="offer">
     <CardHead icon="moon" tint="var(--indigo)" eyebrow={t('Daily form')} title={t('Check in before workouts?')}
-      sub={t('Four taps on sleep, energy, soreness and stress. On a rough day openGym offers to go lighter, and after a few weeks you see what your good days have in common.')} />
+      sub={t('Four taps on sleep, energy, soreness and stress. On a rough day Habcore Gym offers to go lighter, and after a few weeks you see what your good days have in common.')} />
     <div className="card-head-indent row" style={{ gap: 8, marginTop: 10 }}>
       <Button size="sm" variant="tinted" icon="check" onClick={() => setOn(true)}>{t('Turn it on')}</Button>
       <Button size="sm" variant="ghost" onClick={() => setOn(false)}>{t('Not for me')}</Button>

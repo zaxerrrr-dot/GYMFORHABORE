@@ -1,5 +1,5 @@
 /* ============================================================================
-   openGym — design system
+   Habcore Gym — design system
    ----------------------------------------------------------------------------
    Rebuilt around four rules, each aimed at a specific "generated" tell in the
    previous sheet:
@@ -309,7 +309,7 @@ button,.chip,.tile,.item,.wday,.cal-d,.swatch,.hm-c,.lrow,.seg button,.stp butto
 
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 
-/* A glyph (components/Glyph.jsx): openGym's icon by default, the system emoji with Settings →
+/* A glyph (components/Glyph.jsx): Habcore Gym's icon by default, the system emoji with Settings →
    Icons on Emoji (data-icons on <html>, set by App.jsx). Both sit in the page, one shows. */
 .glyph{display:inline-flex;align-items:center;vertical-align:-.125em;line-height:1}
 .glyph > svg{display:block}
@@ -2819,7 +2819,7 @@ button.mchip{border:none;font:inherit;font-size:var(--fs-caption);cursor:pointer
 .flame.out .flame-s1{stop-color:#8e8e93} .flame.out .flame-s2{stop-color:#a1a1a6} .flame.out .flame-s3{stop-color:#b8b8bd}
 .flame.out .flame-s4{stop-color:#d1d1d6} .flame.out .flame-s5{stop-color:#e5e5ea}
 .flame-o,.flame-i{transform-box:fill-box;transform-origin:50% 100%}
-/* Your own flame or freeze (Settings → Icons, lib/streak-icons.js): an openGym icon in its own
+/* Your own flame or freeze (Settings → Icons, lib/streak-icons.js): an Habcore Gym icon in its own
    colour or the emoji itself, in the same 1em box. The tints around it come from its colour
    (App.jsx writes --streak-ink, --flame-soft, --frost, --frost-soft per theme). */
 .flame-own,.frz-own{display:inline-grid;place-items:center;width:1em;height:1em;line-height:1;flex:none;vertical-align:-.12em}
@@ -3164,7 +3164,7 @@ button.cal-wk:active{background:var(--press-fill)}
 .streak-howto li .wk-legend-g{margin-top:1px}
 @keyframes howto-in{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion: reduce){.streak-howto{animation:none}}
-/* --- openGym date field + picker (#809, components/DateField.jsx) ---
+/* --- Habcore Gym date field + picker (#809, components/DateField.jsx) ---
    The field is a button dressed as the field or row value it replaces; the picker reuses the
    calendar's cells above. Cells are at least 44px tall: at 320px seven columns cannot also be
    44px wide, so the grid gives up gap before it gives up height. */
@@ -3843,7 +3843,7 @@ button.wl-summary{width:100%;padding:0 0 10px;text-align:start;border-radius:var
 .youtube-actions{display:flex;justify-content:space-between;gap:8px;margin-top:8px}
 .youtube-actions .btn{min-height:44px}
 
-/* Your year in openGym: Home's December card (components/WrappedEntry.jsx). The stories' own
+/* Your year in Habcore Gym: Home's December card (components/WrappedEntry.jsx). The stories' own
    styles load with them (components/Wrapped.css). */
 .wr-home{position:relative;overflow:hidden;background:var(--surface);background:linear-gradient(135deg,color-mix(in srgb,var(--acc) 24%,var(--surface)),var(--surface) 72%)}
 .wr-home>.btn{margin-top:12px}

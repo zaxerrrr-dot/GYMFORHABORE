@@ -1,14 +1,14 @@
-// openNutrition → openGym (v1.4.5, gm-hooks): what you ate, read-only, opt-in, on this device.
+// openNutrition → Habcore Gym (v1.4.5, gm-hooks): what you ate, read-only, opt-in, on this device.
 //
-// The mirror of the pairing openNutrition already does the other way (it redeems an openGym pairing
-// code at POST /api/pair/redeem and reads /api/data). Here openGym is the one that links:
+// The mirror of the pairing openNutrition already does the other way (it redeems an Habcore Gym pairing
+// code at POST /api/pair/redeem and reads /api/data). Here Habcore Gym is the one that links:
 //
-//   1. In openNutrition: Settings → Connected apps → "Link openGym" shows a short code (or, on an
+//   1. In openNutrition: Settings → Connected apps → "Link Habcore Gym" shows a short code (or, on an
 //      openNutrition from before that, "Create token" gives an `on_…` token with summary:read).
-//   2. In openGym: Settings → Integrations → Sister apps → openNutrition, its address and the code.
+//   2. In Habcore Gym: Settings → Integrations → Sister apps → openNutrition, its address and the code.
 //      A code is redeemed at POST <url>/api/v1/integration/pair/redeem for a summary:read token;
 //      a pasted `on_…` token is used as it is, after one read proves it works.
-//   3. openGym reads GET <url>/api/v1/integration/summary?from=&to= (schema opennutrition.summary.v1)
+//   3. Habcore Gym reads GET <url>/api/v1/integration/summary?from=&to= (schema opennutrition.summary.v1)
 //      with that token, never writes anything, and keeps the answer here.
 //
 // The contract, and what openNutrition still has to add (the code, CORS for the web app, protein
@@ -19,7 +19,7 @@
 // kept in the phone's secure storage (lib/coach-secrets.js) and never in S, a backup or the sync. A second device
 // links on its own. Off until linked; unlinking forgets the token and the numbers.
 //
-// Network only: openGym Offline (lib/build-caps.js) leaves the card out (OFFLINE_OFF_CARDS), and
+// Network only: Habcore Gym Offline (lib/build-caps.js) leaves the card out (OFFLINE_OFF_CARDS), and
 // link() / refresh() / loadLink() do nothing there, so no screen ever shows or asks for it.
 import { nativeFetch } from './capacitor-fetch.js'
 import { secureGet, secureSet, secureRemove } from './coach-secrets.js'
@@ -56,7 +56,7 @@ export function cleanUrl(raw) {
   } catch { return null }
 }
 
-/** A guess for the address, from openGym's own: gym.example.com → nutrition.example.com. */
+/** A guess for the address, from Habcore Gym's own: gym.example.com → nutrition.example.com. */
 export function guessUrl(base) {
   try {
     const u = new URL(base)
@@ -66,7 +66,7 @@ export function guessUrl(base) {
   } catch { return '' }
 }
 
-/** One day of the summary, in openGym's words: { date, kcal, protein, carbs, fat, partial, target?, proteinMeals? }. */
+/** One day of the summary, in Habcore Gym's words: { date, kcal, protein, carbs, fat, partial, target?, proteinMeals? }. */
 export function cleanDay(d) {
   if (!isObj(d) || !ISO.test(String(d.date || ''))) return null
   // opennutrition.summary.v1 says energy/carbohydrate/targets; the trainer hook's older shape kcal/carbs/target.
@@ -146,7 +146,7 @@ const DAY = 86400000
 const isoAt = t => new Date(t).toISOString().slice(0, 10)
 
 // The phone app asks from native code (no CORS there); the web app needs openNutrition to allow
-// openGym's origin (docs/dev/SISTER_APPS.md, "CORS").
+// Habcore Gym's origin (docs/dev/SISTER_APPS.md, "CORS").
 const doFetch = (url, init) => nativeFetch(url, init)
 
 export class LinkError extends Error {

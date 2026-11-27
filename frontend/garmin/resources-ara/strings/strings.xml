@@ -1,8 +1,8 @@
-<!-- openGym on Garmin, ara. Written by frontend/garmin/garmin-strings.mjs: change that, not this. -->
+<!-- Habcore Gym on Garmin, ara. Written by frontend/garmin/garmin-strings.mjs: change that, not this. -->
 <strings>
     <string id="all_sets_done">اكتملت كل المجموعات</string>
     <string id="all_synced">تمت مزامنة كل شيء</string>
-    <string id="app_name">openGym</string>
+    <string id="app_name">Habcore Gym</string>
     <string id="cancel">إلغاء</string>
     <string id="continue_workout">متابعة التمرين</string>
     <string id="discard_q">تجاهل التمرين؟</string>
@@ -33,7 +33,7 @@
     <string id="no_set_for">لا مجموعة منذ $1$ دقيقة. ما زلت تتمرن؟</string>
     <string id="no_workout">لا يوجد تمرين جارٍ</string>
     <string id="not_synced">لم تتم المزامنة بعد</string>
-    <string id="open_phone_once">في openGym على هاتفك، افتح الإعدادات ثم Garmin.</string>
+    <string id="open_phone_once">في Habcore Gym على هاتفك، افتح الإعدادات ثم Garmin.</string>
     <string id="overview">نظرة عامة</string>
     <string id="paused">متوقف مؤقتًا</string>
     <string id="phone_out_of_reach">الهاتف خارج النطاق</string>
@@ -62,7 +62,7 @@
     <string id="up_next">التالي</string>
     <string id="up_next_set">$1$، المجموعة $2$</string>
     <string id="volume">حجم التدريب</string>
-    <string id="waiting_phone">بانتظار هاتفك. افتح openGym عليه إذا تأخر.</string>
+    <string id="waiting_phone">بانتظار هاتفك. افتح Habcore Gym عليه إذا تأخر.</string>
     <string id="waiting_sync">بانتظار المزامنة</string>
     <string id="warmup">إحماء</string>
     <string id="weight">الوزن</string>

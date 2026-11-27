@@ -1,4 +1,4 @@
-// openGym Offline (lib/build-caps.js) in Settings: nothing that needs a network is a page or a
+// Habcore Gym Offline (lib/build-caps.js) in Settings: nothing that needs a network is a page or a
 // search hit, and the network log is there in the phone app only.
 import { describe, expect, it } from 'vitest'
 import { pageVisible, searchSettings } from './settings-pages.js'
@@ -7,7 +7,7 @@ const tr = s => s
 const phone = { mobile: true, android: true, mod: () => true, user: null }
 const offline = { ...phone, offline: true }
 
-describe('Settings in openGym Offline', () => {
+describe('Settings in Habcore Gym Offline', () => {
   it('has no Coach, Zepp or token pages, and keeps the network log', () => {
     expect(pageVisible('coach', phone)).toBe(true)
     expect(pageVisible('coach', offline)).toBe(false)

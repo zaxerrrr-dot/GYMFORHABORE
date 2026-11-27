@@ -98,7 +98,7 @@ export default function ModulesPage() {
   ]
   // Community only where the server has a library (LIBRARY=on): elsewhere it would switch nothing.
   const libOn = useStore(st => libraryOn(st.config, st.user))
-  // openGym Offline has no Coach, Integrations or Community (lib/build-caps.js): not offered at all.
+  // Habcore Gym Offline has no Coach, Integrations or Community (lib/build-caps.js): not offered at all.
   const shown = MODULES.filter(m => moduleBuilt(m.id) && (m.id !== 'community' || libOn))
   return <div className="modules">
     <p className="sect-f modules-intro">{t('Switch off what you don’t use. Nothing gets deleted: switch it back on and it’s all still there.')}</p>

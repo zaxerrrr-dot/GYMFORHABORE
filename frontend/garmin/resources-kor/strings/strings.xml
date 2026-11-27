@@ -1,8 +1,8 @@
-<!-- openGym on Garmin, kor. Written by frontend/garmin/garmin-strings.mjs: change that, not this. -->
+<!-- Habcore Gym on Garmin, kor. Written by frontend/garmin/garmin-strings.mjs: change that, not this. -->
 <strings>
     <string id="all_sets_done">모든 세트 완료</string>
     <string id="all_synced">모두 동기화됨</string>
-    <string id="app_name">openGym</string>
+    <string id="app_name">Habcore Gym</string>
     <string id="cancel">취소</string>
     <string id="continue_workout">운동 계속하기</string>
     <string id="discard_q">운동을 버릴까요?</string>
@@ -33,7 +33,7 @@
     <string id="no_set_for">$1$분째 세트가 없어요. 아직 운동 중이세요?</string>
     <string id="no_workout">진행 중인 운동이 없어요</string>
     <string id="not_synced">아직 동기화되지 않았어요</string>
-    <string id="open_phone_once">휴대폰의 openGym에서 설정, Garmin 순서로 열어 주세요.</string>
+    <string id="open_phone_once">휴대폰의 Habcore Gym에서 설정, Garmin 순서로 열어 주세요.</string>
     <string id="overview">개요</string>
     <string id="paused">일시정지됨</string>
     <string id="phone_out_of_reach">휴대폰이 멀리 있어요</string>
@@ -62,7 +62,7 @@
     <string id="up_next">다음</string>
     <string id="up_next_set">$1$, $2$세트</string>
     <string id="volume">볼륨</string>
-    <string id="waiting_phone">휴대폰을 기다리는 중이에요. 오래 걸리면 거기서 openGym을 열어 주세요.</string>
+    <string id="waiting_phone">휴대폰을 기다리는 중이에요. 오래 걸리면 거기서 Habcore Gym을 열어 주세요.</string>
     <string id="waiting_sync">동기화 대기 중</string>
     <string id="warmup">워밍업</string>
     <string id="weight">무게</string>

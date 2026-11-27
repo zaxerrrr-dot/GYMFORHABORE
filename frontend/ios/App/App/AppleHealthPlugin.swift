@@ -7,7 +7,7 @@ import UIKit
  * Apple Health on the iPhone, the same calls as HealthConnectPlugin.java (lib/health-sync.js):
  * finished workouts and weigh-ins go to Apple Health, each with a sync identifier of its own
  * ('opengym-w-<id>', 'opengym-bw-<day>'), so writing one again replaces it and removing finds
- * exactly what openGym wrote. It asks to read the heart rate and the body weight too, for the
+ * exactly what Habcore Gym wrote. It asks to read the heart rate and the body weight too, for the
  * Apple Watch app's workout session, and keeps the switch where the watch link reads it
  * (App Group "healthEnabled").
  *
@@ -300,7 +300,7 @@ public class AppleHealthPlugin: CAPPlugin, CAPBridgedPlugin {
         }
     }
 
-    /// Workouts since `since` (ms) from any app, openGym's own included (JS skips those by origin,
+    /// Workouts since `since` (ms) from any app, Habcore Gym's own included (JS skips those by origin,
     /// lib/activities.js isOwnRecord), as { id, sport, start, end, km?, origin, clientId? }, the
     /// sport named the way lib/activities.js names it (sportName). Not allowed reads nothing.
     @objc func readWorkouts(_ call: CAPPluginCall) {

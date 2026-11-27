@@ -1,13 +1,13 @@
-# openGym MCP server
+# Habcore Gym MCP server
 
 A [Model Context Protocol](https://modelcontextprotocol.io) bridge that lets an external LLM
-application (Claude Desktop, Cursor, Cline, Continue, etc.) read your openGym profile —
+application (Claude Desktop, Cursor, Cline, Continue, etc.) read your Habcore Gym profile —
 routines, workouts, body-weight log, estimated 1RMs, and muscle balance — directly from your
 self-hosted `./data` directory, and log a workout you describe to it.
 
 It runs locally as a stdio process spawned by the LLM client and adds no new container (an
 optional container serves the same tools over HTTPS: [docs/MCP_REMOTE.md](../docs/MCP_REMOTE.md)). The
-read tools need no authentication: they read the same `state-<uid>.json` files the openGym api
+read tools need no authentication: they read the same `state-<uid>.json` files the Habcore Gym api
 already writes, and the LLM never sees passkeys, VAPID keys, or session secrets. The one write
 tool, `log_workout`, is off until you pair it with your server (see
 [Logging workouts](#logging-workouts)).
@@ -63,7 +63,7 @@ Add the server to your LLM client's MCP config. For Claude Desktop, edit
 For Cursor and other MCP-compatible clients, see the client's MCP docs — the same `command` +
 `args` + `env` shape is what every stdio MCP server expects.
 
-Restart the client; you should see the openGym tools appear with "serving profile \<name\>" on
+Restart the client; you should see the Habcore Gym tools appear with "serving profile \<name\>" on
 the server's stderr.
 
 ## Tools
@@ -111,7 +111,7 @@ re-interpret them.
 
 The LLM turns that into exercises and sets; the tool matches the exercises against your library,
 builds the workout the way the app's Finish button does (PR badges, the next suggested weight,
-warm-ups kept out of volume) and saves it through your openGym server, so every signed-in
+warm-ups kept out of volume) and saves it through your Habcore Gym server, so every signed-in
 device shows it within half a minute. Asking for the same thing twice logs it once.
 
 Exercise names are matched the way a CSV import matches them. A common name resolves to the
@@ -210,7 +210,7 @@ dependencies landed in `frontend/`, no public exports changed.
   `log_workout` uses the paired-session token the phone app already uses; no new kind of
   credential, no new api route.
 - **No telemetry.** The read tools make no network call. `log_workout` talks to your own
-  openGym server and nothing else. The process exits when the LLM client disconnects.
+  Habcore Gym server and nothing else. The process exits when the LLM client disconnects.
 
 ## Tests
 

@@ -1,16 +1,16 @@
-// "Use your subscription" (views/Assistants.jsx, sub-connect-146): openGym as a connector inside
+// "Use your subscription" (views/Assistants.jsx, sub-connect-146): Habcore Gym as a connector inside
 // the assistant apps people already pay for. Not a sign-in to their subscription: Anthropic's
 // terms forbid third-party apps from using claude.ai logins, and OpenAI's plan sharing is for
 // approved apps. What every one of them does allow is adding a remote MCP server, so the
-// assistant comes to openGym (docs/MCP_REMOTE.md), signs in with openGym's own OAuth
+// assistant comes to Habcore Gym (docs/MCP_REMOTE.md), signs in with Habcore Gym's own OAuth
 // (api/oauth.js) and gets a scoped token the person picks on the consent screen.
 //
 // The pure half of the screen: the three assistants with their steps and plans, which of the
 // profile's tokens are connectors, and whether this server can be reached from the internet at all.
 import { t } from './i18n.js'
 
-export const SELF_HOSTING_DOCS = 'https://github.com/DuarteSantos8/openGym/blob/main/docs/SELF_HOSTING.md'
-export const MCP_REMOTE_DOCS = 'https://github.com/DuarteSantos8/openGym/blob/main/docs/MCP_REMOTE.md'
+export const SELF_HOSTING_DOCS = 'https://github.com/zaxerrrr-dot/GYMFORHABORE/blob/main/docs/SELF_HOSTING.md'
+export const MCP_REMOTE_DOCS = 'https://github.com/zaxerrrr-dot/GYMFORHABORE/blob/main/docs/MCP_REMOTE.md'
 
 // Where each app adds a connector, as its makers document it (checked 2026-11-08):
 //   Claude   claude.com/docs/connectors/custom/add-unlisted: Customize > Connectors, Free (one
@@ -26,10 +26,10 @@ export const ASSISTANTS = [
     plan: () => t('Any Claude plan. Free has room for one custom connector; on Team and Enterprise an Owner adds it first.'),
     steps: () => [
       t('Open Claude’s connector settings and choose Add custom connector.'),
-      t('Name it openGym and paste the server address. Leave the OAuth fields empty.'),
-      t('Press Connect. openGym asks what Claude may see and change, you say Allow.'),
+      t('Name it Habcore Gym and paste the server address. Leave the OAuth fields empty.'),
+      t('Press Connect. Habcore Gym asks what Claude may see and change, you say Allow.'),
     ],
-    tryIt: () => t('Ask Claude: “Look at my last month in openGym and plan my next week.”'),
+    tryIt: () => t('Ask Claude: “Look at my last month in Habcore Gym and plan my next week.”'),
   },
   {
     id: 'chatgpt', name: 'ChatGPT', tint: 'var(--green)',
@@ -37,10 +37,10 @@ export const ASSISTANTS = [
     plan: () => t('A paid ChatGPT plan, on the web. Business and Enterprise workspaces decide whether members may add their own.'),
     steps: () => [
       t('Open ChatGPT’s plugins, press the plus and choose Add custom MCP server.'),
-      t('Name it openGym, paste the server address and pick OAuth.'),
-      t('Sign in when ChatGPT sends you to openGym, choose what it may use, then Allow.'),
+      t('Name it Habcore Gym, paste the server address and pick OAuth.'),
+      t('Sign in when ChatGPT sends you to Habcore Gym, choose what it may use, then Allow.'),
     ],
-    tryIt: () => t('Ask ChatGPT: “Using openGym, how did my bench press go this month?”'),
+    tryIt: () => t('Ask ChatGPT: “Using Habcore Gym, how did my bench press go this month?”'),
   },
   {
     id: 'gemini', name: 'Gemini', tint: 'var(--blue)', limited: true,
@@ -49,9 +49,9 @@ export const ASSISTANTS = [
     steps: () => [
       t('In the Gemini web app open Settings & help, then Connected apps.'),
       t('Choose Add a custom app and paste the server address.'),
-      t('Sign in to openGym when Gemini asks, pick what it may use and Allow.'),
+      t('Sign in to Habcore Gym when Gemini asks, pick what it may use and Allow.'),
     ],
-    tryIt: () => t('Ask Gemini: “Make me a 3-day routine in openGym with what I already train.”'),
+    tryIt: () => t('Ask Gemini: “Make me a 3-day routine in Habcore Gym with what I already train.”'),
   },
 ]
 export const assistantById = id => ASSISTANTS.find(a => a.id === id) || null

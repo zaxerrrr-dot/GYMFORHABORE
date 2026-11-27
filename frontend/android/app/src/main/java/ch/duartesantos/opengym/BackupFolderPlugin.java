@@ -153,7 +153,7 @@ public class BackupFolderPlugin extends Plugin {
                 for (String[] child : children(tree)) {
                     if (BACKUP_NAME.matcher(child[0]).matches() && !child[0].equals(written)) older.add(child);
                 }
-                // Newest first by the date in the name, as the Documents/openGym prune does.
+                // Newest first by the date in the name, as the Documents/Habcore Gym prune does.
                 older.sort((a, b) -> b[0].compareTo(a[0]));
                 ContentResolver cr = getContext().getContentResolver();
                 for (int i = keep - 1; i < older.size(); i++) {

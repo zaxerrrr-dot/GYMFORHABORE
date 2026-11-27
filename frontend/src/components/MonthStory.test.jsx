@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-// Your month in openGym (v1.4.5): the year's stories for one month, and the Daily form card.
+// Your month in Habcore Gym (v1.4.5): the year's stories for one month, and the Daily form card.
 import React, { act } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createRoot } from 'react-dom/client'
@@ -38,7 +38,7 @@ describe('the month as stories', () => {
     act(() => openMonthStory('2026-10'))
     render(<Wrapped />)
     expect(host.querySelector('.wr-year').textContent).toBe('October 2026')
-    expect(host.textContent).toContain('Your month in openGym')
+    expect(host.textContent).toContain('Your month in Habcore Gym')
     act(() => button('Next card').click())
     expect(host.textContent).toContain('Workouts this month')
     expect(S().wrapped?.opened || []).toEqual([])

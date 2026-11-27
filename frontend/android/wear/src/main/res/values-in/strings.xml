@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- openGym on Wear OS, id. Written by frontend/android/wear/wear-strings.mjs: change that, not this. -->
+<!-- Habcore Gym on Wear OS, id. Written by frontend/android/wear/wear-strings.mjs: change that, not this. -->
 <resources>
     <string name="add_birth_year">Tambahkan tahun lahirmu di aplikasi ponsel</string>
     <string name="added_weight">Beban tambahan</string>
@@ -70,7 +70,7 @@
     <string name="not_now">Tidak sekarang</string>
     <string name="not_synced">Belum disinkronkan</string>
     <string name="notif_running">Latihan berjalan. Ketuk untuk kembali.</string>
-    <string name="open_phone_once">Buka openGym sekali di ponselmu, rutinitasmu akan muncul di sini.</string>
+    <string name="open_phone_once">Buka Habcore Gym sekali di ponselmu, rutinitasmu akan muncul di sini.</string>
     <string name="overview">Ringkasan</string>
     <string name="personal_records">PR</string>
     <string name="phone_away">Ponsel di luar jangkauan. Set kamu menunggu di sini.</string>

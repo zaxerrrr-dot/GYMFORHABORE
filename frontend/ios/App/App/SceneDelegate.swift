@@ -10,14 +10,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     // These callbacks just forward deep links / Universal Links to Capacitor,
     // since AppDelegate's equivalents are not called under the scene lifecycle.
 
-    // A link that started the app (a tap on a widget while openGym was closed) arrives here, not
+    // A link that started the app (a tap on a widget while Habcore Gym was closed) arrives here, not
     // in openURLContexts: handed on the same way, Capacitor keeps it as the launch URL the page
     // asks for (lib/widget-links.js, App.getLaunchUrl).
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // For the Live Activity's timing log (WorkoutActivity.swift LiveLog): a scene connecting on
         // a launch iOS made for a button means the whole page boots beside that tap.
         LiveLog.sceneConnected()
-        // Garmin Connect Mobile coming back with the watches picked for openGym (GarminLink).
+        // Garmin Connect Mobile coming back with the watches picked for Habcore Gym (GarminLink).
         if let url = connectionOptions.urlContexts.first?.url, GarminLink.shared.handle(url) {
             // handled: not a link for the page
         } else if let url = connectionOptions.urlContexts.first?.url {

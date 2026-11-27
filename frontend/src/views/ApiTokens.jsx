@@ -13,7 +13,7 @@ import { Section, Row, SelectRow, Button, TextField } from '../components/ui.jsx
    over MCP, a planner, a script), each seeing and changing only what is ticked, revoked here. The
    server keeps only a hash, so a new token is shown once. */
 
-export const MCP_REMOTE_DOCS = 'https://github.com/DuarteSantos8/openGym/blob/main/docs/MCP_REMOTE.md'
+export const MCP_REMOTE_DOCS = 'https://github.com/zaxerrrr-dot/GYMFORHABORE/blob/main/docs/MCP_REMOTE.md'
 export const ICON = { workouts: 'dumbbell', plans: 'calendar', bodyweight: 'scale', measurements: 'ruler', notes: 'pencil' }
 export const TINT = { workouts: 'var(--green)', plans: 'var(--orange)', bodyweight: 'var(--teal)', measurements: 'var(--indigo)', notes: 'var(--yellow)' }
 const sheet = render => useUI.getState().openSheet(render)
@@ -40,7 +40,7 @@ export default function ApiTokensPage() {
   return <>
     <p className="sect-f intg-intro">{t('A token lets one program, like an AI assistant, see or change only what you tick. Never more than you can, and only your own profile.')}</p>
     {error && <Section><Row icon="warning" iconTint="var(--orange)" title={t('Could not reach your server')} subtitle={t('Tap to try again')} onClick={load} /></Section>}
-    {mcp && <Section title={t('MCP address')} footer={t('Add it as a custom connector in Claude or ChatGPT and sign in with openGym when it asks. Other assistants take a token from below.')}>
+    {mcp && <Section title={t('MCP address')} footer={t('Add it as a custom connector in Claude or ChatGPT and sign in with Habcore Gym when it asks. Other assistants take a token from below.')}>
       <Row icon="plug" iconTint="var(--purple)" title={<span translate="no" className="tok-url">{address}</span>} accessory="none"
         onClick={async () => { if (await copyText(address)) toast(t('Copied')) }} value={t('Copy')} />
       <Row icon="chat" iconTint="var(--acc)" title={t('Step by step for Claude, ChatGPT and Gemini')} accessory="chevron" onClick={() => { window.location.hash = '#/assistants' }} />
@@ -99,7 +99,7 @@ function NewToken({ close, defaultDays, onMade }) {
   }
   if (token) return <>
     <h3>{t('Your new token')}</h3>
-    <p className="intg-lead">{t('Copy it now: this is the only time openGym shows it. Treat it like a password.')}</p>
+    <p className="intg-lead">{t('Copy it now: this is the only time Habcore Gym shows it. Treat it like a password.')}</p>
     <div className="intg-secret" role="group" aria-label={t('Your new token')} translate="no">{token}</div>
     <div className="intg-btns">
       <Button variant="tinted" icon="copy" onClick={async () => { if (await copyText(token)) toast(t('Copied')) }}>{t('Copy')}</Button>

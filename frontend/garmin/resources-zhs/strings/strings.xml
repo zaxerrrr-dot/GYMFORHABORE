@@ -1,8 +1,8 @@
-<!-- openGym on Garmin, zhs. Written by frontend/garmin/garmin-strings.mjs: change that, not this. -->
+<!-- Habcore Gym on Garmin, zhs. Written by frontend/garmin/garmin-strings.mjs: change that, not this. -->
 <strings>
     <string id="all_sets_done">所有组已完成</string>
     <string id="all_synced">已全部同步</string>
-    <string id="app_name">openGym</string>
+    <string id="app_name">Habcore Gym</string>
     <string id="cancel">取消</string>
     <string id="continue_workout">继续训练</string>
     <string id="discard_q">放弃训练？</string>
@@ -33,7 +33,7 @@
     <string id="no_set_for">已经 $1$ 分钟没有记录组了。还在练吗？</string>
     <string id="no_workout">没有进行中的训练</string>
     <string id="not_synced">尚未同步</string>
-    <string id="open_phone_once">在手机上的 openGym 里打开设置，再点 Garmin。</string>
+    <string id="open_phone_once">在手机上的 Habcore Gym 里打开设置，再点 Garmin。</string>
     <string id="overview">概览</string>
     <string id="paused">已暂停</string>
     <string id="phone_out_of_reach">手机不在范围内</string>
@@ -62,7 +62,7 @@
     <string id="up_next">下一个</string>
     <string id="up_next_set">$1$，第 $2$ 组</string>
     <string id="volume">总量</string>
-    <string id="waiting_phone">正在等手机。太久的话，在手机上打开 openGym。</string>
+    <string id="waiting_phone">正在等手机。太久的话，在手机上打开 Habcore Gym。</string>
     <string id="waiting_sync">等待同步</string>
     <string id="warmup">热身</string>
     <string id="weight">重量</string>

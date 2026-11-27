@@ -1,4 +1,4 @@
-// Your own streak flame and freeze (Settings → Look & Home → Icons): one of openGym's icons or any
+// Your own streak flame and freeze (Settings → Look & Home → Icons): one of Habcore Gym's icons or any
 // emoji, in place of the drawn flame and the snowflake. Stored in the synced state as
 // S.flameIcon and S.freezeIcon, two separate settings so a change to one on the phone and to the
 // other on the desktop both survive a merge:

@@ -1,4 +1,4 @@
-/* openGym on the Apple Watch, bn. Written by ios/ci/watch-strings.mjs: change that, not this. */
+/* Habcore Gym on the Apple Watch, bn. Written by ios/ci/watch-strings.mjs: change that, not this. */
 
 "Today" = "আজ";
 "Start workout" = "ওয়ার্কআউট শুরু করুন";
@@ -50,7 +50,7 @@
 "Finish the workout now? Otherwise it ends by itself at %@." = "এখনই ওয়ার্কআউট শেষ করবেন? না হলে %@-এ নিজে শেষ হবে।";
 "No workout running" = "কোনো ওয়ার্কআউট চলছে না";
 "Not synced yet" = "এখনো সিঙ্ক হয়নি";
-"Open openGym on your iPhone once and your routines show up here." = "iPhone-এ openGym একবার খুলুন, আপনার রুটিন এখানে দেখা যাবে।";
+"Open Habcore Gym on your iPhone once and your routines show up here." = "iPhone-এ Habcore Gym একবার খুলুন, আপনার রুটিন এখানে দেখা যাবে।";
 "Start one on your iPhone and it shows up here." = "iPhone-এ একটি শুরু করুন, এখানে দেখা যাবে।";
 "All sets done" = "সব সেট শেষ";
 "measuring" = "মাপা হচ্ছে …";
@@ -73,7 +73,7 @@
 "Tap to change it." = "বদলাতে ট্যাপ করুন।";
 "Added weight" = "অতিরিক্ত ওজন";
 "Your rest, your next set, or today's workout." = "আপনার বিশ্রাম, পরের সেট, বা আজকের ওয়ার্কআউট।";
-"Opens openGym." = "openGym খোলে।";
+"Opens Habcore Gym." = "Habcore Gym খোলে।";
 "Hold to finish" = "শেষ করতে চেপে ধরুন";
 "iPhone out of reach" = "iPhone নাগালের বাইরে";
 "No set for %lld min. Still at it?" = "%lld মিনিট ধরে কোনো সেট নেই। এখনো চলছে?";
@@ -85,7 +85,7 @@
 "No effort rated yet" = "এখনো কোনো পরিশ্রম রেট করা হয়নি";
 "max" = "সর্বোচ্চ";
 "min" = "সর্বনিম্ন";
-"Turn on Apple Health on your iPhone and openGym stays on screen through rests and holds." = "iPhone-এ Apple Health চালু করো, তাহলে বিশ্রাম আর হোল্ডের সময় openGym স্ক্রিনে থাকবে।";
+"Turn on Apple Health on your iPhone and Habcore Gym stays on screen through rests and holds." = "iPhone-এ Apple Health চালু করো, তাহলে বিশ্রাম আর হোল্ডের সময় Habcore Gym স্ক্রিনে থাকবে।";
 "No sets yet" = "এখনো কোনো সেট নেই";
 "+%lld more" = "+%lld আরও";
 "%@ sets" = "%@ সেট";

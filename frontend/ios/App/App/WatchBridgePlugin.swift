@@ -29,7 +29,7 @@ import WatchConnectivity
  * Without a paired watch nothing happens: status says so and sendSnapshot is a no-op.
  *
  * A Garmin rides along (GarminLink.swift, docs/GARMIN.md): status says `garmin: true` when one with
- * the openGym app was picked in Garmin Connect, the page then adds its cut-down snapshot
+ * the Habcore Gym app was picked in Garmin Connect, the page then adds its cut-down snapshot
  * (`garmin`) to each sendSnapshot, and the Garmin's events land in the same queue file. The Apple
  * Watch keeps its own snapshot; both can be there at once.
  *
@@ -77,7 +77,7 @@ public class WatchBridgePlugin: CAPPlugin, CAPBridgedPlugin {
     /* ---------- the page's calls ---------- */
 
     @objc func status(_ call: CAPPluginCall) {
-        // A Garmin with the openGym app counts as a watch for the page: it then sends snapshots.
+        // A Garmin with the Habcore Gym app counts as a watch for the page: it then sends snapshots.
         let g = GarminLink.shared
         let garmin = GarminLink.onMain { g.anyInstalled() }
         guard WCSession.isSupported() else {
@@ -117,7 +117,7 @@ public class WatchBridgePlugin: CAPPlugin, CAPBridgedPlugin {
     /// delegate). Only with a paired watch that has the app; anything else resolves { ok: false }
     /// and nothing happens.
     @objc func openOnWatch(_ call: CAPPluginCall) {
-        // A Garmin with the app shows its own "open openGym?" prompt.
+        // A Garmin with the app shows its own "open Habcore Gym?" prompt.
         let garmin = GarminLink.onMain { GarminLink.shared.open() }
         guard WCSession.isSupported(), WCSession.default.activationState == .activated,
               WCSession.default.isPaired, WCSession.default.isWatchAppInstalled,

@@ -1,8 +1,8 @@
-<!-- openGym on Garmin, ces. Written by frontend/garmin/garmin-strings.mjs: change that, not this. -->
+<!-- Habcore Gym on Garmin, ces. Written by frontend/garmin/garmin-strings.mjs: change that, not this. -->
 <strings>
     <string id="all_sets_done">Všechny série hotové</string>
     <string id="all_synced">Vše synchronizováno</string>
-    <string id="app_name">openGym</string>
+    <string id="app_name">Habcore Gym</string>
     <string id="cancel">Zrušit</string>
     <string id="continue_workout">Pokračovat v tréninku</string>
     <string id="discard_q">Zahodit trénink?</string>
@@ -33,7 +33,7 @@
     <string id="no_set_for">Už $1$ min žádná série. Pořád cvičíš?</string>
     <string id="no_workout">Žádný trénink neběží</string>
     <string id="not_synced">Zatím nesynchronizováno</string>
-    <string id="open_phone_once">V openGym na telefonu otevři Nastavení a pak Garmin.</string>
+    <string id="open_phone_once">V Habcore Gym na telefonu otevři Nastavení a pak Garmin.</string>
     <string id="overview">Přehled</string>
     <string id="paused">Pozastaveno</string>
     <string id="phone_out_of_reach">Telefon mimo dosah</string>
@@ -62,7 +62,7 @@
     <string id="up_next">Na řadě</string>
     <string id="up_next_set">$1$, série $2$</string>
     <string id="volume">Objem</string>
-    <string id="waiting_phone">Čekám na telefon. Když to trvá, otevři tam openGym.</string>
+    <string id="waiting_phone">Čekám na telefon. Když to trvá, otevři tam Habcore Gym.</string>
     <string id="waiting_sync">Čeká na synchronizaci</string>
     <string id="warmup">Rozcvička</string>
     <string id="weight">Váha</string>

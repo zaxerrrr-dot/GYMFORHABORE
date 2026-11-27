@@ -296,7 +296,8 @@ describe('the search lands on a row', () => {
     'account: gym.example', // the server's address, as the person typed it
     'account: Passkeys not supported in this browser.', 'reminders: Not supported in this browser.', // a note, not a row to change
     'equipment: Home', // the name of this test's equipment profile
-    'about: Rate openGym on the App Store', 'about: Buy me a coffee', 'about: Ko-fi', 'about: GitHub Sponsors', // links out of the app
+    // Habcore Gym (patch 0010): the Licences page's rows are links and a statement, found by the page's own entry
+    'licenses: Habcore Gym is based on open-source software licensed under the AGPL-3.0.', 'licenses: Source code of this version', 'licenses: Licence text (GNU AGPL-3.0)',
     'gym: Checking…', // the page loading
     'gym-find: Current location', // a search result, not a setting
     'voice: Try it', // plays a sample

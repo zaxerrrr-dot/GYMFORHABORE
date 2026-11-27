@@ -48,7 +48,7 @@ android {
     // or ML Kit (see the F-Droid block below the dependencies), no updater (F-Droid updates it),
     // the repository's 180 px animations only. Same applicationId and versionCode as the APK;
     // F-Droid signs it with its own key unless its build matches ours (docs/APP_STORES.md).
-    // "offline" is openGym Offline: the F-Droid build with the INTERNET permission taken out
+    // "offline" is Habcore Gym Offline: the F-Droid build with the INTERNET permission taken out
     // (src/offline/AndroidManifest.xml), so the phone itself guarantees it never talks to anyone.
     // Its own applicationId and name, so it sits next to the normal app; the page hides everything
     // that needs a network (lib/build-caps.js: sync, the Coach, YouTube, webhooks, WebDAV...).
@@ -88,7 +88,7 @@ android {
     sourceSets {
         sideload.java.srcDirs += ['src/gms/java', 'src/ciq/java']
         play.java.srcDirs += ['src/gms/java', 'src/ciq/java']
-        // openGym Offline answers "no watch, no Garmin, no packs, no updater" like F-Droid.
+        // Habcore Gym Offline answers "no watch, no Garmin, no packs, no updater" like F-Droid.
         offline.java.srcDirs += ['src/fdroid/java']
     }
     // Plan B for Google Play's background-location review (docs/APP_STORES.md): with

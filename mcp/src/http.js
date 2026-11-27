@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* openGym MCP over HTTPS (#781, #314): the same tools as the stdio server, as a Streamable HTTP
+/* Habcore Gym MCP over HTTPS (#781, #314): the same tools as the stdio server, as a Streamable HTTP
    endpoint for clients that cannot spawn a local process (hosted assistants, a phone, another
    machine). It runs as the optional `mcp` container (docker-compose.yml, profile `mcp`), and the
    web container proxies /mcp to it, so it lives on the app's own origin behind whatever already
@@ -69,7 +69,7 @@ export function createMcpHandler({
   // should ask for when the person picks nothing else: read the training, plan it. Claude
   // requires the 401 (it ignores the header on any other status).
   const unauthorized = (res, why) => rpcError(res, 401, why, {
-    'WWW-Authenticate': 'Bearer realm="openGym", error="invalid_token", error_description="sign in with openGym, or make a token in Settings, API tokens"'
+    'WWW-Authenticate': 'Bearer realm="Habcore Gym", error="invalid_token", error_description="sign in with Habcore Gym, or make a token in Settings, API tokens"'
       + (publicOrigin ? `, resource_metadata="${publicOrigin}${basePath}/.well-known/oauth-protected-resource/mcp", scope="${DEFAULT_SCOPE}"` : ''),
   })
 
@@ -122,7 +122,7 @@ export function createMcpHandler({
     if (!TOKEN_RE.test(token)) {
       const wait = refused.take(who)
       if (wait) return rpcError(res, 429, 'too many refused requests, try again later', { 'Retry-After': String(wait) })
-      return unauthorized(res, token ? 'that is not an openGym API token (ogt_…); a paired session is not taken here' : 'an openGym API token is needed (Authorization: Bearer ogt_…)')
+      return unauthorized(res, token ? 'that is not an Habcore Gym API token (ogt_…); a paired session is not taken here' : 'an Habcore Gym API token is needed (Authorization: Bearer ogt_…)')
     }
 
     let body
@@ -136,10 +136,10 @@ export function createMcpHandler({
       if (e.code === 'EAUTH') {
         const wait = refused.take(who)
         if (wait) return rpcError(res, 429, 'too many refused requests, try again later', { 'Retry-After': String(wait) })
-        return unauthorized(res, 'openGym did not accept this token: revoked, expired, or the profile signed out everywhere')
+        return unauthorized(res, 'Habcore Gym did not accept this token: revoked, expired, or the profile signed out everywhere')
       }
       if (e.code === 'ERATE') return rpcError(res, 429, e.message, { 'Retry-After': '60' })
-      return rpcError(res, 502, 'openGym could not be reached from the MCP server')
+      return rpcError(res, 502, 'Habcore Gym could not be reached from the MCP server')
     }
 
     const server = buildServer({

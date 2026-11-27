@@ -1,4 +1,4 @@
-// openGym on a Zepp OS watch: one page that draws one screen at a time, picked from the state
+// Habcore Gym on a Zepp OS watch: one page that draws one screen at a time, picked from the state
 // (lib/session.js, the Wear OS SessionCore's port). The screens mirror the Wear OS app's:
 //
 //   start    today's routine with one tap, Quick start, a few more; the week streak on top
@@ -73,7 +73,7 @@ function button (text, y, onClick, { w = null, h = u(TAP + 16), x = null, primar
   return add(widget.BUTTON, props)
 }
 
-// The openGym lockup (assets/logo/opengym-logo-dark.svg): the official mark as its five plain
+// The Habcore Gym lockup (assets/logo/opengym-logo-dark.svg): the official mark as its five plain
 // rectangles (352 x 174 grid, square corners), then "open" in light ink and "Gym" in brand green.
 // The mark is 1.07x the type, 0.2x away from it, as in the SVG and card-draw.js drawBrand. Drawn
 // from FILL_RECTs and two TEXTs, so no image asset and next to no memory.
@@ -138,7 +138,7 @@ Page(
       this.store = createStore(new LocalStorage())
       const own = getText('lang')
       setLang((this.store.state.settings && this.store.state.settings.lang) || (own !== 'lang' ? own : 'en'))
-      // Back to openGym when the wrist comes up, not the watch face, while a workout runs.
+      // Back to Habcore Gym when the wrist comes up, not the watch face, while a workout runs.
       try { setWakeUpRelaunch({ relaunch: true }) } catch (e) { /* older firmware */ }
       this.hrSamples = []
       this.hrAll = []

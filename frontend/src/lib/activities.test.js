@@ -75,7 +75,7 @@ describe('activities: from the health store', () => {
   it('takes a run from Strava, with its day and minutes', () => {
     expect(activityFromHealth(rec, {}, 'hc', now)).toMatchObject({ d: '2026-11-02', sport: 'run', min: 42, src: 'hc' })
   })
-  it('skips openGym\'s own, strength, gym cardio, walks, short ones and the future', () => {
+  it('skips Habcore Gym\'s own, strength, gym cardio, walks, short ones and the future', () => {
     expect(isOwnRecord({ origin: 'ch.duartesantos.opengym' })).toBe(true)
     expect(isOwnRecord({ origin: 'ch.opengym.app.watchkitapp' })).toBe(true)
     expect(isOwnRecord({ clientId: 'opengym-w-1' })).toBe(true)
@@ -111,13 +111,13 @@ describe('activities: imports', () => {
     expect(hkSportName('HKWorkoutActivityTypeSoccer')).toBe('football')
     expect(hkSportName('HKWorkoutActivityTypeSomethingNew')).toBe('other')
   })
-  it('reads the runs and matches of an Apple Health export, and skips openGym, strength and walks', () => {
+  it('reads the runs and matches of an Apple Health export, and skips Habcore Gym, strength and walks', () => {
     const xml = `<?xml version="1.0"?><HealthData>
       <Workout workoutActivityType="HKWorkoutActivityTypeRunning" duration="42.5" durationUnit="min" totalDistance="8.2" totalDistanceUnit="km" sourceName="Strava" startDate="2026-10-05 07:00:00 +0200" endDate="2026-10-05 07:42:30 +0200"><MetadataEntry key="x" value="y"/></Workout>
       <Workout workoutActivityType="HKWorkoutActivityTypeTennis" duration="1.5" durationUnit="hr" sourceName="Watch" startDate="2026-10-06 18:00:00 +0200" endDate="2026-10-06 19:30:00 +0200"/>
-      <Workout workoutActivityType="HKWorkoutActivityTypeTraditionalStrengthTraining" duration="60" durationUnit="min" sourceName="openGym" startDate="2026-10-07 18:00:00 +0200"/>
+      <Workout workoutActivityType="HKWorkoutActivityTypeTraditionalStrengthTraining" duration="60" durationUnit="min" sourceName="Habcore Gym" startDate="2026-10-07 18:00:00 +0200"/>
       <Workout workoutActivityType="HKWorkoutActivityTypeWalking" duration="30" durationUnit="min" sourceName="Watch" startDate="2026-10-08 12:00:00 +0200"/>
-      <Workout workoutActivityType="HKWorkoutActivityTypeSoccer" duration="90" durationUnit="min" sourceName="openGym" startDate="2026-10-09 12:00:00 +0200"/>
+      <Workout workoutActivityType="HKWorkoutActivityTypeSoccer" duration="90" durationUnit="min" sourceName="Habcore Gym" startDate="2026-10-09 12:00:00 +0200"/>
     </HealthData>`
     const list = activitiesFromHealthExport(xml)
     expect(list.map(a => [a.d, a.sport, a.min, a.km ?? null])).toEqual([['2026-10-05', 'run', 43, 8.2], ['2026-10-06', 'racket', 90, null]])

@@ -17,16 +17,16 @@ const lineOf = key => ({
   checking: t('Checking…'),
   build: t('Wear OS watches talk to the phone through Google Play services, which F-Droid apps leave out. The APK from opengym.ch and the Google Play app have the watch link.'),
   'no-watch': t('No Wear OS watch is connected to this phone. Pair one in its own app (Galaxy Wearable, Pixel Watch), then come back here.'),
-  'get-app-play': t('Your watch is here, openGym isn’t on it yet. On the watch, open the Play Store and install openGym from “Apps on your phone”.'),
-  'get-app-apk': t('Your watch is here, openGym isn’t on it yet. This phone runs the openGym APK, so the watch needs the Wear OS APK of the same release. One from Google Play won’t pair with it.'),
-  'on-watch': t('openGym is on your watch and in reach. Sets you log on the wrist land here.'),
-  'on-watch-away': t('openGym is on your watch, but the watch is out of reach right now. Sets you log on it wait there and land here once it is back.'),
+  'get-app-play': t('Your watch is here, Habcore Gym isn’t on it yet. On the watch, open the Play Store and install Habcore Gym from “Apps on your phone”.'),
+  'get-app-apk': t('Your watch is here, Habcore Gym isn’t on it yet. This phone runs the Habcore Gym APK, so the watch needs the Wear OS APK of the same release. One from Google Play won’t pair with it.'),
+  'on-watch': t('Habcore Gym is on your watch and in reach. Sets you log on the wrist land here.'),
+  'on-watch-away': t('Habcore Gym is on your watch, but the watch is out of reach right now. Sets you log on it wait there and land here once it is back.'),
 }[key] || '')
 
 const watchLine = w => ({
   connected: t('Connected'),
   away: t('Not in reach'),
-  'not-installed': t('openGym isn’t on it yet'),
+  'not-installed': t('Habcore Gym isn’t on it yet'),
 }[wearWatchLine(w)])
 
 /** `api`: the phone's answer and where the app came from (a test hands in its own). */
@@ -57,7 +57,7 @@ export default function WearSettingsPage ({ api = { status: wearStatus, channel:
   const heardAt = lastHeardAt(heard)
   const heardLine = !there ? '' : heardAt
     ? t('Last heard from the watch: {0}', fmtAgo(heardAt))
-    : t('The watch hasn’t checked in yet. Open openGym on it once.')
+    : t('The watch hasn’t checked in yet. Open Habcore Gym on it once.')
 
   return <>
     <Section footer={[lineOf(view.key), heardLine].filter(Boolean).join(' ')}>
@@ -70,7 +70,7 @@ export default function WearSettingsPage ({ api = { status: wearStatus, channel:
         title={w.name || t('Wear OS watch')} subtitle={watchLine(w)} />)}
     </Section>}
     {view.getApp && <Section>
-      <Row icon="download" iconTint="var(--green)" accessory="chevron" title={t('Get openGym for Wear OS')}
+      <Row icon="download" iconTint="var(--green)" accessory="chevron" title={t('Get Habcore Gym for Wear OS')}
         onClick={() => window.open(WEAR_DOCS, '_blank', 'noopener,noreferrer')} />
     </Section>}
     {prefs.enabled && view.key !== 'build' && <>

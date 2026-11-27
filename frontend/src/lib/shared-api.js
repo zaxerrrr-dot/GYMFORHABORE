@@ -50,7 +50,7 @@ export const libraryConsentWords = consent => (consent && consent.text && consen
 export const REPORT_REASONS = ['spam', 'offensive', 'not-theirs', 'licensed', 'personal', 'other']
 export const reasonLabel = r => ({
   spam: t('Spam'), offensive: t('Rude or not okay'), 'not-theirs': t('Not theirs to share'),
-  licensed: t('openGym animation or other licensed stuff'), personal: t('Personal data'), other: t('Something else'),
+  licensed: t('Habcore Gym animation or other licensed stuff'), personal: t('Personal data'), other: t('Something else'),
 }[r] || r)
 
 /** A refusal from these routes, in the app's words. */

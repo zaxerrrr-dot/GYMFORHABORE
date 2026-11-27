@@ -1,5 +1,5 @@
 // Plan > Scan a QR code: the gym check-in's scanner (lib/scan.js: ML Kit in the phone apps,
-// components/CameraScan.jsx with jsQR in a browser and the F-Droid build), pointed at openGym's
+// components/CameraScan.jsx with jsQR in a browser and the F-Droid build), pointed at Habcore Gym's
 // own codes. What it read goes where a tap on the same link would go (lib/scan-route.js): a
 // friend's routine to its preview, a library routine to the import sheet, a sticker link to the
 // sticker's action. Anything else is shown back, so you can see what the camera actually saw.
@@ -24,7 +24,7 @@ export async function handleScannedText(text, { indexAddress: at } = {}) {
   if (route.kind === 'routine-link') await openRoutinePayload(route.payload)
   else if (route.kind === 'library') await openLibraryLink(route.link)
   else if (route.kind === 'tag') handleTagLink(route.url)
-  else ui().toast(t('That’s not an openGym code: {0}', shownText(route.text) || '?'))
+  else ui().toast(t('That’s not an Habcore Gym code: {0}', shownText(route.text) || '?'))
   return route
 }
 

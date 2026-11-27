@@ -27,7 +27,7 @@ test('a day holds a combined weekday, an override, or nothing on a rest override
 test('the feed: all-day plan events with stable ids, escaped, folded', () => {
   const ics = buildIcs(S, { uid: 'u1', now: NOW, tz: 'UTC', name: 'Duarte' });
   assert.match(ics, /^BEGIN:VCALENDAR\r\nVERSION:2.0\r\n/);
-  assert.match(ics, /X-WR-CALNAME:openGym · Duarte\r\n/);
+  assert.match(ics, /X-WR-CALNAME:Habcore Gym · Duarte\r\n/);
   assert.ok(ics.endsWith('END:VCALENDAR\r\n'));
   for (const line of ics.split('\r\n')) assert.ok(Buffer.byteLength(line) <= 75, 'folded: ' + line);
   const ev = events(ics);

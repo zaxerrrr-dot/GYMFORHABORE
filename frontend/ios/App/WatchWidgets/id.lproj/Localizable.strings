@@ -1,4 +1,4 @@
-/* openGym on the Apple Watch, id. Written by ios/ci/watch-strings.mjs: change that, not this. */
+/* Habcore Gym on the Apple Watch, id. Written by ios/ci/watch-strings.mjs: change that, not this. */
 
 "Today" = "Hari ini";
 "Start workout" = "Mulai latihan";
@@ -50,7 +50,7 @@
 "Finish the workout now? Otherwise it ends by itself at %@." = "Selesaikan latihan sekarang? Kalau tidak, selesai sendiri pukul %@.";
 "No workout running" = "Tidak ada latihan berjalan";
 "Not synced yet" = "Belum disinkronkan";
-"Open openGym on your iPhone once and your routines show up here." = "Buka openGym sekali di iPhone kamu, rutinitasmu akan muncul di sini.";
+"Open Habcore Gym on your iPhone once and your routines show up here." = "Buka Habcore Gym sekali di iPhone kamu, rutinitasmu akan muncul di sini.";
 "Start one on your iPhone and it shows up here." = "Mulai di iPhone kamu dan akan muncul di sini.";
 "All sets done" = "Semua set selesai";
 "measuring" = "mengukur …";
@@ -73,7 +73,7 @@
 "Tap to change it." = "Ketuk untuk mengubah.";
 "Added weight" = "Beban tambahan";
 "Your rest, your next set, or today's workout." = "Istirahatmu, set berikutnya, atau latihan hari ini.";
-"Opens openGym." = "Membuka openGym.";
+"Opens Habcore Gym." = "Membuka Habcore Gym.";
 "Hold to finish" = "Tahan untuk selesai";
 "iPhone out of reach" = "iPhone di luar jangkauan";
 "No set for %lld min. Still at it?" = "Tidak ada set selama %lld mnt. Masih latihan?";
@@ -85,7 +85,7 @@
 "No effort rated yet" = "Belum ada usaha yang dinilai";
 "max" = "maks";
 "min" = "min";
-"Turn on Apple Health on your iPhone and openGym stays on screen through rests and holds." = "Nyalakan Apple Kesehatan di iPhone, dan openGym tetap di layar saat istirahat dan tahanan.";
+"Turn on Apple Health on your iPhone and Habcore Gym stays on screen through rests and holds." = "Nyalakan Apple Kesehatan di iPhone, dan Habcore Gym tetap di layar saat istirahat dan tahanan.";
 "No sets yet" = "Belum ada set";
 "+%lld more" = "+%lld lagi";
 "%@ sets" = "%@ set";

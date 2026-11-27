@@ -1,8 +1,8 @@
 /* "Sign in with OpenRouter": OpenRouter's official OAuth PKCE flow
- * (https://openrouter.ai/docs/guides/overview/auth/oauth). The person approves openGym on
+ * (https://openrouter.ai/docs/guides/overview/auth/oauth). The person approves Habcore Gym on
  * openrouter.ai and comes back with a one-time code; that code plus the verifier made here buys an
  * API key of their own, billed to their OpenRouter credits. No client secret exists, nothing goes
- * through an openGym server, and the code is worthless without the verifier.
+ * through an Habcore Gym server, and the code is worthless without the verifier.
  *
  * Runtime-neutral (web crypto + an injected fetch): the browser's admin card and the phone use it. */
 export const OPENROUTER_AUTH = 'https://openrouter.ai/auth';
@@ -28,7 +28,7 @@ export async function makePkce(c = globalThis.crypto) {
 
 /** The address to send the person to. Without a callback it is OpenRouter's headless mode: the
  *  code is shown on screen for the person to paste back, and the challenge is required. */
-export function authUrl({ callbackUrl, challenge, state, keyLabel = 'openGym Coach' }) {
+export function authUrl({ callbackUrl, challenge, state, keyLabel = 'Habcore Gym Coach' }) {
   const q = new URLSearchParams();
   if (callbackUrl) q.set('callback_url', callbackUrl);
   q.set('code_challenge', challenge);

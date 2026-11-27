@@ -2,7 +2,7 @@ import SwiftUI
 import WatchKit
 
 /*
- * openGym's look on the wrist: the app's dark theme (frontend/src/index.css) as Swift tokens, and
+ * Habcore Gym's look on the wrist: the app's dark theme (frontend/src/index.css) as Swift tokens, and
  * the few controls every screen shares. Black page, grey surfaces one step up, the accent only on
  * the one thing to press. The accent is the app's own, as the phone sends it (WatchSettings.accent),
  * handed down as an environment value so a change on the phone recolours every screen at once.

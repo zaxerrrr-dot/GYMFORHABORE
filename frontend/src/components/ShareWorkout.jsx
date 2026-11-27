@@ -53,9 +53,9 @@ export function readSharePref() {
 const BG_NAMED = { brand: BRAND.ink, black: '#000000', white: '#ffffff' }
 const INK_NAMED = { white: '#ffffff', black: '#000000', brand: BRAND.green }
 const HI_NAMED = { brand: BRAND.green, white: '#ffffff', black: '#000000' }
-const SWATCH_LABEL = () => ({ auto: t('Auto'), brand: t('openGym dark'), black: t('Black'), white: t('White'), accent: t('Accent'), clear: t('See-through') })
-const INK_LABEL = () => ({ auto: t('Auto'), white: t('White'), black: t('Black'), brand: t('openGym green') })
-const HI_LABEL = () => ({ auto: t('Accent'), brand: t('openGym green'), white: t('White'), black: t('Black') })
+const SWATCH_LABEL = () => ({ auto: t('Auto'), brand: t('Habcore Gym dark'), black: t('Black'), white: t('White'), accent: t('Accent'), clear: t('See-through') })
+const INK_LABEL = () => ({ auto: t('Auto'), white: t('White'), black: t('Black'), brand: t('Habcore Gym green') })
+const HI_LABEL = () => ({ auto: t('Accent'), brand: t('Habcore Gym green'), white: t('White'), black: t('Black') })
 
 /** One row of colour swatches, with a custom colour at its end. Each swatch carries its name, not
  *  only its colour, so the row reads without colour vision. */
@@ -277,7 +277,7 @@ export default function ShareWorkout({ w, close }) {
     setBusy(true)
     const blob = await toPng(canvasRef.current)
     if (!blob) { toast(t('Could not create the image')); setBusy(false); return }
-    const done = await how(blob, `opengym-workout-${day}${pref.template === 'sticker' ? '-sticker' : ''}.png`, w.name || 'openGym', toast)
+    const done = await how(blob, `habcore-gym-workout-${day}${pref.template === 'sticker' ? '-sticker' : ''}.png`, w.name || 'Habcore Gym', toast)
     setBusy(false)
     if (done !== false) close?.()
   }

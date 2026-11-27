@@ -203,7 +203,7 @@ describe('the ids both ends find each other by', () => {
     expect(dashed.replace(/-/g, '').toLowerCase()).toBe(appId)
   })
 
-  it('the store id is the same wherever "Get openGym for Garmin" goes', () => {
+  it('the store id is the same wherever "Get Habcore Gym for Garmin" goes', () => {
     expect(GARMIN_STORE_ID).toMatch(/^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$/)
     expect(has(java, new RegExp(`STORE_ID = "${GARMIN_STORE_ID}"`))).toBe(true)
     expect(has(swift, new RegExp(`storeId: UUID\\? = UUID\\(uuidString: "${GARMIN_STORE_ID}"\\)`))).toBe(true)

@@ -1,8 +1,8 @@
-<!-- openGym on Garmin, rus. Written by frontend/garmin/garmin-strings.mjs: change that, not this. -->
+<!-- Habcore Gym on Garmin, rus. Written by frontend/garmin/garmin-strings.mjs: change that, not this. -->
 <strings>
     <string id="all_sets_done">Все подходы сделаны</string>
     <string id="all_synced">Всё синхронизировано</string>
-    <string id="app_name">openGym</string>
+    <string id="app_name">Habcore Gym</string>
     <string id="cancel">Отмена</string>
     <string id="continue_workout">Продолжить тренировку</string>
     <string id="discard_q">Отменить тренировку?</string>
@@ -33,7 +33,7 @@
     <string id="no_set_for">Ни одного подхода $1$ мин. Ещё тренируетесь?</string>
     <string id="no_workout">Тренировка не идёт</string>
     <string id="not_synced">Ещё не синхронизировано</string>
-    <string id="open_phone_once">В openGym на телефоне откройте Настройки, затем Garmin.</string>
+    <string id="open_phone_once">В Habcore Gym на телефоне откройте Настройки, затем Garmin.</string>
     <string id="overview">Обзор</string>
     <string id="paused">На паузе</string>
     <string id="phone_out_of_reach">Телефон вне зоны</string>
@@ -62,7 +62,7 @@
     <string id="up_next">Далее</string>
     <string id="up_next_set">$1$, подход $2$</string>
     <string id="volume">Объём</string>
-    <string id="waiting_phone">Ждём телефон. Если долго, откройте там openGym.</string>
+    <string id="waiting_phone">Ждём телефон. Если долго, откройте там Habcore Gym.</string>
     <string id="waiting_sync">Ожидает синхронизации</string>
     <string id="warmup">Разминка</string>
     <string id="weight">Вес</string>

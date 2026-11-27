@@ -154,9 +154,17 @@ describe('Settings — reset everything', () => {
 })
 
 describe('Settings — footer', () => {
-  it('links the source code to its home on GitHub, on About & updates', () => {
+  it('the Licences page links the source code of this version (AGPL §13) and keeps the notices', () => {
+    act(() => root.render(<Settings page="licenses" />))
+    const src = [...host.querySelectorAll('.lrow')].find(r => r.textContent.includes('Source code of this version'))
+    expect(src.textContent).toContain('github.com/zaxerrrr-dot/GYMFORHABORE')
+    expect(host.textContent).toContain('Media licensed for use in openGym only')
+    expect(host.textContent).toContain('MuscleMap')
+    expect(host.textContent).toContain('GNU AGPL')
+  })
+  it('About & updates names Habcore Gym, not openGym, outside the Licences page', () => {
     act(() => root.render(<Settings page="about" />))
-    const link = [...host.querySelectorAll('a')].find(a => a.textContent === 'Source code')
-    expect(link.getAttribute('href')).toBe('https://github.com/DuarteSantos8/openGym')
+    expect(host.textContent).toContain('Habcore Gym v')
+    expect(host.textContent).not.toContain('openGym')
   })
 })

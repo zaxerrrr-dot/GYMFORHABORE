@@ -43,7 +43,7 @@ import java.util.concurrent.Executors;
  * Garmin Connect going away (it was updated, stopped or crashed) ends the SDK's link to it
  * (onSdkShutDown), and with it what the SDK had registered there: the link is then brought up
  * again from scratch (`revive`) and every watch registered anew, or no set from the wrist would
- * arrive until openGym itself was restarted. A start that never comes up is tried a few times
+ * arrive until Habcore Gym itself was restarted. A start that never comes up is tried a few times
  * and then says "error", which Settings → Garmin's "Look again" starts over.
  */
 final class GarminLink {
@@ -80,7 +80,7 @@ final class GarminLink {
 
     private GarminLink(Context ctx) {
         this.ctx = ctx.getApplicationContext();
-        // The watches that had openGym the last time: known at once, so the page makes the Garmin
+        // The watches that had Habcore Gym the last time: known at once, so the page makes the Garmin
         // snapshot from its first send and a watch saying hello gets it without a round trip.
         try {
             for (String id : prefs().getStringSet("has", new HashSet<String>())) installed.put(Long.parseLong(id), true);
@@ -89,7 +89,7 @@ final class GarminLink {
 
     private SharedPreferences prefs() { return ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE); }
 
-    /** Whether openGym is on a watch, remembered for the next launch. */
+    /** Whether Habcore Gym is on a watch, remembered for the next launch. */
     private Boolean setInstalled(long id, boolean has) {
         Boolean was = installed.put(id, has);
         if (was == null || was != has) saveInstalled();
@@ -309,7 +309,7 @@ final class GarminLink {
 
     private boolean connected(long id) { return "CONNECTED".equals(deviceState.get(id)); }
 
-    /** Whether a Garmin with the openGym app is there (connected now or not). */
+    /** Whether a Garmin with the Habcore Gym app is there (connected now or not). */
     boolean anyInstalled() {
         for (Boolean b : installed.values()) if (Boolean.TRUE.equals(b)) return true;
         return false;
@@ -375,7 +375,7 @@ final class GarminLink {
         });
     }
 
-    /** A workout started on the phone: each connected Garmin with the app asks "open openGym?". */
+    /** A workout started on the phone: each connected Garmin with the app asks "open Habcore Gym?". */
     boolean open() {
         if (ciq == null || !"ready".equals(state)) return false;
         boolean any = false;
@@ -390,7 +390,7 @@ final class GarminLink {
         return any;
     }
 
-    /** The openGym page in the Connect IQ Store (in Garmin Connect), once it is published there. */
+    /** The Habcore Gym page in the Connect IQ Store (in Garmin Connect), once it is published there. */
     boolean openStore() {
         if (ciq == null || !"ready".equals(state) || STORE_ID.isEmpty()) return false;
         try { return ciq.openStore(STORE_ID); } catch (Exception e) { return false; }

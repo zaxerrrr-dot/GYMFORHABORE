@@ -14,7 +14,7 @@ test('the built-in index is the starter plans, every one a valid entry with its 
 });
 
 test('an index is refused unless it says what it is, and broken entries are left out', () => {
-  assert.equal(normalizeIndex({ routines: [] }).error, 'not an openGym routines index');
+  assert.equal(normalizeIndex({ routines: [] }).error, 'not an Habcore Gym routines index');
   assert.match(normalizeIndex({ format: FORMAT, version: 2 }).error, /version/);
   const good = { id: 'community/a', title: 'A', sessions: [{ name: 'Day', exercises: [{ id: '0025', sets: 3, reps: 8 }] }] };
   const r = normalizeIndex({ format: FORMAT, version: 1, routines: [

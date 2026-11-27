@@ -30,7 +30,7 @@ describe('the Wear OS link, as Settings says it', () => {
     expect(wearView({ supported: true, paired: false, installed: true, reachable: false, watches: [] }, 'play').key).toBe('on-watch-away')
   })
 
-  it('F-Droid and openGym Offline have no Wear OS link at all, whatever the phone says', () => {
+  it('F-Droid and Habcore Gym Offline have no Wear OS link at all, whatever the phone says', () => {
     const on = { supported: true, paired: true, installed: true, reachable: true, watches: [watch()] }
     expect(wearView(on, 'fdroid')).toEqual({ key: 'build', getApp: false, watches: [] })
     expect(wearView(on, 'offline').key).toBe('build')
@@ -43,7 +43,7 @@ describe('the Wear OS link, as Settings says it', () => {
 })
 
 describe('one watch\'s line', () => {
-  it('says whether openGym is on it and whether it is in reach', () => {
+  it('says whether Habcore Gym is on it and whether it is in reach', () => {
     expect(wearWatchLine(watch())).toBe('not-installed')
     expect(wearWatchLine(watch({ installed: true, reachable: true }))).toBe('connected')
     expect(wearWatchLine(watch({ installed: true, connected: false }))).toBe('away')

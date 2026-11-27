@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- openGym Offline (app/build.gradle, flavour "offline"): the F-Droid build without a network.
+<!-- Habcore Gym Offline (app/build.gradle, flavour "offline"): the F-Droid build without a network.
      INTERNET is removed here, including any a library would merge in, so Android itself refuses
      every connection the app could try; ACCESS_NETWORK_STATE goes too, there is nothing to check.
      Everything the page would need a network for is hidden (lib/build-caps.js), and

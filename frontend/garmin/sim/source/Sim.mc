@@ -1,5 +1,5 @@
 // The simulator build plays the phone (sim/run.sh, docs/GARMIN.md "Simulator"): every run starts
-// clean, as if openGym on the phone had just sent its snapshot (sim/gen.mjs, from
+// clean, as if Habcore Gym on the phone had just sent its snapshot (sim/gen.mjs, from
 // test/snapshot.json). From there the watch is driven with its own buttons: START starts today's
 // routine, START logs a set and the rest begins, MENU (UP held) opens the workout menu with Finish.
 // Events the watch sends stay in its outbox (Link.wired() is false here). Every 2 s the memory in

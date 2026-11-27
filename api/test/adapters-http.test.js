@@ -881,7 +881,7 @@ test('OpenRouter: its own base, attribution headers, the web plugin only when as
   const c = f.calls[0];
   assert.equal(c.url, 'https://openrouter.ai/api/v1/chat/completions');
   assert.equal(c.headers.authorization, 'Bearer sk-or-v1-x');
-  assert.equal(c.headers['x-title'], 'openGym');
+  assert.equal(c.headers['x-title'], 'Habcore Gym');
   assert.equal(c.body.model, 'openrouter/auto');
   assert.deepEqual(c.body.plugins, [{ id: 'web', max_results: 5 }]);
   const g = fakeFetch([ok({ choices: [{ message: { content: ANSWER }, finish_reason: 'stop' }] })]);

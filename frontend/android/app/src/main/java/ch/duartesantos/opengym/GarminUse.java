@@ -43,7 +43,7 @@ final class GarminUse {
 
     /**
      * Whether Garmin Connect's "not installed" counts. It answers that for a watch it cannot ask
-     * (out of reach) as well, and taking it would say "openGym isn’t on it yet" about a watch that
+     * (out of reach) as well, and taking it would say "Habcore Gym isn’t on it yet" about a watch that
      * has it, and stop the snapshots until it said hello again.
      */
     static boolean trustsNotInstalled(boolean connected) {

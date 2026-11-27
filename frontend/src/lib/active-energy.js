@@ -1,5 +1,5 @@
 // Active energy for a workout logged on the phone (#724, D#917). Apple Health and Health Connect
-// show a workout without calories as 0 kcal, and nothing on the phone measures them, so openGym
+// show a workout without calories as 0 kcal, and nothing on the phone measures them, so Habcore Gym
 // writes an estimate: MET of what was done × body weight × time. The Apple Watch app measures its
 // own and saves those instead (WorkoutManager.swift); this is only for the phone's copy.
 //

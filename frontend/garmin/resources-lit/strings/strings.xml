@@ -1,8 +1,8 @@
-<!-- openGym on Garmin, lit. Written by frontend/garmin/garmin-strings.mjs: change that, not this. -->
+<!-- Habcore Gym on Garmin, lit. Written by frontend/garmin/garmin-strings.mjs: change that, not this. -->
 <strings>
     <string id="all_sets_done">Visos serijos atliktos</string>
     <string id="all_synced">Viskas sinchronizuota</string>
-    <string id="app_name">openGym</string>
+    <string id="app_name">Habcore Gym</string>
     <string id="cancel">Atšaukti</string>
     <string id="continue_workout">Tęsti treniruotę</string>
     <string id="discard_q">Atsisakyti treniruotės?</string>
@@ -33,7 +33,7 @@
     <string id="no_set_for">Jau $1$ min. be serijos. Dar treniruojatės?</string>
     <string id="no_workout">Treniruotė nevyksta</string>
     <string id="not_synced">Dar nesinchronizuota</string>
-    <string id="open_phone_once">Telefone atidaryk openGym, tada Nustatymai ir Garmin.</string>
+    <string id="open_phone_once">Telefone atidaryk Habcore Gym, tada Nustatymai ir Garmin.</string>
     <string id="overview">Apžvalga</string>
     <string id="paused">Pristabdyta</string>
     <string id="phone_out_of_reach">Telefonas nepasiekiamas</string>
@@ -62,7 +62,7 @@
     <string id="up_next">Kitas</string>
     <string id="up_next_set">$1$, serija $2$</string>
     <string id="volume">Tūris</string>
-    <string id="waiting_phone">Laukiu telefono. Jei ilgai, atidaryk ten openGym.</string>
+    <string id="waiting_phone">Laukiu telefono. Jei ilgai, atidaryk ten Habcore Gym.</string>
     <string id="waiting_sync">Laukiama sinchronizacijos</string>
     <string id="warmup">Apšilimas</string>
     <string id="weight">Svoris</string>

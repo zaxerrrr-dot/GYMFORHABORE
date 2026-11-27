@@ -123,12 +123,12 @@ test('unpaired, the watch says how to pair', async () => {
 })
 
 for (const device of [{ width: 480, height: 480 }, { width: 360, height: 360 }, { width: 390, height: 450 }]) {
-  test(`the idle title is the openGym lockup, not one accent label (${device.width}x${device.height})`, async () => {
+  test(`the idle title is the Habcore Gym lockup, not one accent label (${device.width}x${device.height})`, async () => {
     fresh(device)
     const p = await load('page/index.js')
     Z().request = async () => ({ unpaired: true })
     p.onInit(); p.build(); await settle()
-    assert.ok(!texts().includes('openGym'), 'no single "openGym" label')
+    assert.ok(!texts().includes('Habcore Gym'), 'no single "Habcore Gym" label')
     const open = Z().widgets.find(w => w.type === 'TEXT' && w.props.text === 'open')
     const gym = Z().widgets.find(w => w.type === 'TEXT' && w.props.text === 'Gym')
     assert.equal(open.props.color, 0xeef1f6, '"open" in the light ink')

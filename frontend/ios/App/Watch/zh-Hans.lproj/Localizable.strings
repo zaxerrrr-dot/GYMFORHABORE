@@ -1,4 +1,4 @@
-/* openGym on the Apple Watch, zh-Hans. Written by ios/ci/watch-strings.mjs: change that, not this. */
+/* Habcore Gym on the Apple Watch, zh-Hans. Written by ios/ci/watch-strings.mjs: change that, not this. */
 
 "Today" = "今天";
 "Start workout" = "开始训练";
@@ -50,7 +50,7 @@
 "Finish the workout now? Otherwise it ends by itself at %@." = "现在结束训练吗？否则它会在 %@ 自动结束。";
 "No workout running" = "没有进行中的训练";
 "Not synced yet" = "尚未同步";
-"Open openGym on your iPhone once and your routines show up here." = "在 iPhone 上打开一次 openGym，你的训练计划就会出现在这里。";
+"Open Habcore Gym on your iPhone once and your routines show up here." = "在 iPhone 上打开一次 Habcore Gym，你的训练计划就会出现在这里。";
 "Start one on your iPhone and it shows up here." = "在 iPhone 上开始，它就会出现在这里。";
 "All sets done" = "所有组已完成";
 "measuring" = "测量中 …";
@@ -73,7 +73,7 @@
 "Tap to change it." = "轻点以更改。";
 "Added weight" = "附加重量";
 "Your rest, your next set, or today's workout." = "你的休息、下一组或今天的训练。";
-"Opens openGym." = "打开 openGym。";
+"Opens Habcore Gym." = "打开 Habcore Gym。";
 "Hold to finish" = "按住以结束";
 "iPhone out of reach" = "iPhone 不在附近";
 "No set for %lld min. Still at it?" = "已经 %lld 分钟没有记录组了。还在练吗？";
@@ -85,7 +85,7 @@
 "No effort rated yet" = "尚未评定强度";
 "max" = "最高";
 "min" = "最低";
-"Turn on Apple Health on your iPhone and openGym stays on screen through rests and holds." = "在 iPhone 上打开 Apple 健康，休息和静力保持时 openGym 就会一直留在屏幕上。";
+"Turn on Apple Health on your iPhone and Habcore Gym stays on screen through rests and holds." = "在 iPhone 上打开 Apple 健康，休息和静力保持时 Habcore Gym 就会一直留在屏幕上。";
 "No sets yet" = "还没有组";
 "+%lld more" = "还有 %lld 个";
 "%@ sets" = "%@ 组";

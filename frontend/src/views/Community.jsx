@@ -460,7 +460,7 @@ function ConsentSheet({ type, it, close, done }) {
     <p className="com-consent-text">{words}</p>
     <label className="com-own-check">
       <Check checked={own} onChange={setOwn} label={t('It is mine to share')} />
-      <span>{t('It is mine to share. I made it, recorded it or may pass it on, and it is not an openGym animation.')}</span>
+      <span>{t('It is mine to share. I made it, recorded it or may pass it on, and it is not an Habcore Gym animation.')}</span>
     </label>
     <Button variant="primary" disabled={!own || busy || !title.trim()} onClick={go}>{busy ? t('Sharing…') : t('Share it')}</Button>
     <Button variant="ghost" onClick={close}>{t('Not now')}</Button>

@@ -125,7 +125,7 @@ function prTable(S, formula) {
 /** list_routines — names + counts of each routine in the user's plan. */
 export const listRoutines = {
   name: 'list_routines',
-  description: 'List the workout routines saved in the user\'s openGym profile (the same list the Plan screen shows). Each routine is a named set of exercises with set/rep targets. Use this to discover the plan structure before diving into a specific routine or today\'s workout.',
+  description: 'List the workout routines saved in the user\'s Habcore Gym profile (the same list the Plan screen shows). Each routine is a named set of exercises with set/rep targets. Use this to discover the plan structure before diving into a specific routine or today\'s workout.',
   schema: {},
   handler: () => {
     const S = getState()
@@ -208,7 +208,7 @@ export const getRoutine = {
 const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 export const getWeekPlan = {
   name: 'get_week_plan',
-  description: 'Show the user\'s training plan. `days` is the authoritative answer to "what is planned when": the next seven dates from today with the routines planned for each (a date can hold several — a combined day) and how each was decided: a coach-week session ("coach"), a session the user pinned to that date ("pinned"), a one-off routine override ("override"), a "rest" override ("rest_override"), the weekday plan ("weekday") or nothing ("rest"). `coach_week` is the current coach week when one is running (a week written by an external planner through the API, never by the app): its sessions are done IN ORDER on whatever days the user trains (no weekday attached), the first undone one is today\'s session, a session can be pinned to a date, and `waiting` means the week starts on `starts_on`. `weekdays` is the user\'s own weekly plan keyed by JS getDay() (Sunday=0 … Saturday=6, the openGym state convention) — in a coach week it holds only the routines the user planned themselves, which ride along beside the coach-week session.',
+  description: 'Show the user\'s training plan. `days` is the authoritative answer to "what is planned when": the next seven dates from today with the routines planned for each (a date can hold several — a combined day) and how each was decided: a coach-week session ("coach"), a session the user pinned to that date ("pinned"), a one-off routine override ("override"), a "rest" override ("rest_override"), the weekday plan ("weekday") or nothing ("rest"). `coach_week` is the current coach week when one is running (a week written by an external planner through the API, never by the app): its sessions are done IN ORDER on whatever days the user trains (no weekday attached), the first undone one is today\'s session, a session can be pinned to a date, and `waiting` means the week starts on `starts_on`. `weekdays` is the user\'s own weekly plan keyed by JS getDay() (Sunday=0 … Saturday=6, the Habcore Gym state convention) — in a coach week it holds only the routines the user planned themselves, which ride along beside the coach-week session.',
   schema: {},
   handler: () => {
     const S = getState()
@@ -756,7 +756,7 @@ const BODY_PARTS = ['back', 'cardio', 'chest', 'lower arms', 'lower legs', 'neck
 export const searchExercises = {
   name: 'search_exercises',
   description: [
-    'Search openGym\'s exercise library (the built-in catalogue plus the user\'s own exercises) by name, muscle or equipment, e.g. "romanian deadlift", "rear delt dumbbell", "pull-up bar".',
+    'Search Habcore Gym\'s exercise library (the built-in catalogue plus the user\'s own exercises) by name, muscle or equipment, e.g. "romanian deadlift", "rear delt dumbbell", "pull-up bar".',
     'Returns ids with name, body part, target muscle, equipment and category, best match first.',
     'Use it before create_routine, update_routine or log_workout whenever a name could mean several exercises (there are many curls and presses): pass the id you picked as `exercise`, and the save cannot land on the wrong one.',
     'Filter with body_part, equipment (as the results spell it: "barbell", "dumbbell", "body weight", "cable", "leverage machine", "band"...) or category to build a plan from what the user owns.',
@@ -800,7 +800,7 @@ export const TOOLS = [
 
 function noState() {
   return {
-    error: 'no synced state yet — sign in at least once from a device so the openGym api can save a state file for this profile',
+    error: 'no synced state yet — sign in at least once from a device so the Habcore Gym api can save a state file for this profile',
     unit: 'kg'
   }
 }

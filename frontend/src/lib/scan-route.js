@@ -1,4 +1,4 @@
-// What a scanned QR code is to openGym (Plan > Scan a QR code, components/ScanCode.jsx). Pure:
+// What a scanned QR code is to Habcore Gym (Plan > Scan a QR code, components/ScanCode.jsx). Pure:
 // the text in, which handler it goes to out.
 //   { kind: 'routine-link', payload }  a friend's routine, https://opengym.ch/r#... (lib/routine-link.js)
 //   { kind: 'library', link }          a library routine's page, or another library page (lib/library-link.js)

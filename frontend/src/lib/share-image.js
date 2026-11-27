@@ -57,6 +57,6 @@ export async function saveImage(blob, name, title, toast) {
   let r
   try { r = await saveImageToPhotos(blob, name) } catch (e) { toast?.(t('Could not save the picture.')); return false }
   if (r === 'saved') { toast?.(t('Saved to Photos')); return true }
-  if (r === 'denied') { toast?.(t('openGym may not add pictures to Photos. You can allow it in the phone settings.')); return false }
+  if (r === 'denied') { toast?.(t('Habcore Gym may not add pictures to Photos. You can allow it in the phone settings.')); return false }
   return shareImage(blob, name, title, toast)
 }

@@ -94,7 +94,7 @@ struct WorkoutRow: View {
     }
 }
 
-/// openGym's mark in a circle where Apple's Workout shows the workout's symbol: brand green on a dark tint of it.
+/// Habcore Gym's mark in a circle where Apple's Workout shows the workout's symbol: brand green on a dark tint of it.
 struct WorkoutBadge: View {
     let size: CGFloat
     var body: some View {

@@ -110,7 +110,7 @@ class WorkoutService : Service() {
         try {
             val client = HealthServices.getClient(this).exerciseClient
             // Health Services runs one exercise at a time: starting ours would end the workout
-            // another app is recording (Samsung Health next to openGym is common). Then the heart
+            // another app is recording (Samsung Health next to Habcore Gym is common). Then the heart
             // rate is only measured, and that app's workout is left alone (HrPlan).
             val tracked = try { client.getCurrentExerciseInfoAsync().await().exerciseTrackedStatus } catch (_: Exception) { null }
             // The documented way to tell another app's exercise (ExerciseInfo.exerciseTrackedStatus); the

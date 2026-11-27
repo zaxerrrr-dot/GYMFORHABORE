@@ -57,7 +57,7 @@ export function ReminderSoundSheet({ kind, close }) {
       {row('sys', t('Pick a phone sound…'), 'sys', phone, cur?.tone === 'sys' ? cur.name || null : t('Any of the sounds on your phone.'))}
       {row('none', t('Silent'), 'none', () => set({ tone: 'none' }), t('Shows up, keeps quiet.'))}
     </Section>
-    <Section title={t('openGym sounds')}>
+    <Section title={t('Habcore Gym sounds')}>
       {REST_SOUND_IDS.map(id => row(id, t(TONE_LABEL[id] || id), id, () => set({ tone: id })))}
     </Section>
     {own.length > 0 && <Section title={t('Your own sounds')}>

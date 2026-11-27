@@ -188,7 +188,7 @@ export default function AdminCoach() {
       <p>An optional coach that designs training plans and reviews what people actually log. Off right now, so nobody sees it anywhere in the app.</p>
       <div className="adm-hero-feats">
         <div><Icon name="key" /><span><b>Bring any AI.</b> An API key from Anthropic, OpenAI or Gemini, or a free local model via Ollama.</span></div>
-        <div><Icon name="chat" /><span><b>Or skip the key.</b> With <code>MCP=on</code> everyone can add openGym to the Claude, ChatGPT or Gemini they already pay for: Settings, Use your subscription.</span></div>
+        <div><Icon name="chat" /><span><b>Or skip the key.</b> With <code>MCP=on</code> everyone can add Habcore Gym to the Claude, ChatGPT or Gemini they already pay for: Settings, Use your subscription.</span></div>
         <div><Icon name="shield" /><span><b>Private by design.</b> A strict allowlist decides what leaves; every change needs the user's yes and can be undone.</span></div>
         <div><Icon name="person" /><span><b>Each user decides.</b> Turning it on only makes the Coach available; every person consents for themselves.</span></div>
       </div>
@@ -297,7 +297,7 @@ export default function AdminCoach() {
               {meta.keyOptional ? 'Add API key (optional)' : 'Add API key'}</Button>}
             {meta.keyUrl && <Button size="sm" variant="tinted" icon="link" onClick={() => window.open(meta.keyUrl, '_blank', 'noopener')}>Get a key</Button>}
           </div>
-          {meta.signIn === 'pkce' && <div className="adm-hint" style={{ margin: '6px 0 0' }}>OpenRouter's own sign-in (OAuth PKCE): you approve openGym on openrouter.ai and it hands back a key of your own, billed to your OpenRouter credits. One key for Claude, GPT, Gemini and the rest.</div>}
+          {meta.signIn === 'pkce' && <div className="adm-hint" style={{ margin: '6px 0 0' }}>OpenRouter's own sign-in (OAuth PKCE): you approve Habcore Gym on openrouter.ai and it hands back a key of your own, billed to your OpenRouter credits. One key for Claude, GPT, Gemini and the rest.</div>}
         </>}
       </Step>}
 
@@ -498,7 +498,7 @@ const failureTitle = cls => ({
 // The setup token stays on offer (owner decision, sub-connect-146), with the risk said plainly
 // where it is pasted: Anthropic's terms allow it in Claude Code only
 // (code.claude.com/docs/en/agent-sdk/overview, "Authentication").
-export const SETUP_TOKEN_RISK = 'Anthropic\'s terms only allow this token in Claude Code; using it here can get your Claude account limited. An API key, or openGym as a connector inside Claude (Use your subscription), is the safe way.'
+export const SETUP_TOKEN_RISK = 'Anthropic\'s terms only allow this token in Claude Code; using it here can get your Claude account limited. An API key, or Habcore Gym as a connector inside Claude (Use your subscription), is the safe way.'
 function SetupTokenRisk() {
   return <div className="adm-risk" role="note"><Icon name="warning" /><span>{SETUP_TOKEN_RISK}</span></div>
 }

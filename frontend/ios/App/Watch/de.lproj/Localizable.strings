@@ -1,4 +1,4 @@
-/* openGym on the Apple Watch, de. Written by ios/ci/watch-strings.mjs: change that, not this. */
+/* Habcore Gym on the Apple Watch, de. Written by ios/ci/watch-strings.mjs: change that, not this. */
 
 "Today" = "Heute";
 "Start workout" = "Training starten";
@@ -50,7 +50,7 @@
 "Finish the workout now? Otherwise it ends by itself at %@." = "Training jetzt beenden? Sonst endet es um %@ von selbst.";
 "No workout running" = "Kein Training läuft";
 "Not synced yet" = "Noch nicht synchronisiert";
-"Open openGym on your iPhone once and your routines show up here." = "Öffne openGym einmal auf dem iPhone, dann tauchen deine Routinen hier auf.";
+"Open Habcore Gym on your iPhone once and your routines show up here." = "Öffne Habcore Gym einmal auf dem iPhone, dann tauchen deine Routinen hier auf.";
 "Start one on your iPhone and it shows up here." = "Starte eins auf dem iPhone, dann taucht es hier auf.";
 "All sets done" = "Alle Sätze erledigt";
 "measuring" = "misst …";
@@ -73,7 +73,7 @@
 "Tap to change it." = "Tippe, um es zu ändern.";
 "Added weight" = "Zusatzgewicht";
 "Your rest, your next set, or today's workout." = "Deine Pause, dein nächster Satz oder das Training von heute.";
-"Opens openGym." = "Öffnet openGym.";
+"Opens Habcore Gym." = "Öffnet Habcore Gym.";
 "Hold to finish" = "Halten zum Beenden";
 "iPhone out of reach" = "iPhone außer Reichweite";
 "No set for %lld min. Still at it?" = "Seit %lld Min. kein Satz. Noch dabei?";
@@ -85,7 +85,7 @@
 "No effort rated yet" = "Noch keine Anstrengung bewertet";
 "max" = "max";
 "min" = "min";
-"Turn on Apple Health on your iPhone and openGym stays on screen through rests and holds." = "Schalte auf dem iPhone Apple Health ein, dann bleibt openGym in Pausen und beim Halten im Vordergrund.";
+"Turn on Apple Health on your iPhone and Habcore Gym stays on screen through rests and holds." = "Schalte auf dem iPhone Apple Health ein, dann bleibt Habcore Gym in Pausen und beim Halten im Vordergrund.";
 "No sets yet" = "Noch keine Sätze";
 "+%lld more" = "+%lld weitere";
 "%@ sets" = "%@ Sätze";

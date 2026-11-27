@@ -493,7 +493,7 @@
 }
 @keyframes xm-fade{from{opacity:0}}
 
-/* The advent calendar's pictures are openGym's icons (components/Glyph.jsx), in the season's
+/* The advent calendar's pictures are Habcore Gym's icons (components/Glyph.jsx), in the season's
    colours; with Settings → Icons on Emoji they are the emoji they replaced. */
 .xm-advent-i .icn{color:var(--xm-green)}
 .xm-door-in .icn{color:var(--xm-red)}

@@ -1,4 +1,4 @@
-/* openGym on the Apple Watch, fr. Written by ios/ci/watch-strings.mjs: change that, not this. */
+/* Habcore Gym on the Apple Watch, fr. Written by ios/ci/watch-strings.mjs: change that, not this. */
 
 "Today" = "Aujourd'hui";
 "Start workout" = "Démarrer la séance";
@@ -50,7 +50,7 @@
 "Finish the workout now? Otherwise it ends by itself at %@." = "Terminer la séance maintenant ? Sinon elle se termine toute seule à %@.";
 "No workout running" = "Aucune séance en cours";
 "Not synced yet" = "Pas encore synchronisé";
-"Open openGym on your iPhone once and your routines show up here." = "Ouvre openGym une fois sur ton iPhone et tes routines apparaissent ici.";
+"Open Habcore Gym on your iPhone once and your routines show up here." = "Ouvre Habcore Gym une fois sur ton iPhone et tes routines apparaissent ici.";
 "Start one on your iPhone and it shows up here." = "Lance-en une sur ton iPhone et elle apparaît ici.";
 "All sets done" = "Toutes les séries faites";
 "measuring" = "mesure …";
@@ -73,7 +73,7 @@
 "Tap to change it." = "Touche pour le changer.";
 "Added weight" = "Poids ajouté";
 "Your rest, your next set, or today's workout." = "Ton repos, ta prochaine série ou la séance du jour.";
-"Opens openGym." = "Ouvre openGym.";
+"Opens Habcore Gym." = "Ouvre Habcore Gym.";
 "Hold to finish" = "Maintiens pour terminer";
 "iPhone out of reach" = "iPhone hors de portée";
 "No set for %lld min. Still at it?" = "Aucune série depuis %lld min. Toujours là ?";
@@ -85,7 +85,7 @@
 "No effort rated yet" = "Aucun effort noté";
 "max" = "max";
 "min" = "min";
-"Turn on Apple Health on your iPhone and openGym stays on screen through rests and holds." = "Active Apple Santé sur ton iPhone et openGym reste à l’écran pendant les repos et les gainages.";
+"Turn on Apple Health on your iPhone and Habcore Gym stays on screen through rests and holds." = "Active Apple Santé sur ton iPhone et Habcore Gym reste à l’écran pendant les repos et les gainages.";
 "No sets yet" = "Aucune série";
 "+%lld more" = "+%lld autres";
 "%@ sets" = "%@ séries";

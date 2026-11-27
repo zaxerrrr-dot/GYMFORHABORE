@@ -1,4 +1,4 @@
-/* openGym on the Apple Watch, ko. Written by ios/ci/watch-strings.mjs: change that, not this. */
+/* Habcore Gym on the Apple Watch, ko. Written by ios/ci/watch-strings.mjs: change that, not this. */
 
 "Today" = "오늘";
 "Start workout" = "운동 시작";
@@ -50,7 +50,7 @@
 "Finish the workout now? Otherwise it ends by itself at %@." = "지금 운동을 끝낼까요? 아니면 %@에 알아서 끝나요.";
 "No workout running" = "진행 중인 운동이 없어요";
 "Not synced yet" = "아직 동기화되지 않았어요";
-"Open openGym on your iPhone once and your routines show up here." = "iPhone에서 openGym을 한 번 열면 루틴이 여기에 나타나요.";
+"Open Habcore Gym on your iPhone once and your routines show up here." = "iPhone에서 Habcore Gym을 한 번 열면 루틴이 여기에 나타나요.";
 "Start one on your iPhone and it shows up here." = "iPhone에서 시작하면 여기에 나타나요.";
 "All sets done" = "모든 세트 완료";
 "measuring" = "측정 중 …";
@@ -73,7 +73,7 @@
 "Tap to change it." = "탭해서 바꾸세요.";
 "Added weight" = "추가 무게";
 "Your rest, your next set, or today's workout." = "휴식, 다음 세트, 또는 오늘의 운동.";
-"Opens openGym." = "openGym을 열어요.";
+"Opens Habcore Gym." = "Habcore Gym을 열어요.";
 "Hold to finish" = "길게 눌러 끝내기";
 "iPhone out of reach" = "iPhone이 멀리 있어요";
 "No set for %lld min. Still at it?" = "%lld분째 세트가 없어요. 아직 운동 중이세요?";
@@ -85,7 +85,7 @@
 "No effort rated yet" = "아직 평가한 강도가 없어요";
 "max" = "최대";
 "min" = "최소";
-"Turn on Apple Health on your iPhone and openGym stays on screen through rests and holds." = "iPhone에서 Apple 건강을 켜면 휴식과 버티기 중에도 openGym이 화면에 남아 있어요.";
+"Turn on Apple Health on your iPhone and Habcore Gym stays on screen through rests and holds." = "iPhone에서 Apple 건강을 켜면 휴식과 버티기 중에도 Habcore Gym이 화면에 남아 있어요.";
 "No sets yet" = "아직 세트가 없어요";
 "+%lld more" = "+%lld개 더";
 "%@ sets" = "%@세트";

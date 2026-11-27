@@ -1,4 +1,4 @@
-// #821: Android can keep openGym upright (or sideways) without touching the phone's auto-rotate.
+// #821: Android can keep Habcore Gym upright (or sideways) without touching the phone's auto-rotate.
 // The choice is per device, survives a restart, and an APK without the plugin keeps working.
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { readFileSync } from 'node:fs'

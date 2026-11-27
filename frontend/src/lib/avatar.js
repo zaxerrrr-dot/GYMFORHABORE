@@ -1,7 +1,7 @@
 /* A profile picture of one's own (Settings → Account, v1.4.5; asked for on Discord by dreeper999).
  *
  *   S.avatar = { m }            m: a MediaRef of kind 'image', a 256 px square this device encoded
- *   S.avatar = { preset: id }   one of AVATAR_PRESETS, an openGym icon on the accent's tint
+ *   S.avatar = { preset: id }   one of AVATAR_PRESETS, an Habcore Gym icon on the accent's tint
  *   (absent)                    the first letter of the name, as before
  *
  * The bytes never go into the state: it is one document every device downloads whole, and the
@@ -32,7 +32,7 @@ export const AVATAR_MAX_BYTES = 32 * 1024   // the stored file; a 256 px face is
 export const WORK_EDGE = 1280               // px, the working copy the crop step draws from
 export const ZOOM_MAX = 4
 
-// Built-in pictures for people who would rather not use a photo: openGym's icon, or the emoji
+// Built-in pictures for people who would rather not use a photo: Habcore Gym's icon, or the emoji
 // with Settings → Icons on emoji (components/Glyph.jsx).
 export const AVATAR_PRESETS = [
   { id: 'lifter', icon: 'figureStrength', emoji: '🏋️' },

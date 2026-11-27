@@ -1,4 +1,4 @@
-/* openGym on the Apple Watch, da: Info.plist. Written by ios/ci/watch-strings.mjs. */
+/* Habcore Gym on the Apple Watch, da: Info.plist. Written by ios/ci/watch-strings.mjs. */
 
-"NSHealthShareUsageDescription" = "openGym viser din puls under træningen og ved hvert sæt og bruger din fødselsdato til pulszonerne.";
-"NSHealthUpdateUsageDescription" = "openGym gemmer dine træninger i Apple Sundhed, hvis du slår det til.";
+"NSHealthShareUsageDescription" = "Habcore Gym viser din puls under træningen og ved hvert sæt og bruger din fødselsdato til pulszonerne.";
+"NSHealthUpdateUsageDescription" = "Habcore Gym gemmer dine træninger i Apple Sundhed, hvis du slår det til.";

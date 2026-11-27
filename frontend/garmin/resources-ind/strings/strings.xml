@@ -1,8 +1,8 @@
-<!-- openGym on Garmin, ind. Written by frontend/garmin/garmin-strings.mjs: change that, not this. -->
+<!-- Habcore Gym on Garmin, ind. Written by frontend/garmin/garmin-strings.mjs: change that, not this. -->
 <strings>
     <string id="all_sets_done">Semua set selesai</string>
     <string id="all_synced">Semua disinkronkan</string>
-    <string id="app_name">openGym</string>
+    <string id="app_name">Habcore Gym</string>
     <string id="cancel">Batal</string>
     <string id="continue_workout">Lanjutkan latihan</string>
     <string id="discard_q">Buang sesi latihan?</string>
@@ -33,7 +33,7 @@
     <string id="no_set_for">Tidak ada set selama $1$ mnt. Masih latihan?</string>
     <string id="no_workout">Tidak ada latihan berjalan</string>
     <string id="not_synced">Belum disinkronkan</string>
-    <string id="open_phone_once">Di openGym di ponselmu, buka Pengaturan, lalu Garmin.</string>
+    <string id="open_phone_once">Di Habcore Gym di ponselmu, buka Pengaturan, lalu Garmin.</string>
     <string id="overview">Ringkasan</string>
     <string id="paused">Dijeda</string>
     <string id="phone_out_of_reach">Ponsel di luar jangkauan</string>
@@ -62,7 +62,7 @@
     <string id="up_next">Berikutnya</string>
     <string id="up_next_set">$1$, set $2$</string>
     <string id="volume">Volume</string>
-    <string id="waiting_phone">Menunggu ponselmu. Buka openGym di sana kalau lama.</string>
+    <string id="waiting_phone">Menunggu ponselmu. Buka Habcore Gym di sana kalau lama.</string>
     <string id="waiting_sync">Menunggu untuk disinkronkan</string>
     <string id="warmup">Pemanasan</string>
     <string id="weight">Beban</string>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- openGym on Wear OS, English. Written by frontend/android/wear/wear-strings.mjs: change that, not this. -->
+<!-- Habcore Gym on Wear OS, English. Written by frontend/android/wear/wear-strings.mjs: change that, not this. -->
 <resources>
     <string name="add_birth_year">Add your birth year on the phone</string>
     <string name="added_weight">Added weight</string>
@@ -7,7 +7,7 @@
     <string name="all_sets_done">All sets done</string>
     <string name="all_synced">All synced</string>
     <string name="allow">Allow</string>
-    <string name="app_name">openGym Beta</string>
+    <string name="app_name">Habcore Gym Beta</string>
     <string name="avg">avg</string>
     <string name="band_over">%1$d and up</string>
     <string name="band_to">%1$d to %2$d</string>
@@ -71,7 +71,7 @@
     <string name="not_now">Not now</string>
     <string name="not_synced">Not synced yet</string>
     <string name="notif_running">Workout running. Tap to jump back in.</string>
-    <string name="open_phone_once">Open openGym on your phone once and your routines show up here.</string>
+    <string name="open_phone_once">Open Habcore Gym on your phone once and your routines show up here.</string>
     <string name="overview">Overview</string>
     <string name="personal_records">Personal records</string>
     <string name="phone_away">Phone out of reach. Your sets wait here.</string>

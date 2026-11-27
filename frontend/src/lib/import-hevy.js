@@ -104,7 +104,7 @@ export async function fetchHevyAccount(apiKey, { onProgress } = {}) {
 
 /* ---------------------------------------------------------- template → id -- */
 
-// Hevy primary_muscle_group → openGym body-part for exercises we invent. Indexed straight from
+// Hevy primary_muscle_group → Habcore Gym body-part for exercises we invent. Indexed straight from
 // the API's text, so it has no prototype: a plain object answers "constructor" and "__proto__"
 // with Object's own machinery, and that would ride into the store as a body part.
 const HEVY_BP = Object.assign(Object.create(null), {
@@ -388,7 +388,7 @@ export function parseHevyWorkouts(workouts, templates, { unit = 'kg', customEx =
 }
 
 /**
- * Hevy routine → openGym routine config.
+ * Hevy routine → Habcore Gym routine config.
  * Work sets become `sets`×`reps`/`weight`; warm-ups become `warmupSets`;
  * supersets keep adjacency via `sg`. Always imported as *new* routines.
  */
@@ -409,7 +409,7 @@ export function parseHevyRoutines(routines, templates, { unit = 'kg', customEx =
 
   for (const r of routines || []) {
     const ex = []
-    const sgMap = new Map() // Hevy superset_id → openGym sg token
+    const sgMap = new Map() // Hevy superset_id → Habcore Gym sg token
 
     for (const he of r.exercises || []) {
       const id = R.resolve(he.exercise_template_id, he.title)
@@ -421,7 +421,7 @@ export function parseHevyRoutines(routines, templates, { unit = 'kg', customEx =
       if (!work.length && !warm) continue
 
       const sample = work[0] || allSets[0]
-      // A range ("8 to 12") is double progression in openGym: its top is the reps, its bottom
+      // A range ("8 to 12") is double progression in Habcore Gym: its top is the reps, its bottom
       // repsMin, and a range of one number is just that many reps (#815).
       const range = repRangeOf(sample)
       const reps = sample?.reps != null ? Math.round(sample.reps) : range ? range.hi : 0

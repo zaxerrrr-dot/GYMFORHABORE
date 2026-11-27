@@ -1,4 +1,4 @@
-/* Who a provider sign-in is, in openGym terms. Pure functions over db and the verified claims,
+/* Who a provider sign-in is, in Habcore Gym terms. Pure functions over db and the verified claims,
  * so every "may this person in, and as whom" rule has a unit test (test/oidc-accounts.test.js).
  *
  * An identity is (iss, sub), never an e-mail. A first sign-in either finds the profile linked to

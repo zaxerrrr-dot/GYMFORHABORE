@@ -1,4 +1,4 @@
-// "Your month in openGym" (v1.4.5, gm-insights): the year's story engine (lib/wrapped.js,
+// "Your month in Habcore Gym" (v1.4.5, gm-insights): the year's story engine (lib/wrapped.js,
 // lib/wrapped-cards.js, components/Wrapped.jsx) for one calendar month, shorter. The month in
 // numbers, its records, how consistent it was, the exercise of the month on the muscle map, what
 // was new, and one line to go out on. Every card is a picture to share, drawn by the same layout.
@@ -191,7 +191,7 @@ export function monthCards(st, S, extras = null) {
   if (!st) return []
   const name = monthName(st.ym)
   const cards = []
-  cards.push({ id: 'intro', kicker: t('Your month in openGym'), big: name, bigKind: 'text',
+  cards.push({ id: 'intro', kicker: t('Your month in Habcore Gym'), big: name, bigKind: 'text',
     title: st.running ? t('The month so far, the short version.') : t('One month, the short version.'), lines: [t('Tap to start')] })
 
   const lines = []
@@ -265,6 +265,6 @@ export function monthCards(st, S, extras = null) {
     ...(st.prs > 0 ? [{ label: t('Records'), value: nf(st.prs) }] : []),
     ...(st.topExercise ? [{ label: t('Exercise of the month'), value: exName(st.topExercise.id, st.topExercise.name), wide: true }] : []),
   ]
-  cards.push({ id: 'summary', kicker: t('Your {0} in openGym', name), big: '', bigKind: 'none', title: funLine(st), lines: [], tiles })
+  cards.push({ id: 'summary', kicker: t('Your {0} in Habcore Gym', name), big: '', bigKind: 'none', title: funLine(st), lines: [], tiles })
   return cards
 }

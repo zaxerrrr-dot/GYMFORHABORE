@@ -21,7 +21,9 @@ import { buildPlanBundle, parsePlan, mergePlan } from './plan-share.js'
 import { t } from './i18n-core.js'
 
 export const LINK_FMT = 1
-export const LINK_BASE = 'https://opengym.ch/r'
+// Habcore Gym (local patch 0010): a shared routine opens in our own web app (its #/r/<payload>
+// route), not on the upstream website. Links from opengym.ch are still read (routinePayloadFromUrl).
+export const LINK_BASE = 'https://sv.metin2sp.pl/opengym/#/r/'
 // Past this a link starts breaking in chat apps and SMS: the share falls back to a plan file.
 export const MAX_LINK = 2000
 // What a link may hold at all, before and after inflating: far past any real routine.
@@ -155,7 +157,7 @@ export async function decodePayload(payload) {
   return data
 }
 
-export const linkFor = payload => `${LINK_BASE}#${payload}`
+export const linkFor = payload => `${LINK_BASE}${payload}`
 
 /**
  * The link for a routine, or `{ tooLong: true }` when it would pass MAX_LINK (the caller shares a

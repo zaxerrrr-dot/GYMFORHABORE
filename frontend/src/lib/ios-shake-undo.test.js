@@ -1,6 +1,6 @@
 // #921: the iPhone app showed iOS's own "Undo" alert after the phone was carried around and
 // unlocked. That alert is UIKit's shake to undo, on by default for every app with a text field:
-// the page has many. The app turns it off at launch; nothing in openGym undoes by shaking.
+// the page has many. The app turns it off at launch; nothing in Habcore Gym undoes by shaking.
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'

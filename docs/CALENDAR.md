@@ -6,7 +6,7 @@ It shows your planned sessions, and if you switch on "Show finished workouts too
 you finished. The calendar app fetches it again by itself, so a change in your plan shows up there
 (how often is the app's choice: Apple and Outlook every hour or so, Google every few hours).
 
-It needs an openGym server (the address is served by it) with API tokens on (the default; see
+It needs an Habcore Gym server (the address is served by it) with API tokens on (the default; see
 docs/API_TOKENS.md, `API_TOKENS`).
 
 ## Subscribing

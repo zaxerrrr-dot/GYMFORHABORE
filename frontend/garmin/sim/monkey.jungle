@@ -1,4 +1,4 @@
-# The simulator build of openGym on Garmin (sim/run.sh): the app as it ships, plus sim/source,
+# The simulator build of Habcore Gym on Garmin (sim/run.sh): the app as it ships, plus sim/source,
 # which plays the phone (no Communications calls: the Linux simulator crashes without an ADB phone).
 # Never a store or sideload build: those use ../monkey.jungle, which leaves (:sim) out.
 project.manifest = ../manifest.xml

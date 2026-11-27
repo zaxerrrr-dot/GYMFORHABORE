@@ -266,14 +266,14 @@ struct OverviewPage: View {
     }
 }
 
-/// With Apple Health off no workout session runs, and watchOS treats openGym like any other app:
+/// With Apple Health off no workout session runs, and watchOS treats Habcore Gym like any other app:
 /// it may go back to the clock mid-rest or mid-hold (#883). Said once, quietly, on the Overview.
 struct HealthOffHint: View {
     @ObservedObject var health: WorkoutManager // a nested object: the store does not republish it
 
     var body: some View {
         if !health.enabled {
-            Label { Text("Turn on Apple Health on your iPhone and openGym stays on screen through rests and holds.") }
+            Label { Text("Turn on Apple Health on your iPhone and Habcore Gym stays on screen through rests and holds.") }
                 icon: { Image(systemName: "heart.text.square") }
                 .font(.system(.caption2, design: .rounded))
                 .foregroundStyle(Theme.label2)

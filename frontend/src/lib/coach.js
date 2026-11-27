@@ -65,7 +65,7 @@ const coachOf = s => (s.coach = s.coach || emptyCoach())
 // paired to a self-hosted server is an ordinary signed-in profile and takes the web rule; a
 // phone that brought its own API key runs the Coach itself (lib/coach-local.js). Nothing
 // chosen means nothing shown — the same "invisible unless configured" promise the web keeps.
-// openGym Offline (lib/build-caps.js) has no network, so no Coach in any form.
+// Habcore Gym Offline (lib/build-caps.js) has no network, so no Coach in any form.
 export const coachAvailable = (config, user, { demo, mobile, coachMode } = {}) =>
   offlineBuild() ? false : mobile ? (coachMode === 'byok' || !!(config?.coach?.enabled && user))
     : demo ? true : !!(config?.coach?.enabled && user)
