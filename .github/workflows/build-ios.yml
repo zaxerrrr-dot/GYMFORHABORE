@@ -131,6 +131,7 @@ jobs:
             echo "- HabcoreGym.ipa: unsigned, for SideStore (+, pick the file)."
             echo "- HabcoreGym-debug.apk: Android (debug build)."
             echo
+            echo "Sign-in screen: password first, then sign in with passkey, then Registration (opens on a password); passwords need 8 characters (local patch 0011)."
             echo "Habcore Gym name everywhere, no donation links, Settings > About > Licences (local patch 0010)."
             echo
             echo "Habcore Gym, AGPL-3.0 (see LICENSE and NOTICE.md). Source: this repository at ${GITHUB_SHA}."
