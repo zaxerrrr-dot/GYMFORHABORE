@@ -1,4 +1,4 @@
-# Habcore Gym (fork of openGym): the iPhone app (with its Apple Watch app) as an .ipa for SideStore,
+# Habcore Gym: the iPhone app (with its Apple Watch app) as an .ipa for SideStore,
 # and a debug APK for Android, published as a GitHub Release.
 #
 # The .ipa carries no real signature: SideStore signs it with the user's own (free) Apple ID when it
@@ -131,9 +131,9 @@ jobs:
             echo "- HabcoreGym.ipa: unsigned, for SideStore (+, pick the file)."
             echo "- HabcoreGym-debug.apk: Android (debug build)."
             echo
-            echo "Live joint training with the trainer, group training, Habcore red accent (local patch 0006)."
+            echo "Habcore Gym name everywhere, no donation links, Settings > About > Licences (local patch 0010)."
             echo
-            echo "Fork of openGym (https://github.com/DuarteSantos8/openGym), AGPL-3.0. Source: this repository at ${GITHUB_SHA}."
+            echo "Habcore Gym, AGPL-3.0 (see LICENSE and NOTICE.md). Source: this repository at ${GITHUB_SHA}."
             echo
             echo '```'; cat build-info.txt; echo '```'
           } > notes.md

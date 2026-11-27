@@ -115,5 +115,5 @@ TRENING NA ZYWO Z TRENEREM
   Na gorze treningu widac "NA ZYWO".
 - Zakonczenie: zapis (i Apple Zdrowie) robi Twoj iPhone/zegarek - takze gdy "Zakoncz" nacisnie trener.
 
-Zrodlo: https://github.com/zaxerrrr-dot/GYMFORHABORE (fork openGym, AGPL-3.0). Obrazki i animacje cwiczen:
+Zrodlo: https://github.com/zaxerrrr-dot/GYMFORHABORE (AGPL-3.0, zob. LICENSE i NOTICE.md). Obrazki i animacje cwiczen:
 Gym visual (gymvisual.com), na zasadach z NOTICE.md - tylko w tej aplikacji, bez kopiowania dalej.
