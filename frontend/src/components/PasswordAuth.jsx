@@ -16,13 +16,16 @@ import { api, webauthnOK, passkeyAssertion, passwordLogin, passwordRegister, pas
 import { askAddDeviceData } from '../sheets.jsx'
 import { Row, Button } from './ui.jsx'
 import { MOBILE } from '../lib/mobile.js'
+import { appPasswordLogin, appPasswordRegister, appPasswordReset } from '../lib/remote.js'
 import { oidcOn, oidcLabel, startWebSignIn } from '../lib/oidc.js'
 import { LegalChecks, legalOn, legalBody, legalMissing } from '../lib/legal.jsx'
 
 // The server's floor (api/password.js MIN_LENGTH), checked here first so the common mistake is
 // answered without a round trip. The server still decides.
 export const MIN_PASSWORD = 8
-export const passwordOn = config => !!config?.password_login
+// The phone app (kl12) always signs in with a password: the gym's server takes them, and the app
+// may start offline, before /api/config has answered.
+export const passwordOn = config => MOBILE || !!config?.password_login
 // An address the way the server stores and compares it (nameKey in api/password.js): NFKC,
 // trimmed, lower-cased.
 export const foldEmail = s => String(s || '').normalize('NFKC').trim().toLowerCase()
@@ -77,11 +80,18 @@ const dismissed = e => e?.name === 'NotAllowedError' || e?.name === 'AbortError'
 // merges what this device kept for it (adoptProfile).
 async function signedIn(u, close) {
   const st = useStore.getState()
+  // Habcore Gym (kl12): in the phone app the token is already kept (lib/remote.js); the rest is
+  // what a pairing did (useStore appSignedIn), the merge of this phone's data included.
+  if (MOBILE) { close(); await st.appSignedIn(u, askAddDeviceData); toast(t('Welcome back, {0}', u.name)); return }
   st.setUser(u, { adopt: true })
   close()
   await st.adoptProfile(askAddDeviceData)
   toast(t('Welcome back, {0}', u.name))
 }
+// The phone app signs in through /api/app/* (bearer token, no cookie); a browser through the cookie routes.
+const doLogin = (n, pw) => (MOBILE ? appPasswordLogin(n, pw) : passwordLogin(n, pw))
+const doReset = (n, code, next) => (MOBILE ? appPasswordReset(n, code, next) : passwordResetRedeem(n, code, next))
+const doRegister = (...a) => (MOBILE ? appPasswordRegister(...a) : passwordRegister(...a))
 
 const field = { autoCapitalize: 'none', autoCorrect: 'off', spellCheck: false }
 const codeStyle = { letterSpacing: '.14em', fontWeight: 600, textAlign: 'center' }
@@ -117,7 +127,7 @@ export function PasswordSignInSheet({ close = () => {}, onPasskey, inline = fals
       : null
     if (bad) { setErr(bad); return }
     setBusy(true); setErr(null)
-    try { await signedIn(reset ? await passwordResetRedeem(n, code.trim(), next) : await passwordLogin(n, pw), close) }
+    try { await signedIn(reset ? await doReset(n, code.trim(), next) : await doLogin(n, pw), close) }
     catch (e) { setErr(passwordError(e)) }
     finally { setBusy(false) }
   }
@@ -188,8 +198,9 @@ export function PasswordRegisterForm({ close, inviteOnly, name, setName, code, s
     if (bad) { setErr(bad); return }
     setBusy(true); setErr(null)
     try {
-      const u = await passwordRegister(n, pw, code.trim(), mail, ...(asks ? [legalBody(config, legal)] : []))
+      const u = await doRegister(n, pw, code.trim(), mail, ...(asks ? [legalBody(config, legal)] : []))
       const st = useStore.getState()
+      if (MOBILE) { close(); await st.appSignedIn(u, askAddDeviceData); toast(t('Welcome, {0}', u.name)); return }
       st.setUser(u); close()
       if (hasData(useStore.getState().S)) { await st.pushState(); toast(t('Profile created, and this device’s data moved into it')) }
       else { await st.pullState(); toast(t('Welcome, {0}', u.name)) }

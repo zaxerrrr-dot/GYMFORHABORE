@@ -11,8 +11,11 @@ import { STREAK_RULES, streakRuleOf } from './streak-rule.js'
 export const ruleLabel = r => ({ off: t('No freezes'), gentle: t('Gentle'), generous: t('Generous') }[r] || t('Generous'))
 export const ruleDesc = r => ({
   off: t('Every week counts. Miss one and the streak starts over.'),
-  gentle: t('Bank 1 freeze, earned every 4 trained weeks. Two missed weeks in a row end the streak.'),
-  generous: t('Bank up to 2 freezes, one every 4 trained weeks. Even two missed weeks in a row can be covered.'),
+  // Habcore Gym (kl12): one rule for both, as the walk has it (api/coach/core/streak.js): a missed
+  // week spends a banked freeze, and with none banked the streak starts over. "Two missed weeks in
+  // a row" was only true with a full bank.
+  gentle: t('Bank 1 freeze, earned every 4 trained weeks. A missed week with no freeze banked ends the streak.'),
+  generous: t('Bank up to 2 freezes, one every 4 trained weeks. A missed week with no freeze banked ends the streak.'),
 }[r] || '')
 
 /** "From now on: Gentle." with what it means for the weeks already counted. */

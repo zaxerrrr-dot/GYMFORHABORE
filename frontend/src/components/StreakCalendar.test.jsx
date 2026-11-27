@@ -73,6 +73,19 @@ describe('the calendar explains the streak', () => {
     expect(renderTop().querySelector('[data-streak-howto]')).toBeTruthy()
   })
 
+  it('kl12: closed without "Got it", it does not come back on the next tap (seen once, in the synced state)', () => {
+    calendarSheet()
+    let el = renderTop()
+    expect(el.querySelector('[data-streak-howto]')).toBeTruthy()
+    // the sheet is closed by a swipe, not by "Got it"
+    act(() => { mounted.splice(0).forEach(r => r.unmount()) }); useUI.setState({ sheets: [] })
+    expect(useStore.getState().S.hints?.streakHow).toBe(true)
+    calendarSheet(); el = renderTop()
+    expect(el.querySelector('[data-streak-howto]')).toBe(null)
+    act(() => el.querySelector('.streak-sum-i').click())
+    expect(el.querySelector('[data-streak-howto]')).toBeTruthy()
+  })
+
   it('leaves the plain calendar alone with Motivation off', () => {
     useStore.getState().update(s => { s.modules = { ...(s.modules || {}), motivation: false } })
     calendarSheet(); const el = renderTop()

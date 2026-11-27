@@ -6,7 +6,8 @@
 // server's RP_ID), so auth here is a short one-time code redeemed from an already signed-in
 // browser tab (Settings → "Pair the mobile app") for a bearer token — see api/server.js's
 // /api/pair/create + /api/pair/redeem.
-import { pairRedeem, setRemoteAuth } from './api.js'
+import { pairRedeem, setRemoteAuth, currentRemoteBase, appSignInRequest } from './api.js'
+import { HABCORE_SERVER } from './habcore-server.js'
 import { phoneSignIn } from './oidc-app.js'
 import { loadRemoteFile, saveRemoteFile } from './mobile.js'
 import { clearCfAccess } from './cf-access.js'
@@ -68,4 +69,31 @@ export async function connectWithProvider(rawUrl, label, signIn = phoneSignIn) {
   setRemoteAuth(base, token)
   await saveRemoteFile({ mode: 'remote', base, token, user })
   return user
+}
+
+// Habcore Gym (patch 0014, kl12): the app signs in with the site's name and password, straight
+// against the gym's server, with no pairing. The server's /api/app/* routes answer the same bearer
+// token a pairing gave (and no cookie); it is kept in the same file, so boot() restores it the way
+// it restored a pairing. A phone paired before keeps its address; a new one uses HABCORE_SERVER.
+export function appServer(remote) {
+  return normalizeServerUrl(remote?.base) || HABCORE_SERVER
+}
+async function appAuth(path, body) {
+  const base = currentRemoteBase() || HABCORE_SERVER
+  const { token, user } = await appSignInRequest(base, path, body)
+  setRemoteAuth(base, token)
+  await saveRemoteFile({ mode: 'remote', base, token, user })
+  return user
+}
+export const appPasswordLogin = (name, password) => appAuth('/api/app/login', { name, password })
+export const appPasswordRegister = (name, password, code, email, legal) =>
+  appAuth('/api/app/register', { name, password, code: code || '', ...(email ? { email } : {}), ...(legal ? { legal } : {}) })
+export const appPasswordReset = (name, code, next) => appAuth('/api/app/password-reset', { name, code, next })
+export const appRecover = (code, next) => appAuth('/api/app/recover', { code, next })
+// Signed out (or the account deleted): the token goes, the address stays, and the next start
+// opens on the sign-in screen. The server has already revoked the token (POST /api/logout).
+export async function forgetAppToken() {
+  const base = currentRemoteBase() || HABCORE_SERVER
+  setRemoteAuth(base, null)
+  await saveRemoteFile({ mode: 'remote', base, token: null })
 }

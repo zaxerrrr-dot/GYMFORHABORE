@@ -90,20 +90,20 @@ describe('OwedSheet with photos and videos waiting', () => {
 
   // Where the phone-sync fixes and the media meet: a server that refuses the device is not
   // something "Try again" can fix, for photos and videos no more than for changes.
-  it('refused phone with only photos or videos waiting: names them, and offers Pair again, not Try again', () => {
+  it('refused phone with only photos or videos waiting: names them, and offers Sign in (kl12), not Try again', () => {
     mocks.MOBILE = true
     mocks.sync = { status: 'auth', auth: true, lastError: { status: 401, code: 'auth' } }
     const zip = vi.fn()
-    act(() => root.render(<OwedSheet kind="disconnect" count={0} media={3} exportBackup={vi.fn()} exportBackupZip={zip} done={vi.fn()} close={vi.fn()} />))
+    act(() => root.render(<OwedSheet kind="signout" count={0} media={3} exportBackup={vi.fn()} exportBackupZip={zip} done={vi.fn()} close={vi.fn()} />))
     expect(host.textContent).toContain('3 photos or videos have not reached your server yet.')
     expect(host.textContent).not.toContain('Some changes on this device')
-    expect(host.textContent).toContain('The server refuses this phone')
-    expect(host.textContent).toContain('Pair again, or export a backup first.')
+    expect(host.textContent).toContain('Signed out on this phone')
+    expect(host.textContent).toContain('Sign in again, or export a backup first.')
     expect(host.textContent).not.toContain('Try again')
-    expect(button('Pair again')).toBeTruthy()
+    expect(button('Sign in')).toBeTruthy()
     act(() => { button('Export with photos & videos (.zip)').click() })
     expect(zip).toHaveBeenCalledTimes(1)
-    expect(button('Disconnect anyway')).toBeTruthy()
+    expect(button('Sign out anyway')).toBeTruthy()
     expect(mocks.syncMedia).not.toHaveBeenCalled()
   })
 

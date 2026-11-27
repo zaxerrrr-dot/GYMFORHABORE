@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useStore } from '../store/useStore.js'
 import { t } from '../lib/i18n.js'
 import { fmtDate } from '../lib/format.js'
@@ -14,6 +14,9 @@ import { Button } from './ui.jsx'
    the number counts and the freezes, and the first time, four lines on how it all works.
    Discord, 11-04: a 43-week streak through a visibly patchy October read as a bug, and nobody
    knew what the snowflakes were. The walk itself is lib/streak.js; this only shows it. */
+
+// Seen once by this profile (S.hints.streakHow; S.streakHelpSeen from before kl12 counts too).
+export const streakHelpSeen = S => S?.hints?.streakHow === true || S?.streakHelpSeen === true
 
 export const weekMarkLabel = s => ({ on: t('Counted'), frozen: t('Frozen'), excused: t('Excused'), open: t('Still open') }[s] || t('Missed'))
 
@@ -74,7 +77,7 @@ export function StreakHowTo ({ onDone, rule = 'generous' }) {
         ? <li><span className="wk-legend-g" aria-hidden="true"><MarkGlyph s="missed" /></span>{t('No freezes on your rule: a week without a workout starts it over.')}</li>
         : <>
           <li><span className="wk-legend-g" aria-hidden="true"><MarkGlyph s="frozen" /></span>{rule === 'gentle' ? t('Every 4th week you train earns a freeze. You can bank 1.') : t('Every 4th week you train earns a freeze. You can bank 2.')}</li>
-          <li><span className="wk-legend-g" aria-hidden="true"><MarkGlyph s="missed" /></span>{rule === 'gentle' ? t('Miss a week and a freeze covers it: the streak keeps going, that week just adds nothing. Two missed weeks in a row, and it starts over.') : t('Miss a week and a freeze covers it: the streak keeps going, that week just adds nothing. No freeze left, and it starts over.')}</li>
+          <li><span className="wk-legend-g" aria-hidden="true"><MarkGlyph s="missed" /></span>{t('Miss a week and a freeze covers it: the streak keeps going, that week just adds nothing. No freeze left, and it starts over.')}</li>
         </>}
       <li><span className="wk-legend-g" aria-hidden="true"><MarkGlyph s="excused" /></span>{t('Sick or travelling? Mark a day of that week with a day note and the week is excused, no freeze spent (a few times a year).')}</li>
       <li><span className="wk-legend-g" aria-hidden="true"><MarkGlyph s="open" /></span>{t('This week stays open until it ends. No pressure yet.')}</li>
@@ -91,10 +94,19 @@ export function StreakHowTo ({ onDone, rule = 'generous' }) {
  * and the how-to (by itself until "Got it", S.streakHelpSeen, synced; `help` opens it anyway).
  */
 export function StreakSummary ({ info, help = false }) {
-  const seen = useStore(s => s.S.streakHelpSeen === true)
+  const seen = useStore(s => streakHelpSeen(s.S))
   const update = useStore(s => s.update)
+  const acting = useStore(s => !!s.config?.gymv2?.acting)
   const [open, setOpen] = useState(help || !seen)
-  const done = () => { setOpen(false); if (!seen) update(s => { s.streakHelpSeen = true }) }
+  // Habcore Gym (kl12): it came up on every tap, because only "Got it" remembered it and people
+  // closed the sheet instead. Shown once is seen: the profile remembers it the moment it is
+  // shown (S.hints.streakHow, synced with the account like the other one-time hints, so another
+  // phone or the site do not show it again). After that it is behind the (i). A trainer leading
+  // a client does not use up the client's first look.
+  useEffect(() => {
+    if (open && !seen && !acting) update(s => { s.hints = { ...(s.hints || {}), streakHow: true }; s.streakHelpSeen = true })
+  }, [open, seen, acting, update])
+  const done = () => setOpen(false)
   return <div className="streak-sum" data-streak-sum>
     <div className="streak-sum-top">
       <span className="streak-sum-flame" aria-hidden="true"><StreakFlame lit={info.current > 0} /></span>

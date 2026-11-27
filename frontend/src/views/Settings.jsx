@@ -76,9 +76,9 @@ import { showsConnection, showsLocalLine } from '../components/SyncBanner.jsx'
 import BackupFolderRow, { useBackupFolder, autoBackupSubtitle } from '../components/BackupFolderRow.jsx'
 import AppIconRow from '../components/AppIconRow.jsx'
 import { AnimationQualityRow } from '../components/Animations.jsx'
-import { ServerSyncSection, KeptChangesRows, leaveServer, connectServer, passkeySignIn } from '../components/ServerSync.jsx'
+import { KeptChangesRows, leaveServer, passkeySignIn } from '../components/ServerSync.jsx'
 import { passwordOn, PasswordRow, openPasswordSignIn, openPasswordRegister } from '../components/PasswordAuth.jsx'
-import { usePasskeys, PasskeysRow, DeviceLinkRow, openDeviceLinkRedeem, PairSheet } from '../components/Passkeys.jsx'
+import { usePasskeys, PasskeysRow, DeviceLinkRow, openDeviceLinkRedeem } from '../components/Passkeys.jsx'
 import { OidcRow } from '../components/OidcAccount.jsx'
 import { DeleteAccountRow } from '../components/DeleteAccount.jsx'
 import { warmupAutoOf } from '../lib/warmup-ramp.js'
@@ -437,12 +437,6 @@ export default function Settings({ page = null, find = null, via = null, entryKe
   // A workout running here is kept aside by the sign-out (useStore stashActive): the confirm says so.
   const running = () => S.active ? ' ' + t('You have a workout running. It waits on this device until you’re back on this account.') : ''
   const leave = (kind, after) => leaveServer(kind, { exportBackup: doExport, exportBackupZip: doExportZip, done: r => { nav('/home'); if (r.stashed) toast(kept); else if (after) toast(after) } })
-  const disconnect = () => confirmSheet({
-    title: t('Disconnect from your server?'),
-    message: t('This phone switches back to local-only and its copy of your account is removed. First it checks that your server has every change. If not, you choose what happens to them.') + running(),
-    confirmText: t('Disconnect'), danger: true,
-    onConfirm: () => leave('disconnect', t('Disconnected. Back to local-only')),
-  })
   const signOutHere = () => confirmSheet({
     title: t('Sign out?'),
     message: t('Your data is removed from this browser; your profile on the server keeps it. First it checks that the server has every change. If not, you choose what happens to them.') + running(),
@@ -451,7 +445,7 @@ export default function Settings({ page = null, find = null, via = null, entryKe
   })
   const signOutEverywhere = () => confirmSheet({
     title: t('Sign out everywhere?'),
-    message: t('Signs this profile out on every device, including this one. Phones paired with it are disconnected and have to be paired again. Your passkeys keep working, so you can sign in with them again anytime.') + running(),
+    message: t('Signs this profile out on every device, including this one, phones too. You sign in again as usual, with your password or passkey.') + running(),
     confirmText: t('Sign out everywhere'), danger: true,
     onConfirm: () => leave('everywhere', t('Signed out on all devices')),
   })
@@ -1352,35 +1346,12 @@ export default function Settings({ page = null, find = null, via = null, entryKe
     account: () => <>
       {/* The profile picture (lib/avatar.js): every mode but the demo, kept like any other photo. */}
       {!DEMO && <AvatarSection name={user?.name || null} signedIn={!!user} />}
-      {/* The server: which one, which account, how that stands, "Sync now". A paired phone's
-          Admin and Disconnect sit in the same block; a browser's account rows follow in their own. */}
-      {user && !DEMO && <ServerSyncSection>
-        {MOBILE && <>
-          {community && <Row icon="globe" iconTint="var(--blue)" title={t('Community')} subtitle={t('What people on this server shared')} accessory="chevron" onClick={() => nav('/community')} />}
-          {user.admin && <Row icon="crown" iconTint="var(--indigo)" title={t('Admin dashboard')} accessory="chevron" onClick={() => nav('/admin')} />}
-          {!gymv2On && pageVisible('trainer', ctx) && <Row icon="personCircle" iconTint="var(--acc)" title={t('Trainer & gym')} subtitle={t('Who sees what of your training')} accessory="chevron" onClick={() => nav('/settings/trainer')} />}
-          {!gymv2On && pageVisible('trainer', ctx) && showsDashboard(config) && <Row icon="clipboard" iconTint="var(--orange)" title={t('Trainer dashboard')} subtitle={t('The people you train, and how they are doing')} accessory="chevron" onClick={() => nav('/trainer')} />}
-          {gymv2On && !acting && <Row icon="clipboard" iconTint="var(--orange)" title={g('gym')} subtitle={g('gymSub')} accessory="chevron" onClick={() => nav('/silownia')} />}
-          {/* A code to sign in on a computer (#551), behind the same proof as in a browser. */}
-          {acting ? <Row icon="signOut" iconTint="var(--orange)" title={g('backToMine')} subtitle={g('actingNoAccount')} onClick={() => stopLeading(useStore).catch(() => {})} /> : <>
-          <DeviceLinkRow state={passkeys.st} />
-          <AccountIdRow id={user.id} />
-          <Row icon="signOut" iconTint="var(--red)" title={t('Disconnect')} danger onClick={disconnect} />
-          </>}
-        </>}
-      </ServerSyncSection>}
-
-      {/* account (demo and mobile builds have nothing to sign in to) */}
-      {/* A local-only phone has no account to hand another device a code for (#551). */}
-      {!(MOBILE && user) && <Section title={MOBILE ? t('Your data') : DEMO ? t('Demo') : t('Account')}
-        footer={MOBILE ? (offline ? t('This is Habcore Gym Offline: Android doesn’t even let it on the internet. Want sync? The normal Habcore Gym app can do that, next to this one.') : t('Signing in on your computer too needs your own server. Connect this phone to it, and Add another device then gives the computer a code.')) : null}>
-        {MOBILE ? <>
-          <Row icon="lock" iconTint="var(--acc)" title={t('All data stays on this phone')} subtitle={t('No account, no cloud. Back it up anytime in Data & backup.')} />
-          {/* Habcore Gym Offline cannot reach a server at all (lib/build-caps.js). */}
-          {!offline && <Row icon="cloud" iconTint="var(--indigo)" title={t('Connect to my server')} subtitle={t('Sync this device to your own self-hosted Habcore Gym instead.')} accessory="chevron"
-            onClick={connectServer} />}
-          <KeptChangesRows />
-        </> : DEMO ? <>
+      {/* Habcore Gym (kl12): no "Server & sync" block any more. Sync is automatic; the small banner
+          (SyncBanner) says when something is waiting or the server cannot be reached, and signing
+          out still checks that the server has every change (components/ServerSync.jsx). The phone
+          signs in with a password like the site, so it has the same account rows, minus passkeys. */}
+      {!(MOBILE && !user) && <Section title={DEMO ? t('Demo') : t('Account')}>
+        {DEMO ? <>
           <Row icon="info" iconTint="var(--acc)" title={t('You’re in the demo')} subtitle={t('Example data, stored only in this browser. Go wild and change anything you like.')} />
           <Row icon="reset" iconTint="var(--blue)" title={t('Reset demo data')} accessory="chevron"
             onClick={() => confirmSheet({ title: t('Reset demo data?'), message: t('Puts the example plan, workouts and weigh-ins back the way they started.'), confirmText: t('Reset'), onConfirm: () => { resetDemo(); nav('/home'); toast(t('Demo data reset')) } })} />
@@ -1396,16 +1367,15 @@ export default function Settings({ page = null, find = null, via = null, entryKe
             <Row icon="lock" iconTint="var(--orange)" title={g('leading', user.name)} subtitle={g('actingNoAccount')} />
             <Row icon="signOut" iconTint="var(--orange)" title={g('backToMine')} onClick={() => stopLeading(useStore).catch(() => {})} />
           </> : <>
-          <PasskeysRow state={passkeys.st} changed={credsChanged} />
-          <OidcRow state={passkeys.st} changed={credsChanged} />
+          {!MOBILE && <PasskeysRow state={passkeys.st} changed={credsChanged} />}
+          {!MOBILE && <OidcRow state={passkeys.st} changed={credsChanged} />}
           <DeviceLinkRow state={passkeys.st} />
-          <Row icon="qr" iconTint="var(--blue)" title={t('Pair the mobile app')} subtitle={t('Connect the Habcore Gym app on your phone to this account.')} accessory="chevron"
-            onClick={() => useUI.getState().openSheet(close => <PairSheet close={close} />)} />
           {pwOn && <PasswordRow version={credsV} />}
           <Row icon="signOut" iconTint="var(--red)" title={t('Sign out')} danger onClick={signOutHere} />
           <Row icon="shield" iconTint="var(--red)" title={t('Sign out everywhere')} subtitle={t('Ends this profile’s sessions on all your devices.')} danger onClick={signOutEverywhere} />
           <AccountIdRow id={user.id} />
           </>}
+          <KeptChangesRows />
         </> : webauthnOK() ? <>
           <Row icon="plusCircle" iconTint="var(--acc)" title={t('Create passkey profile')} subtitle={t('Keeps your data safe and separate per person.')} accessory="chevron" onClick={registerHere} />
           <Row icon="fingerprint" iconTint="var(--blue)" title={t('Sign in with passkey')} accessory="chevron" onClick={passkeySignIn} />

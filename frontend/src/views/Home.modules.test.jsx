@@ -39,7 +39,7 @@ describe('Home follows the modules', () => {
     mountWith(undefined)
     expect(heads()).toContain('Body weight')
     expect(heads()).toContain('Check in')
-    expect(heads().some(h => /week streak/.test(h))).toBe(true)
+    expect(host.querySelector('[data-passa-title]').textContent).toMatch(/^Streak: \d+ weeks?$/)
   })
 
   it('Just training: none of them, and the week strip and today row stay', () => {

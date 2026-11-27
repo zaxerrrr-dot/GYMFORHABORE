@@ -954,6 +954,149 @@ paths:
               schema: { $ref: '#/components/schemas/Error' }
               example: { error: "invalid or expired code", code: "pair-invalid" }
 
+  /api/app/login:
+    post:
+      tags: [password]
+      operationId: appLogin
+      summary: The phone app signs in with a name or e-mail and a password
+      description: |
+        Habcore Gym (patch 0014). The same check, throttle and answers as `POST /api/login/password`,
+        but the session comes back as a Bearer token in the body and no cookie is set, so the phone
+        app (whose WebView origin is never ORIGIN) can sign in without pairing. CSRF-exempt for that
+        reason: a page that posts its own credentials only gets its own token. Only with PASSWORD_LOGIN.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [password]
+            example: { identifier: "Ada", password: "correct horse battery staple" }
+      responses:
+        '200':
+          description: Signed in. No cookie is set; the token is in the body.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: Signed session token (Bearer), valid for SESSION_DAYS, renewed by `GET /api/me`.
+                  user: { $ref: '#/components/schemas/SessionUser' }
+        '400':
+          description: Missing or refused input (the same answers as the cookie route).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /api/app/register:
+    post:
+      tags: [password]
+      operationId: appRegister
+      summary: The phone app creates a profile with a password
+      description: |
+        Habcore Gym (patch 0014). `POST /api/register/password` (invite code, Terms and health
+        consent with LEGAL=on), answering a Bearer token in the body instead of a cookie.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+            example: { name: "Ada", password: "correct horse battery staple", code: "ABCD2345" }
+      responses:
+        '200':
+          description: Signed in. No cookie is set; the token is in the body.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: Signed session token (Bearer), valid for SESSION_DAYS, renewed by `GET /api/me`.
+                  user: { $ref: '#/components/schemas/SessionUser' }
+        '400':
+          description: Missing or refused input (the same answers as the cookie route).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /api/app/password-reset:
+    post:
+      tags: [password]
+      operationId: appPasswordReset
+      summary: The phone app redeems an admin's reset code
+      description: |
+        Habcore Gym (patch 0014). `POST /api/login/password-reset`, answering a Bearer token in the body.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code]
+            example: { identifier: "Ada", code: "K7WQ-2MZP-...", next: "a new long password" }
+      responses:
+        '200':
+          description: Signed in. No cookie is set; the token is in the body.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: Signed session token (Bearer), valid for SESSION_DAYS, renewed by `GET /api/me`.
+                  user: { $ref: '#/components/schemas/SessionUser' }
+        '400':
+          description: Missing or refused input (the same answers as the cookie route).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /api/app/recover:
+    post:
+      tags: [password]
+      operationId: appRecover
+      summary: The phone app sets a new password with a recovery code
+      description: |
+        Habcore Gym (patch 0014). A recovery code from the admin dashboard, or a code from another
+        signed-in device (`POST /api/account/device-link`), sets a new password for its profile
+        (the code is spent, every other session ends) and signs the app in with a Bearer token.
+        Wrong codes count like device-link redemptions (`link` pause). Only with PASSWORD_LOGIN.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code, next]
+            example: { code: "ABCD-EFGH-JKLM", next: "a new long password" }
+      responses:
+        '200':
+          description: Signed in. No cookie is set; the token is in the body.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: Signed session token (Bearer), valid for SESSION_DAYS, renewed by `GET /api/me`.
+                  user: { $ref: '#/components/schemas/SessionUser' }
+        '400':
+          description: Missing or refused input (the same answers as the cookie route).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
   /api/watch/pair:
     post:
       tags: [watch]

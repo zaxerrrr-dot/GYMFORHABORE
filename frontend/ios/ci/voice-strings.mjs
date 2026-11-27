@@ -78,7 +78,7 @@ export const PHRASES = {
   "How's my streak in {app}": {
     de: 'Wie steht meine Serie in {app}', fr: 'Où en est ma série dans {app}', es: 'Cómo va mi racha en {app}',
     it: 'Come va la mia serie in {app}', 'pt-PT': 'Como está a minha sequência no {app}', 'pt-BR': 'Como está minha sequência no {app}',
-    pl: 'Jak idzie moja seria w {app}', hu: 'Hogy áll a sorozatom az {app} appban', tr: '{app} serim nasıl gidiyor',
+    pl: 'Jak idzie moja passa w {app}', hu: 'Hogy áll a sorozatom az {app} appban', tr: '{app} serim nasıl gidiyor',
     ru: 'Как моя серия в {app}', uk: 'Як моя серія в {app}', ar: 'كيف سلسلتي في {app}',
     hi: '{app} में मेरी स्ट्रीक कैसी है', bn: '{app}-এ আমার স্ট্রিক কেমন চলছে', th: 'สถิติต่อเนื่องของฉันใน {app} เป็นอย่างไร',
     ko: '{app}에서 내 연속 기록 어때', 'zh-Hans': '我在 {app} 的连续纪录怎么样', 'zh-Hant': '我在 {app} 的連續紀錄怎麼樣', sv: 'Hur går min svit i {app}',
@@ -86,7 +86,7 @@ export const PHRASES = {
   "What's my {app} streak": {
     de: 'Wie lang ist meine {app} Serie', fr: 'Quelle est ma série {app}', es: 'Cuál es mi racha de {app}',
     it: 'Qual è la mia serie su {app}', 'pt-PT': 'Qual é a minha sequência do {app}', 'pt-BR': 'Qual é minha sequência do {app}',
-    pl: 'Jaka jest moja seria w {app}', hu: 'Mekkora az {app} sorozatom', tr: '{app} serim kaç hafta',
+    pl: 'Jaka jest moja passa w {app}', hu: 'Mekkora az {app} sorozatom', tr: '{app} serim kaç hafta',
     ru: 'Какая у меня серия в {app}', uk: 'Яка в мене серія в {app}', ar: 'ما طول سلسلتي في {app}',
     hi: 'मेरी {app} स्ट्रीक कितनी है', bn: 'আমার {app} স্ট্রিক কত', th: 'สถิติ {app} ของฉันเท่าไร',
     ko: '내 {app} 연속 기록 몇 주야', 'zh-Hans': '我的 {app} 连续纪录是多少', 'zh-Hant': '我的 {app} 連續紀錄是多少', sv: 'Hur lång är min {app}-svit',

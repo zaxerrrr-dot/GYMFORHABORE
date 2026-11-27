@@ -16,6 +16,7 @@ import { syncFingerprint } from '../lib/sync-changes.js'
 
 const h = vi.hoisted(() => {
   vi.stubEnv('VITE_MOBILE', '1')   // lib/mobile.js: MOBILE = import.meta.env.VITE_MOBILE === '1'
+  vi.stubEnv('VITE_HABCORE_SERVER', 'https://gym.example.com')   // lib/habcore-server.js (kl12)
   // `refuse`: file names whose writes fail, like a full disk.
   return { files: new Map(), server: null, calls: [], refuse: new Set() }
 })
@@ -76,6 +77,7 @@ function serverWith(doc) {
     if (path === '/api/me') return json(200, { user: USER })
     if (path === '/api/config') return json(200, { invite_only: false, allow_guest: true })
     if (path === '/api/pair/redeem') return json(200, { token: 'TOKEN-NEW', user: USER })
+    if (path === '/api/app/login') return json(200, { token: 'TOKEN-NEW', user: USER })
     if (path === '/api/data/rev') return json(200, { rev: srv.doc._rev })
     if (path === '/api/data' && method === 'GET') return json(200, { state: clone(srv.doc), rev: srv.doc._rev })
     if (path === '/api/data' && method === 'PUT') {
@@ -248,31 +250,27 @@ describe('boot when the server refuses the pairing token', () => {
 describe('a phone an earlier version already unpaired', () => {
   const week = () => ({ ...clone(SERVER_STATE), _ts: 3000, _rev: undefined, restSec: 60, routines: [routine('push', 15), routine('new-plan', 8)], workouts: [workout('w1', '2026-09-10'), workout('w-week', '2026-09-18')] })
 
-  it('is recognised at boot: its data is owed, nothing goes to the app\'s own asset server, and it asks to be paired again', async () => {
+  it('is recognised at boot (kl12): its data is owed, the gym\'s server is set, nothing goes without a token, and it asks to sign in again', async () => {
     zombiePhone(week())
+    h.server = () => refusing()                           // the gym's server, which wants a token
     const useStore = await freshStore()
     await useStore.getState().boot()
     expect(useStore.getState().user).toEqual(USER)
-    expect(useStore.getState().sync).toMatchObject({ status: 'auth', lastError: { status: 0, code: 'not-paired' }, server: null, pending: true })
+    expect(useStore.getState().sync).toMatchObject({ status: 'auth', server: BASE, pending: true })
     expect(localStorage.getItem('gym_dirty')).toBe('1')
-
-    useStore.getState().update(s => { s.restSec = 45 })
-    await useStore.getState().pushState()
-    await useStore.getState().syncNow()
-    expect(h.calls).toHaveLength(0)                       // not a single request, anywhere
-    expect(localStorage.getItem('gym_dirty')).toBe('1')
-    expect(useStore.getState().sync.status).toBe('auth')
+    expect(localCalls()).toHaveLength(0)                  // nothing to the app's own asset server
+    expect(h.calls.every(c => !c.auth)).toBe(true)          // and no token anywhere
   })
 
-  it('pairing it again with the same account merges the week, the routine edits and the settings — no question asked', async () => {
+  it('signing in with the password and the same account merges the week, the routine edits and the settings — no question asked', async () => {
     zombiePhone(week())
     const useStore = await freshStore()
     await useStore.getState().boot()
     const srv = serverWith(SERVER_STATE)
     const ask = vi.fn(async () => false)
+    await useStore.getState().appLogin('andi', 'a long password', ask)
 
-    await useStore.getState().connectToServer('gym.example.com', 'ABCD2345', ask)
-
+    expect(h.calls.find(c => c.url === BASE + '/api/app/login').body).toEqual({ name: 'andi', password: 'a long password' })
     expect(ask).not.toHaveBeenCalled()
     const S = useStore.getState().S
     expect(ids(S.workouts)).toEqual(['w1', 'w-week'])
@@ -283,15 +281,17 @@ describe('a phone an earlier version already unpaired', () => {
     expect(ids(srv.doc.workouts)).toEqual(['w1', 'w-week'])
     expect(useStore.getState().sync).toMatchObject({ status: 'ok', server: BASE, auth: false })
     expect(readFile('opengym-remote.json')).toMatchObject({ mode: 'remote', base: BASE, token: 'TOKEN-NEW' })
+    expect(serverCalls().filter(c => c.url.endsWith('/api/data') && c.method === 'PUT').every(c => c.auth === 'Bearer TOKEN-NEW')).toBe(true)
   })
 
-  it('Disconnect does not wipe the week the server never saw', async () => {
+  it('Sign out does not wipe the week the server never saw', async () => {
     zombiePhone(week())
+    h.server = () => refusing()
     const useStore = await freshStore()
     await useStore.getState().boot()
     await sleep(900)                                      // the file mirror's debounce
 
-    const r = await useStore.getState().disconnectServer()
+    const r = await useStore.getState().signOut()
 
     expect(r).toMatchObject({ owed: true })
     expect(ids(useStore.getState().S.workouts)).toEqual(['w1', 'w-week'])
@@ -299,7 +299,28 @@ describe('a phone an earlier version already unpaired', () => {
     await sleep(900)
     expect(ids(readFile('opengym-state.json').workouts)).toEqual(['w1', 'w-week'])
     expect(useStore.getState().user).toEqual(USER)
-    expect(h.calls).toHaveLength(0)
+  })
+})
+
+describe('signing in and out in the app (kl12, no pairing)', () => {
+  it('a paired phone signs out: the server gets its token on /api/logout, the file keeps the address and drops the token', async () => {
+    pairedPhone()
+    serverWith(SERVER_STATE)
+    const useStore = await freshStore()
+    await useStore.getState().boot()
+    const r = await useStore.getState().signOut()
+    expect(r).toMatchObject({ owed: false })
+    expect(serverCalls().find(c => c.url === BASE + '/api/logout').auth).toBe('Bearer TOKEN-OLD')
+    expect(readFile('opengym-remote.json')).toMatchObject({ mode: 'remote', base: BASE, token: null })
+    expect(useStore.getState().user).toBe(null)
+    // The next start opens on the sign-in screen against the same server, with no token.
+    const next = await freshStore()
+    h.calls = []
+    await next.getState().boot()
+    expect(next.getState().user).toBe(null)
+    expect(next.getState().ready).toBe(true)
+    expect(next.getState().sync.server).toBe(BASE)
+    expect(h.calls.every(c => !c.auth)).toBe(true)
   })
 })
 
@@ -607,29 +628,19 @@ describe('a request that never answers', () => {
 })
 
 describe('the first-start permission steps (views/PermissionSteps.jsx)', () => {
-  const firstLaunch = async () => {
+  // Habcore Gym (kl12): no first-launch choice any more; a first launch opens on the sign-in screen
+  // against the gym's server, and the steps follow the first sign-in.
+  it('are due once the first sign-in has finished', async () => {
     h.files.clear(); localStorage.clear()
+    serverWith(SERVER_STATE)
     const useStore = await freshStore()
     await useStore.getState().boot()
-    expect(useStore.getState().needsMobileOnboarding).toBe(true)
-    expect(useStore.getState().permSteps).toBe(false)
-    return useStore
-  }
-
-  it('are due once "Use on this device" is picked', async () => {
-    const useStore = await firstLaunch()
-    await useStore.getState().chooseLocalMode()
     expect(useStore.getState().needsMobileOnboarding).toBe(false)
-    expect(useStore.getState().permSteps).toBe(true)
-    useStore.getState().finishPermSteps()
+    expect(useStore.getState().user).toBe(null)
+    expect(useStore.getState().sync.server).toBe(BASE)
     expect(useStore.getState().permSteps).toBe(false)
-  })
-
-  it('are due once pairing from the first-launch screen has finished', async () => {
-    const useStore = await firstLaunch()
-    serverWith(SERVER_STATE)
-    await useStore.getState().connectToServer('gym.example.com', 'ABCD2345', vi.fn(async () => false))
-    expect(useStore.getState().needsMobileOnboarding).toBe(false)
+    await useStore.getState().appLogin('andi', 'a long password', vi.fn(async () => false))
     expect(useStore.getState().permSteps).toBe(true)
+    expect(useStore.getState().user).toEqual(USER)
   })
 })

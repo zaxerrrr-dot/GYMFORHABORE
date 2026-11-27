@@ -4,6 +4,7 @@ import { webauthnOK, passkeyLogin, passkeyRegister, passkeyError, bio } from '..
 import { hasData } from '../store/useStore.js'
 import { t } from '../lib/i18n.js'
 import { DEMO, REPO } from '../lib/demo.js'
+import { MOBILE } from '../lib/mobile.js'
 import { guestAllowed } from '../lib/guest.js'
 import { useState, useRef, useEffect } from 'react'
 import BrandLogo from '../components/BrandLogo.jsx'
@@ -29,6 +30,9 @@ function RegisterSheet({ close }) {
   // first — people did not get on with passkeys — and the passkey is a link under the form.
   const pwOn = passwordOn(config)
   const [how, setHow] = useState(pwOn || !webauthnOK() ? 'password' : 'passkey')
+  // Habcore Gym (kl12): no passkeys in the phone app (its WebView is not the server's address; a
+  // passkey there needs associated domains, a TODO for the target server).
+  const passkeys = webauthnOK() && !MOBILE
   const ref = useRef(null)
   useEffect(() => { setTimeout(() => ref.current?.focus(), 250) }, [])
   // Boot already fetched this; retry here only if that attempt failed, so the invite field still
@@ -47,7 +51,7 @@ function RegisterSheet({ close }) {
     } catch (e) { if (e.name !== 'NotAllowedError' && e.name !== 'AbortError') useUI.getState().toast(passkeyError(e, t('Registration failed'))) }
   }
   // The other way, as a quiet link under the form; name and invite code typed so far are kept.
-  const other = pwOn && webauthnOK() && <>
+  const other = pwOn && passkeys && <>
     <div style={{ height: 8 }} />
     {how === 'password'
       ? <Button variant="ghost" className="dim" icon="fingerprint" onClick={() => setHow('passkey')} data-testid="register-passkey-instead">{t('Register with a passkey instead')}</Button>
@@ -153,11 +157,11 @@ export default function Login() {
       {ssoNote}
       {ssoButton}
       <div style={{ textAlign: 'start' }}><PasswordSignInSheet inline /></div>
-      {webauthnOK() && <>
+      {webauthnOK() && !MOBILE && <>
         <div style={{ height: 6 }} />
         <Button variant="ghost" icon="fingerprint" onClick={signIn} data-testid="login-passkey">{t('Sign in with passkey')}</Button>
       </>}
-      <div style={{ height: webauthnOK() ? 6 : 14 }} />
+      <div style={{ height: webauthnOK() && !MOBILE ? 6 : 14 }} />
       <Button variant="tinted" icon="plusCircle" onClick={register} data-testid="login-register">{t('Registration')}</Button>
       <div style={{ height: 18 }} />
       <Button variant="ghost" className="dim" size="sm" style={{ alignSelf: 'center' }} onClick={() => openPasswordSignIn(undefined, 'reset')}>{t('Have a reset code from your admin?')}</Button>

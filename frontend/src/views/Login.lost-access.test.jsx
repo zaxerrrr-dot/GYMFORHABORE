@@ -93,10 +93,14 @@ describe('LostAccessSheet', () => {
     expect(close).toHaveBeenCalled()
     expect(mocks.redeem).toBe(true)
   })
-  it('in the phone app: a browser first, then pair again; no code field here', () => {
+  it('in the phone app (kl12): Ask your trainer, and "I have a code" opens the new-password form', async () => {
     mocks.MOBILE = true
     const host = mount(<LostAccessSheet close={vi.fn()} />)
-    expect(host.textContent).toContain('pair the app again')
-    expect(button(host, 'I have a code')).toBeUndefined()
+    expect(host.textContent).not.toContain('pair the app again')
+    expect(host.textContent).toContain('Ask your trainer')
+    expect(host.textContent).not.toContain('Your passkey may be synced')
+    await act(async () => { button(host, 'I have a code').click() })
+    expect(host.querySelector('[data-testid="app-recover"]')).toBeTruthy()
+    expect(host.querySelectorAll('input[type="password"]').length).toBe(2)
   })
 })

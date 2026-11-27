@@ -73,7 +73,9 @@ describe('a new profile picks once', () => {
 describe('the words follow the rule', () => {
   it('the how-to per rule', () => {
     expect(mount(<StreakHowTo rule="generous" />).textContent).toMatch(/You can bank 2\./)
-    expect(mount(<StreakHowTo rule="gentle" />).textContent).toMatch(/You can bank 1\..*Two missed weeks in a row, and it starts over\./)
+    // kl12: one sentence for both rules, as the walk counts: no freeze banked, and it starts over.
+    expect(mount(<StreakHowTo rule="gentle" />).textContent).toMatch(/You can bank 1\..*No freeze left, and it starts over\./)
+    expect(mount(<StreakHowTo rule="gentle" />).textContent).not.toMatch(/Two missed weeks in a row/)
     const off = mount(<StreakHowTo rule="off" />).textContent
     expect(off).toMatch(/No freezes on your rule/)
     expect(off).not.toMatch(/bank/)

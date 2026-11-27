@@ -359,7 +359,9 @@ describe('the search lands on a row', () => {
     expect(searchSettings('reminder time', web, tr).map(h => h.title)).toEqual(['Reminder time'])
     expect(searchSettings('tone', web, tr).map(h => h.title)).toContain('Nudge tone')
     expect(searchSettings('test notification', web, tr).map(h => h.title)).toEqual(['Send test notification'])
-    expect(searchSettings('server', web, tr).map(h => h.title)).toContain('Sync now')
+    // Habcore Gym (kl12): no "Server & sync" block, so no "Sync now" row to find; sync is automatic.
+    expect(searchSettings('server', web, tr).map(h => h.title)).not.toContain('Sync now')
+    expect(searchSettings('wyloguj', { ...web, mobile: true }, tr).map(h => h.title)).toContain('Sign out')
     // Full QA 146: the daily WebDAV backup was a row on Data & backup that the search never found.
     // Both homes of the WebDAV backup: the Data & backup row and the Integrations card (#1120).
     expect(searchSettings('webdav', web, tr).map(h => h.title).sort()).toEqual(['Back up to WebDAV', 'WebDAV backup'])
@@ -370,7 +372,7 @@ describe('the search lands on a row', () => {
       ['pull-up volume', 'Count body weight in bodyweight lifts'], ['sport', 'Sport counts for the streak']]) {
       expect(searchSettings(q, web, tr).map(h => h.title), q).toContain(title)
     }
-    expect(searchSettings('sync', web, tr).map(h => h.title)).toContain('Sync now')
+    expect(searchSettings('sync', web, tr).map(h => h.title)).not.toContain('Sync now')
     expect(searchSettings('loop', web, tr).map(h => h.title)).toContain('How you train')
     expect(searchSettings('swipe', web, tr)[0].title).toBe('Swipe actions')
     expect(searchSettings('gesture', web, tr).map(h => h.title)).toEqual(['Swipe actions'])

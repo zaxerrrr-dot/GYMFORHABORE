@@ -127,6 +127,8 @@ const REASONS = {
   'credential-exists': 'that passkey already belongs to a profile',
   'invite-invalid': 'the invite code was used or revoked in the meantime',
   'invite-rejected': 'wrong or already-used invite code',
+  // Habcore Gym (kl12): a sign-in, sign-up or sign-out from the phone app (/api/app/*).
+  'app': 'in the phone app',
   'code-invalid': 'wrong or expired pairing code',
   'user-unavailable': 'the profile behind the code is disabled or gone',
   'bad-password': 'wrong password',

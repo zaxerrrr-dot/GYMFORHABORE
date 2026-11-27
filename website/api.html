@@ -328,7 +328,7 @@ main.api-main .lead { color: var(--fg-2); max-width: 58ch; margin: 14px 0 0; fon
   <p class="api-facts">
     <span>OpenAPI 3.1.0</span>
     <span>openGym v1.4.5</span>
-    <span>178 endpoints</span>
+    <span>182 endpoints</span>
     <span>AGPL-3.0-or-later</span>
   </p>
 
@@ -1308,6 +1308,128 @@ main.api-main .lead { color: var(--fg-2); max-width: 58ch; margin: 14px 0 0; fon
   <h2>Password</h2>
   <p class="sub">Optional name-and-password sign-in (<code>PASSWORD_LOGIN=1</code>). Every route here is a 404 while the flag is off.</p>
   <div class="eps">
+
+<details class="ep" id="op-appLogin">
+  <summary>
+    <span class="m post">POST</span>
+    <span class="ep-path"><code>/api/app/login</code><span class="ep-chip public">public</span></span>
+    <span class="ep-chev" aria-hidden="true"></span>
+    <span class="ep-sum">The phone app signs in with a name or e-mail and a password</span>
+  </summary>
+  <div class="ep-body">
+<p>Habcore Gym (patch 0014). The same check, throttle and answers as <code>POST /api/login/password</code>, but the session comes back as a Bearer token in the body and no cookie is set, so the phone app (whose WebView origin is never ORIGIN) can sign in without pairing. CSRF-exempt for that reason: a page that posts its own credentials only gets its own token. Only with PASSWORD_LOGIN.</p>
+    <p class="ep-auth"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span>Public: no authentication required.</span></p>
+
+<p class="ep-h">Request body <span class="p-hint">(JSON)</span></p>
+<pre><code>{
+  &quot;identifier&quot;: &quot;Ada&quot;,
+  &quot;password&quot;: &quot;correct horse battery staple&quot;
+}</code></pre>
+    <p class="ep-h">Responses</p>
+    <div class="ptab">
+  <div class="prow rrow">
+    <span class="r-code s2">200</span>
+    <span class="p-desc">Signed in. No cookie is set; the token is in the body.<span class="r-sig">{ token: string, user: <a href="#schema-SessionUser">SessionUser</a> }</span></span>
+  </div>
+  <div class="prow rrow">
+    <span class="r-code s4">400</span>
+    <span class="p-desc">Missing or refused input (the same answers as the cookie route).</span>
+  </div>
+    </div>
+  </div>
+</details>
+
+<details class="ep" id="op-appRegister">
+  <summary>
+    <span class="m post">POST</span>
+    <span class="ep-path"><code>/api/app/register</code><span class="ep-chip public">public</span></span>
+    <span class="ep-chev" aria-hidden="true"></span>
+    <span class="ep-sum">The phone app creates a profile with a password</span>
+  </summary>
+  <div class="ep-body">
+<p>Habcore Gym (patch 0014). <code>POST /api/register/password</code> (invite code, Terms and health consent with LEGAL=on), answering a Bearer token in the body instead of a cookie.</p>
+    <p class="ep-auth"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span>Public: no authentication required.</span></p>
+
+<p class="ep-h">Request body <span class="p-hint">(JSON)</span></p>
+<pre><code>{
+  &quot;name&quot;: &quot;Ada&quot;,
+  &quot;password&quot;: &quot;correct horse battery staple&quot;,
+  &quot;code&quot;: &quot;ABCD2345&quot;
+}</code></pre>
+    <p class="ep-h">Responses</p>
+    <div class="ptab">
+  <div class="prow rrow">
+    <span class="r-code s2">200</span>
+    <span class="p-desc">Signed in. No cookie is set; the token is in the body.<span class="r-sig">{ token: string, user: <a href="#schema-SessionUser">SessionUser</a> }</span></span>
+  </div>
+  <div class="prow rrow">
+    <span class="r-code s4">400</span>
+    <span class="p-desc">Missing or refused input (the same answers as the cookie route).</span>
+  </div>
+    </div>
+  </div>
+</details>
+
+<details class="ep" id="op-appPasswordReset">
+  <summary>
+    <span class="m post">POST</span>
+    <span class="ep-path"><code>/api/app/password-reset</code><span class="ep-chip public">public</span></span>
+    <span class="ep-chev" aria-hidden="true"></span>
+    <span class="ep-sum">The phone app redeems an admin's reset code</span>
+  </summary>
+  <div class="ep-body">
+<p>Habcore Gym (patch 0014). <code>POST /api/login/password-reset</code>, answering a Bearer token in the body.</p>
+    <p class="ep-auth"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span>Public: no authentication required.</span></p>
+
+<p class="ep-h">Request body <span class="p-hint">(JSON)</span></p>
+<pre><code>{
+  &quot;identifier&quot;: &quot;Ada&quot;,
+  &quot;code&quot;: &quot;K7WQ-2MZP-...&quot;,
+  &quot;next&quot;: &quot;a new long password&quot;
+}</code></pre>
+    <p class="ep-h">Responses</p>
+    <div class="ptab">
+  <div class="prow rrow">
+    <span class="r-code s2">200</span>
+    <span class="p-desc">Signed in. No cookie is set; the token is in the body.<span class="r-sig">{ token: string, user: <a href="#schema-SessionUser">SessionUser</a> }</span></span>
+  </div>
+  <div class="prow rrow">
+    <span class="r-code s4">400</span>
+    <span class="p-desc">Missing or refused input (the same answers as the cookie route).</span>
+  </div>
+    </div>
+  </div>
+</details>
+
+<details class="ep" id="op-appRecover">
+  <summary>
+    <span class="m post">POST</span>
+    <span class="ep-path"><code>/api/app/recover</code><span class="ep-chip public">public</span></span>
+    <span class="ep-chev" aria-hidden="true"></span>
+    <span class="ep-sum">The phone app sets a new password with a recovery code</span>
+  </summary>
+  <div class="ep-body">
+<p>Habcore Gym (patch 0014). A recovery code from the admin dashboard, or a code from another signed-in device (<code>POST /api/account/device-link</code>), sets a new password for its profile (the code is spent, every other session ends) and signs the app in with a Bearer token. Wrong codes count like device-link redemptions (<code>link</code> pause). Only with PASSWORD_LOGIN.</p>
+    <p class="ep-auth"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span>Public: no authentication required.</span></p>
+
+<p class="ep-h">Request body <span class="p-hint">(JSON)</span></p>
+<pre><code>{
+  &quot;code&quot;: &quot;ABCD-EFGH-JKLM&quot;,
+  &quot;next&quot;: &quot;a new long password&quot;
+}</code></pre>
+    <p class="ep-h">Responses</p>
+    <div class="ptab">
+  <div class="prow rrow">
+    <span class="r-code s2">200</span>
+    <span class="p-desc">Signed in. No cookie is set; the token is in the body.<span class="r-sig">{ token: string, user: <a href="#schema-SessionUser">SessionUser</a> }</span></span>
+  </div>
+  <div class="prow rrow">
+    <span class="r-code s4">400</span>
+    <span class="p-desc">Missing or refused input (the same answers as the cookie route).</span>
+  </div>
+    </div>
+  </div>
+</details>
 
 <details class="ep" id="op-loginPassword">
   <summary>

@@ -5,5 +5,5 @@
 "Log a weigh-in in ${applicationName}" = "Dodaj ważenie w ${applicationName}";
 "What's my workout today in ${applicationName}" = "Jaki mam dziś trening w ${applicationName}";
 "What's planned today in ${applicationName}" = "Co mam dziś w planie w ${applicationName}";
-"How's my streak in ${applicationName}" = "Jak idzie moja seria w ${applicationName}";
-"What's my ${applicationName} streak" = "Jaka jest moja seria w ${applicationName}";
+"How's my streak in ${applicationName}" = "Jak idzie moja passa w ${applicationName}";
+"What's my ${applicationName} streak" = "Jaka jest moja passa w ${applicationName}";

@@ -4904,3 +4904,30 @@ button.wl-summary{width:100%;padding:0 0 10px;text-align:start;border-radius:var
 .gg-also-c{display:inline-flex;align-items:center;gap:6px;font-size:14px;min-height:36px}
 .gg-also-c input{width:20px;height:20px;accent-color:var(--acc)}
 .gg-actions{display:flex;flex-direction:column;gap:8px;margin:8px 0 14px}
+
+/* Habcore Gym (kl12): the "Passa" card on Home and its details (components/Passa.jsx). */
+.passa-main{display:block;width:100%;padding:0;border:0;background:none;color:inherit;text-align:start;font:inherit;cursor:pointer}
+.passa-top{display:flex;align-items:center;gap:10px}
+.passa-flame{font-size:30px;line-height:1}
+.passa-n{flex:1;min-width:0;font-size:var(--fs-title2);font-weight:800;letter-spacing:-.01em}
+.passa-top .chev{color:var(--label-3)}
+.passa-strip{display:flex;gap:4px;margin:12px 0 10px}
+.passa-wk{flex:1;height:10px;border-radius:5px;background:var(--surface-3)}
+.passa-wk.is-on{background:var(--acc)}
+.passa-wk.is-frozen,.passa-wk.is-excused{background:repeating-linear-gradient(135deg,var(--acc) 0 2px,transparent 2px 5px);box-shadow:inset 0 0 0 1px var(--acc);opacity:.75}
+.passa-wk.is-open{background:transparent;box-shadow:inset 0 0 0 2px var(--acc)}
+.passa-week{display:block}
+.passa-days{display:flex;justify-content:space-between;gap:4px;margin-bottom:6px}
+.passa-day{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;font-size:var(--fs-caption);color:var(--label-2)}
+.passa-day.today .passa-dl{color:var(--label);font-weight:700}
+.passa-dot{width:10px;height:10px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--label-4)}
+.passa-day.done .passa-dot{background:var(--acc);box-shadow:none}
+.passa-day.today:not(.done) .passa-dot{box-shadow:inset 0 0 0 2px var(--acc)}
+.passa-wl{display:block;font-weight:600}
+.passa-best{display:flex;align-items:center;gap:6px;margin-top:6px}
+.passa-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:10px;margin-bottom:14px}
+.passa-stats>div{display:flex;flex-direction:column;gap:2px;padding:10px;border-radius:12px;background:var(--surface-2)}
+.passa-stats b{font-size:var(--fs-body);white-space:nowrap}
+.passa-hist{display:grid;gap:2px}
+.passa-hrow{display:flex;align-items:center;gap:10px;min-height:36px;border-bottom:var(--hair) solid var(--sep)}
+.passa-hrow .passa-wk{flex:none;width:22px;height:10px}

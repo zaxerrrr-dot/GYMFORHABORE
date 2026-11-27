@@ -208,6 +208,12 @@ db.creds = db.creds || [];
 db.subs = db.subs || [];
 db.invites = db.invites || [];
 db.deviceLinks = db.deviceLinks || [];   // unused one-time device links, hashed (device-link.js)
+// Habcore Gym (patch 0014): bearer tokens a phone gave back by signing out ({h: sha256, exp}).
+// A cookie ends with the browser forgetting it; a phone's token lives in a file and would stay
+// valid for SESSION_DAYS, so "Sign out" in the app puts it here. Rows go once the token expires.
+db.revoked = (db.revoked || []).filter(r => r && r.exp > Date.now());
+const tokenHash = tok => crypto.createHash('sha256').update(String(tok)).digest('base64url');
+const revokedTokens = new Set(db.revoked.map(r => r.h));
 const isAdmin = user => !!user && (user.admin === true || ADMIN_UIDS.includes(user.id));
 // One owner per instance, any number of admins. Admins run the place day to day (users, invites,
 // the Coach); the owner is the one admin the others cannot act on: only the owner appoints or
@@ -798,6 +804,7 @@ function sessionUser(tok) {
   if (!tok) return null;
   const payload = verifySig(tok);
   if (!payload) return null;
+  if (revokedTokens.size && revokedTokens.has(tokenHash(tok))) return null;
   const [uid, exp, ver, kind, at] = payload.split(':');
   if (!uid || +exp < Date.now()) return null;
   const user = db.users.find(u => u.id === uid) || null;
@@ -874,7 +881,9 @@ const clearCookie = COOKIE === LEGACY_COOKIE
 // Authorization header is the only credential the route reads, and no browser attaches one.
 // The connector's OAuth registration and token exchange (oauth.js) are called by the assistant's
 // own server: the code and verifier in the body are the credential, and no cookie is read.
-const CSRF_EXEMPT = new Set(['POST /api/oauth/register', 'POST /api/oauth/token', 'POST /api/oauth/revoke', 'POST /api/pair/redeem', 'POST /api/watch/redeem', 'POST /api/watch/box', 'POST /api/oidc/app/redeem', 'PUT /api/token/data']);
+const CSRF_EXEMPT = new Set(['POST /api/oauth/register', 'POST /api/oauth/token', 'POST /api/oauth/revoke', 'POST /api/pair/redeem', 'POST /api/watch/redeem', 'POST /api/watch/box', 'POST /api/oidc/app/redeem', 'PUT /api/token/data',
+  // The phone app's sign-in (patch 0014): the token comes back in the body, no cookie is set.
+  'POST /api/app/login', 'POST /api/app/register', 'POST /api/app/password-reset', 'POST /api/app/recover']);
 // The routes that answer to the credential in the body and never to a Bearer. No Bearer is the
 // credential that acts there, so none buys the shortcut below: any valid token would do, the
 // attacker's own included.
@@ -886,7 +895,8 @@ const PASSKEY_ROUTES = new Set([
 // device code in the body is the credential, never a Bearer.
 const SIGN_IN_ROUTES = new Set([
   'POST /api/login/password', 'POST /api/register/password', 'POST /api/login/password-reset',
-  'POST /api/device-link/options', 'POST /api/device-link/verify'
+  'POST /api/device-link/options', 'POST /api/device-link/verify',
+  'POST /api/app/login', 'POST /api/app/register', 'POST /api/app/password-reset', 'POST /api/app/recover'
 ]);
 // A verify error as the answer's body: a passkey made at an address that is not ORIGIN/RP_ID gets
 // the same `code` as the origin check's 403, so the app explains both alike.
@@ -1230,6 +1240,8 @@ setInterval(() => { AUTH_BURST.sweep(); ADDR_FAILS.sweep(); ACCOUNT_FAILS.sweep(
 const THROTTLED = {
   'POST /api/login/password': 'password', 'POST /api/login/password-reset': 'password',
   'POST /api/register/password': 'signup',
+  'POST /api/app/login': 'password', 'POST /api/app/password-reset': 'password', 'POST /api/app/register': 'signup',
+  'POST /api/app/recover': 'link',
   'POST /api/account/password': 'password', 'DELETE /api/account/password': null,
   // Setting an e-mail only spends the budget and asks the address's e-mail pause; an address
   // already in use counts against it (see POST /api/account/email).
@@ -1642,6 +1654,23 @@ function removeAccount(u) {
   saveDb();
 }
 
+// Habcore Gym (patch 0014, kl12): the phone app signs in with the same name and password as the
+// site, with no pairing. Its WebView is never ORIGIN and keeps no cookie for the server, so the
+// /api/app/* twins of the password routes answer the session in the body as a bearer token (the
+// same token a pairing gave, kind 'b', renewed by GET /api/me) and set no cookie. That is why they
+// can be CSRF-exempt where the cookie routes cannot: a hostile page that posts its own name and
+// password gets its own token back and nothing in the visitor's browser changes (no login CSRF).
+// Same throttles (THROTTLED), same invite and Terms rules, same audit rows (tagged 'app').
+function signedIn(req, res, user) {
+  if (req.appToken) return json(res, 200, { token: makeSession(user, 'b'), user: publicUser(user) });
+  json(res, 200, { user: publicUser(user) }, { 'Set-Cookie': sessionCookie(user) });
+}
+const APP_SIGN_IN = {
+  'POST /api/app/login': 'POST /api/login/password',
+  'POST /api/app/register': 'POST /api/register/password',
+  'POST /api/app/password-reset': 'POST /api/login/password-reset'
+};
+
 const passwordRoutes = {
   'POST /api/login/password': async (req, res) => {
     const body = await readBody(req);
@@ -1682,8 +1711,8 @@ const passwordRoutes = {
       // The same question again: the password may have changed while the new hash was made.
       if (!still()) return json(res, 401, WRONG);
     }
-    audit(req, 'auth.password.ok', { user });
-    json(res, 200, { user: publicUser(user) }, { 'Set-Cookie': sessionCookie(user) });
+    audit(req, 'auth.password.ok', { user, ...(req.appToken ? { msg: 'app' } : {}) });
+    signedIn(req, res, user);
   },
 
   // For browsers that cannot make a passkey at all: plain http on a LAN address, some Firefox
@@ -1746,8 +1775,8 @@ const passwordRoutes = {
     claimFirstAdmin(req, user);
     db.users.push(user);
     saveDb();
-    audit(req, 'auth.register.ok', { user, msg: inv ? inv.code + ' · password' : 'password' });
-    json(res, 200, { user: publicUser(user) }, { 'Set-Cookie': sessionCookie(user) });
+    audit(req, 'auth.register.ok', { user, msg: (inv ? inv.code + ' · password' : 'password') + (req.appToken ? ' · app' : '') });
+    signedIn(req, res, user);
   },
 
   // What Settings shows: whether a password is set, and whether it could be removed.
@@ -1923,8 +1952,47 @@ const passwordRoutes = {
     ACCOUNT_FAILS.clear(acctKey(user));
     saveDb();
     audit(req, 'auth.password.reset', { user });
-    json(res, 200, { user: publicUser(user) }, { 'Set-Cookie': sessionCookie(user) });
+    signedIn(req, res, user);
   }
+};
+
+// The phone app's twins (APP_SIGN_IN above): the cookie route itself runs, told to hand back a token.
+const appRoutes = Object.fromEntries(Object.entries(APP_SIGN_IN).map(([app, web]) => [app, (req, res) => {
+  req.appToken = true;
+  return passwordRoutes[web](req, res);
+}]));
+// "Lost access?" in the phone app (kl12): the app cannot make a passkey for the server, so the
+// recovery code a trainer makes in the admin dashboard (or a code from another signed-in device)
+// sets a new password here instead, and the app is signed in with it. Counted like a device-link
+// redemption; the code is spent by setPassword (dropDeviceLinks), which also ends every other session.
+appRoutes['POST /api/app/recover'] = async (req, res) => {
+  const body = await readBody(req);
+  if (addressPaused(req, res, 'link')) return;
+  const code = text(body.code);
+  const link = code ? findDeviceLink(db, code) : null;
+  if (!link) {
+    strikeAddress(req, 'link');
+    audit(req, 'auth.link.fail', { ok: false, msg: 'link-invalid · app' });
+    return json(res, 400, LINK_INVALID);
+  }
+  const owner = db.users.find(u => u.id === link.userId);
+  if (!owner || owner.disabled) {
+    audit(req, 'auth.link.fail', { ok: false, uid: link.userId, msg: 'user-unavailable · app' });
+    return json(res, 400, LINK_INVALID);
+  }
+  if (oidcOnlyRefused(res, owner)) return;
+  const problem = passwordProblem(body.next, owner.name);
+  if (problem) return policyError(res, problem);
+  if (nameTaken(owner.name, owner.id)) return json(res, 409, { error: 'another profile already signs in with this name', code: 'name-taken' });
+  const h = await hashPassword(body.next);
+  // Everything above awaited: the code may have been used or dropped since, the profile locked.
+  const user = db.users.find(u => u.id === link.userId);
+  if (findDeviceLink(db, code) !== link || !user || user.disabled) return json(res, 400, LINK_INVALID);
+  setPassword(user, h);
+  ACCOUNT_FAILS.clear(acctKey(user));
+  saveDb();
+  audit(req, link.kind === 'recovery' ? 'auth.recovery.ok' : 'auth.link.ok', { user, msg: 'app · new password' });
+  json(res, 200, { token: makeSession(user, 'b'), user: publicUser(user) });
 };
 
 /* ---------- more than one passkey, and one-time device links (#95) ---------- */
@@ -2448,7 +2516,7 @@ const oidcOnlyRefused = (res, user) => {
   json(res, 403, { error: `sign in with ${OIDC.label} instead`, code: 'oidc-only' });
   return true;
 };
-const OIDC_ONLY_SIGNUPS = new Set(['POST /api/register/options', 'POST /api/register/verify', 'POST /api/register/password']);
+const OIDC_ONLY_SIGNUPS = new Set(['POST /api/register/options', 'POST /api/register/verify', 'POST /api/register/password', 'POST /api/app/register']);
 // Offers to stay with a trainer privately run out after 30 days even if nobody opens the app.
 if (TRAINERS) { const offerSweep = setInterval(() => { try { org.expireOffers(); } catch (e) { console.error('org offers', e.message); } }, 3600000); offerSweep.unref?.(); }
 
@@ -2840,8 +2908,21 @@ const routes = {
   // Reads the session purely so the sign-out can be recorded; the cookie is cleared either way.
   // A logout with no valid cookie is a no-op and isn't worth an entry.
   'POST /api/logout': async (req, res) => {
-    const user = readSession(req);
-    if (user) audit(req, 'auth.logout', { user });
+    const s = sessionOf(req);
+    const user = s?.user || null;
+    if (user) audit(req, 'auth.logout', { user, ...(s.bearer ? { msg: 'app' } : {}) });
+    // The phone's token (patch 0014): never valid again, whoever holds a copy. Not while a trainer
+    // leads a client: the session is the trainer's then, and the act token ends on its own.
+    const auth = req.headers.authorization || '';
+    if (s && s.bearer && !s.actor && auth.startsWith('Bearer ')) {
+      const h = tokenHash(auth.slice(7).trim());
+      if (!revokedTokens.has(h)) {
+        revokedTokens.add(h);
+        db.revoked = db.revoked.filter(r => r.exp > Date.now());
+        db.revoked.push({ h, exp: s.exp });
+        saveDb();
+      }
+    }
     // OIDC_LOGOUT: where the browser goes next to end the provider's session too.
     const out = user && oidcApi ? oidcApi.logoutUrl(user) : null;
     json(res, 200, { ok: true, ...(out ? { provider_logout: out } : {}) }, { 'Set-Cookie': gym ? [...clearCookie, gym.clearActCookie()] : clearCookie });
@@ -3208,6 +3289,7 @@ const routes = {
 
   // Absent entirely while PASSWORD_LOGIN is off, so each of them is a plain 404.
   ...(PASSWORD_LOGIN ? passwordRoutes : {}),
+  ...(PASSWORD_LOGIN ? appRoutes : {}),
 
   // Always there: more passkeys and device links need nothing an instance has to switch on.
   ...passkeyRoutes,
@@ -3737,6 +3819,11 @@ const routes = {
 // db.watchLinks are left where they are and are simply never served.
 const ZEPP_ON = /^(1|true|yes|on)$/i.test(process.env.ZEPP || '');
 if (!ZEPP_ON) for (const k of Object.keys(routes)) if (/^[A-Z]+ \/api\/watch\//.test(k)) routes[k] = async (req, res) => json(res, 410, { error: 'Zepp OS watches are not available on this server', code: 'zepp-off' });
+// Habcore Gym (patch 0014, kl12): the phone app signs in with a password (/api/app/*), so pairing a
+// phone from a signed-in browser is gone. Making and redeeming codes answers 410 'pairing-off'
+// unless PAIRING=1; tokens phones were paired with before keep working (and renewing) as they were.
+const PAIRING_ON = /^(1|true|yes|on)$/i.test(process.env.PAIRING || '');
+if (!PAIRING_ON) for (const k of ['POST /api/pair/create', 'POST /api/pair/redeem']) routes[k] = async (req, res) => json(res, 410, { error: 'pairing is not available on this server; sign in with your password in the app', code: 'pairing-off' });
 
 /* ---------- Coach: boot recovery, notifications, scheduled reviews ---------- */
 // A job that was running when the process died is not coming back; say so rather than leaving

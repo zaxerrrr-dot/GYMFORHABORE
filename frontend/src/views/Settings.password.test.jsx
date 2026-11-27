@@ -128,16 +128,11 @@ describe('Settings with password sign-in', () => {
     expect(titles(section(off, 'Account'))).toEqual(['Create passkey profile', 'Sign in with passkey', 'Use a code from your other device'])
   })
 
-  it('"Sign in" after the server ended the session asks which way; the passkey is one tap on it', async () => {
+  // kl12: no "Server & sync" block, so no "Sign in" row in Account; the banner offers it
+  // (components/SyncBanner.test.jsx).
+  it('"Sign in" after the server ended the session is not a row in Account any more', () => {
     mocks.sync = { status: 'auth', offline: false, pending: true, auth: true, lastError: { status: 401 }, lastSynced: 0, server: null }
     const page = mount(<Settings page="account" />)
-    const row = rowByTitle(section(page, 'Server & sync'), 'Sign in')
-    expect(row).toBeTruthy()
-    act(() => row.click())
-    expect(mocks.passkeyLogin).not.toHaveBeenCalled()
-    const sheet = mount(mocks.sheets.at(-1).render(() => {}))
-    const passkey = [...sheet.querySelectorAll('button')].find(b => b.textContent === 'Sign in with passkey')
-    await act(async () => { passkey.click() })
-    expect(mocks.passkeyLogin).toHaveBeenCalledTimes(1)
+    expect(section(page, 'Server & sync')).toBeUndefined()
   })
 })

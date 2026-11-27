@@ -23,6 +23,9 @@ export const webauthnOK = () => typeof window.PublicKeyCredential !== 'undefined
 let remoteBase = ''
 let remoteToken = null
 export function setRemoteAuth(base, token) { remoteBase = base || ''; remoteToken = token || null }
+// Habcore Gym (kl12): the server the app talks to, signed in or not (lib/remote.js appServer).
+export const currentRemoteBase = () => remoteBase
+export const remoteSignedIn = () => !!(remoteBase && remoteToken)
 // A Cloudflare Access service token (lib/cf-access.js): sent only to the origin it was entered
 // for, never on a same-origin request, where the browser's own Access session cookie already
 // does the job, and never to a server that merely happens to be paired or typed in.
@@ -375,6 +378,22 @@ export async function pairRedeem(serverBase, code, { probeMs = PROBE_MS } = {}) 
   // Anything that is not a pairing would be saved as one — and the phone would then send every
   // change to a server that never gave it a token.
   if (!data.token || !data.user) throw failure(t('The server answered with something other than Habcore Gym data.'), 'bad-response', 200)
+  return data
+}
+
+// Habcore Gym (patch 0014): the app's password sign-in, registration and recovery (/api/app/*),
+// straight to the server like pairRedeem: no Authorization header, the token comes back in the body.
+export async function appSignInRequest(serverBase, path, body) {
+  let data
+  try {
+    data = await request(serverBase + path, {
+      method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, accessFor(serverBase)), body: JSON.stringify(body)
+    }, TIMEOUT_MS)
+  } catch (e) {
+    if (e && (e.status != null || e.code)) throw e
+    throw await whyUnreachable(serverBase, PROBE_MS)
+  }
+  if (!data || !data.token || !data.user) throw failure(t('The server answered with something other than Habcore Gym data.'), 'bad-response', 200)
   return data
 }
 

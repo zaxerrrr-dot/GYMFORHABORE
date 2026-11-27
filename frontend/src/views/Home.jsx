@@ -5,7 +5,8 @@ import { useNavigate } from 'react-router-dom'
 import { useStore } from '../store/useStore.js'
 import { effectiveRoutines, effectiveRoutineIds, nextTrainingDay, lastBW, setsDoneActive } from '../lib/history.js'
 import { streakInfo } from '../lib/streak.js'
-import { StreakFlame, StreakMeta, StreakParty } from '../components/Streak.jsx'
+import { StreakParty } from '../components/Streak.jsx'
+import { PassaCard, passaSheet } from '../components/Passa.jsx'
 import { StreakRuleWelcome } from '../components/StreakRule.jsx'
 import { fmtNum, fmtDate, todayISO, isoOf, weekStartOf, weekDayOffset, DAYS, DAYN } from '../lib/format.js'
 import { t, tn, dateLocale } from '../lib/i18n.js'
@@ -115,7 +116,7 @@ export default function Home() {
   // The streak card's fraction: this calendar week's workouts over the weekdays with a plan, or,
   // in a coach week, the queue's sessions and your own days together (lib/queue.js weekTally).
   const tally = weekTally(S, todayISO())
-  const { done: doneThisWeek, planned: plannedPerWeek } = tally
+  // (this week's done / planned: the Passa card shows the days themselves, kl12)
   const left = workoutsLeft(S, todayISO())
   // The streak with its best run and freezes (lib/streak.js), read back from the workouts.
   const todayKey = todayISO()
@@ -301,22 +302,15 @@ export default function Home() {
       </>}
     </div>}
 
-    {/* The streak opens its calendar from its text (CardHead open); the weekly-sets line and the
-        party banner are buttons of their own beside it, not inside a card that is a button. */}
-    {on('motivation') ? <div className="card tap-host streak-card">
-      <SeasonDeco spot="home-streak" />
-      {/* in season, a Santa hat on the flame (components/Seasonal.jsx) */}
-      <CardHead className="streak-head" glyph={<span className="streak-flame-wrap"><StreakFlame lit={streak.current > 0} /><SeasonDeco spot="streak-flame" /></span>}
-        title={t('{0} week streak', streak.current)} open={{ onClick: () => calendarSheet(), haspopup: 'dialog' }}
-        sub={<>{doneThisWeek}{plannedPerWeek ? ' / ' + plannedPerWeek : ''} {t('this week')} · {tn('{0} workout total', '{0} workouts total', S.workouts.length)}</>}
-        action={<Icon name="calendar" className="chev" style={{ fontSize: 'var(--fs-title3)' }} />} />
-      {(streak.best > 0 || streak.freezes > 0) && <div className="muted small card-head-indent streak-meta-line"><StreakMeta info={streak} /></div>}
+    {/* Habcore Gym (kl12): the streak as the "Passa" card (components/Passa.jsx); a tap opens its
+        details, from where the calendar is one more tap. The party banner and the weekly-sets
+        line stay buttons of their own under it. */}
+    {on('motivation') ? <PassaCard S={S} tally={tally} onOpen={() => passaSheet(S, { onCalendar: () => calendarSheet(), onHelp: () => calendarSheet(undefined, { help: true }) })}>
       <StreakParty S={S} info={streak} tally={tally} />
       {/* Settings → Look & Home → Weekly sets on Home (lib/muscle-targets.js): the muscle with
-          the most room this week, one tap from the Stats card. */}
-      {/* Straight to Stats → Lifts, where the card is, not to the top of Overview (P5 deep link). */}
+          the most room this week, one tap from the Stats card (Stats → Lifts, P5 deep link). */}
       {S.homeMuscleSets === true && <WeeklySetsHomeLine S={S} onOpen={() => nav('/stats?section=lifts')} />}
-    </div>
+    </PassaCard>
       // Motivation off: no streak card, but the weekly sets line it carried keeps a card of its own.
       : S.homeMuscleSets === true && <div className="card wsets-solo"><WeeklySetsHomeLine S={S} onOpen={() => nav('/stats?section=lifts')} /></div>}
   </div>

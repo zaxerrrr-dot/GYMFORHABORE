@@ -23,7 +23,7 @@ import { countChanges, syncFingerprint } from '../lib/sync-changes.js'
 import { saveWorkoutEdit, deleteEditedWorkout } from '../lib/session-edit.js'
 import { appBase } from '../lib/app-base.js'
 import { linkTokenFromSearch, stripLinkFromUrl } from '../lib/device-link.js'
-import { loadRemote, chooseLocal, forgetRemote, connect, connectWithProvider, normalizeServerUrl, renewToken } from '../lib/remote.js'
+import { loadRemote, chooseLocal, forgetRemote, connect, connectWithProvider, normalizeServerUrl, renewToken, appServer, forgetAppToken, appPasswordLogin } from '../lib/remote.js'
 import { takeOidcReturn } from '../lib/oidc.js'
 import { loadCfAccess } from '../lib/cf-access.js'
 import { loadCoachDevice, saveCoachDevice, coachDeviceSettings } from '../lib/coach-device.js'
@@ -2058,6 +2058,9 @@ export const useStore = create((set, get) => {
       let out = null
       try { out = await api('/api/logout', { method: 'POST', body: '{}' }) } catch (e) { if (!MOBILE) logoutOwed(true) }
       await clearLocalSession()
+      // Habcore Gym (kl12): the phone keeps the server's address and drops the token, so it opens
+      // on the sign-in screen (the server revoked the token above, when it was reachable).
+      if (MOBILE) await forgetAppToken()
       // OIDC_LOGOUT: the provider's session ends too, in this browser (the phone has none of it).
       if (!MOBILE && typeof out?.provider_logout === 'string' && /^https?:\/\//.test(out.provider_logout)) window.location.assign(out.provider_logout)
       return left.owed ? owedResult(left, { stashed: true }) : { owed: false }
@@ -2126,6 +2129,7 @@ export const useStore = create((set, get) => {
       if (left.owed && !(await stashOwed())) return owedResult(left, { stashed: false })
       if (!left.owed && !(await stashActive())) return { owed: true, count: 0, stashed: false }
       await clearLocalSession()
+      if (MOBILE) await forgetAppToken()
       return left.owed ? owedResult(left, { stashed: true }) : { owed: false }
     },
 
@@ -2144,13 +2148,24 @@ export const useStore = create((set, get) => {
       const key = stashKey(serverBase(), uid)
       if (all[key]) { delete all[key]; await writeStashes(all) }
       await clearLocalSession()
+      // Habcore Gym (kl12): back to the sign-in screen, the server's address kept.
       if (MOBILE) {
-        await forgetRemote()
-        setPairedBase(null)
-        setSync({ server: null })
-        get().setGuest(true)
+        await forgetAppToken()
         set({ ready: true })
       }
+    },
+    // Habcore Gym (patch 0014): signed in from the app's own sign-in screen (password, registration,
+    // a reset or recovery code, lib/remote.js appPasswordLogin & co., which already keep the token):
+    // from here on exactly what a pairing did, and the same account merges what the phone kept.
+    // The same in one step, for a caller that holds only the name and password (tests, scripts).
+    async appLogin(name, password, ask) {
+      const user = await appPasswordLogin(name, password)
+      await get().appSignedIn(user, ask)
+      return user
+    },
+    async appSignedIn(user, ask) {
+      await get().afterConnect(user, appServer({ base: pairedBase }), ask)
+      if (get().permStepsAfterSignIn) set({ permStepsAfterSignIn: false, permSteps: true })
     },
 
     // Demo build only: drop the seeded example profile back in (Settings → "Reset demo data").
@@ -2174,7 +2189,7 @@ export const useStore = create((set, get) => {
         // Before the first request: a server behind Cloudflare Access answers nothing without it.
         await loadCfAccess({ pairedBase: remote?.mode === 'remote' ? remote.base : '' })
         set({ coachLocal: coachDeviceSettings(await loadCoachDevice()) })
-        if (remote?.mode === 'remote') {
+        if (remote?.mode === 'remote' && remote.token) {
           setRemoteAuth(remote.base, remote.token)
           setPairedBase(remote.base || null)
           setSync({ server: pairedBase })
@@ -2223,6 +2238,14 @@ export const useStore = create((set, get) => {
         } else if (hasData(S)) {
           nativePersist(true)   // first run after an update from a file-less version: seed the mirror
         }
+        // Habcore Gym (kl12): no token (never signed in, signed out, or a phone in local mode): the
+        // gym's server all the same, unsigned, so the sign-in screen can reach it. What the phone
+        // holds stays, and goes into the account at the first sign-in (adoptProfile asks).
+        const base = appServer(remote)
+        setRemoteAuth(base, null)
+        setPairedBase(base)
+        setSync({ server: base })
+        get().loadConfig()
         if (get().user) {
           // A phone that lost its pairing to a refused token under an earlier version: that boot
           // dropped the pairing file — address and token with it — but not the account, and every
@@ -2231,13 +2254,14 @@ export const useStore = create((set, get) => {
           // this is that phone. What it holds stays owed, and the screens say it has to be paired
           // again; the address is gone, so pairing asks for it.
           markOwed(true)
-          failed({ status: 0, code: 'not-paired' }, { pending: true })
-        } else get().setGuest(true)
+          failed({ status: 401 }, { pending: true })
+        } else get().setGuest(false)
         syncReminder(get().S)
         // Only a genuinely first launch — nothing chosen yet and nothing to lose either — offers
         // the choice. Picking local (even with no data yet) persists that choice below and this
         // never asks again.
-        finishBoot({ needsMobileOnboarding: !remote && !hasData(get().S) })
+        // A first launch (no file, nothing kept): the permission steps follow the first sign-in.
+        finishBoot({ needsMobileOnboarding: false, permStepsAfterSignIn: !remote && !hasData(get().S) })
         return
       }
       // Demo build (GitHub Pages): no backend at all — seed once, stay in guest mode.

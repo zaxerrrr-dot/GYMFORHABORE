@@ -18,7 +18,8 @@ import BrandLogo from '../components/BrandLogo.jsx'
 // The Habcore server the phone app's links point at (the web app links to its own address, so a
 // new domain needs nothing here). One place to change when the server moves: the build variable
 // VITE_HABCORE_SERVER, or this default.
-export const HABCORE_SERVER = ((import.meta.env || {}).VITE_HABCORE_SERVER || 'https://sv.metin2sp.pl/opengym').replace(/\/+$/, '')
+import { HABCORE_SERVER } from './habcore-server.js'
+export { HABCORE_SERVER }
 
 const isPl = () => String(getLang() || '').toLowerCase().startsWith('pl')
 const base = () => {

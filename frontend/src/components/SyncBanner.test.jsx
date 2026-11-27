@@ -169,25 +169,12 @@ describe('not connected — it says so, and what to do', () => {
     expect(text()).toBe('Your server’s address answered with something other than Habcore Gym (HTTP 200). Your changes are kept here.')
   })
 
-  it('phone refused by its server: "Pair again" opens the connect sheet with the address it had', () => {
+  it('phone refused by its server (kl12): it says so and offers "Sign in", no pairing', () => {
     mocks.MOBILE = true
     mocks.sync = sync('auth', { auth: true, pending: true, lastError: { status: 401, code: 'auth' } })
     render()
-    expect(text()).toBe('Your server no longer accepts this phone. Your changes are kept here.')
-    expect(label()).toBe('Pair again')
-    act(() => button().click())
-    const sheet = openedConnect()
-    expect(sheet.dataset.url).toBe(BASE)
-    expect(sheet.dataset.again).toBe('true')
-  })
-
-  it('a phone an earlier version unpaired has no address left: pairing asks for it', () => {
-    mocks.MOBILE = true
-    mocks.sync = sync('auth', { auth: true, pending: true, server: null, lastError: { status: 0, code: 'not-paired' } })
-    render()
-    expect(text()).toBe('This phone is no longer paired with your server. Your changes are kept here.')
-    act(() => button().click())
-    expect(openedConnect().dataset.url).toBe('')
+    expect(text()).toBe('Sign in again to sync. Your changes are kept on this phone until then.')
+    expect(label()).toBe('Sign in')
   })
 
   it('browser refused mid-session: "Sign in" is the passkey, right there', async () => {

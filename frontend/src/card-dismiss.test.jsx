@@ -92,15 +92,17 @@ describe('Home: the streak card and check-in', () => {
     useStore.setState(s => ({ S: { ...s.S, routines: [], workouts: [bench(todayISO())], homeMuscleSets: true, ...patch } }))
     return render(<Home />)
   }
-  it('the weekly-sets line opens Stats → Lifts and not the calendar; the card opens the calendar', () => {
+  it('the weekly-sets line opens Stats → Lifts and not the calendar; the card opens its details (kl12 Passa)', () => {
     const host = mount()
     const card = host.querySelector('.streak-card')
     expect(card.getAttribute('role')).toBeNull()
     act(() => card.querySelector('.wsets-home').click())
     expect(navSpy).toHaveBeenCalledWith('/stats?section=lifts')
     expect(calendarSheet).not.toHaveBeenCalled()
-    act(() => card.querySelector('.tap-main').click())
-    expect(calendarSheet).toHaveBeenCalledTimes(1)
+    const before = useUI.getState().sheets.length
+    act(() => card.querySelector('.passa-main').click())
+    expect(calendarSheet).not.toHaveBeenCalled()
+    expect(useUI.getState().sheets.length).toBe(before + 1)
   })
   it('check-in opens from its text, a real button', () => {
     const host = mount()

@@ -90,9 +90,8 @@ export function connectionView(sync, { mobile = MOBILE, online = isOnline(), off
       if (!mobile) return { tone: 'bad', icon: 'lock', action: 'signin', line: t('The server refuses this browser'), banner: t('Your server no longer accepts this browser. Your changes are kept here.') }
       // A phone an earlier version unpaired kept no address and no token: nothing refuses it,
       // there is simply nothing to ask.
-      return err.code === 'not-paired'
-        ? { tone: 'bad', icon: 'lock', action: 'pair', line: t('This phone is not connected to a server.'), banner: t('This phone is no longer paired with your server. Your changes are kept here.') }
-        : { tone: 'bad', icon: 'lock', action: 'pair', line: t('The server refuses this phone'), banner: t('Your server no longer accepts this phone. Your changes are kept here.') }
+      // Habcore Gym (kl12): the phone signs in again with its password, no pairing.
+      return { tone: 'bad', icon: 'lock', action: 'signin', line: t('Signed out on this phone'), banner: t('Sign in again to sync. Your changes are kept on this phone until then.') }
     // 'local': no server at all. On a phone that is a choice that needs no reminder (#454, #369):
     // Settings still says it and offers Connect, the bar stays away. A guest in a browser is on a
     // server it could sign in to, so it still hears that its data stays in this browser.
@@ -132,7 +131,7 @@ export function connectServer() {
 // first, with the passkey one tap away on it: which of the two this account has is not
 // something this browser can know.
 export function signInAgain() {
-  if (pwOn()) { openPasswordSignIn(webauthnOK() ? passkeySignIn : undefined); return }
+  if (pwOn()) { openPasswordSignIn(webauthnOK() && !MOBILE ? passkeySignIn : undefined); return }
   return passkeySignIn()
 }
 export async function passkeySignIn() {
@@ -218,13 +217,10 @@ export function OwedSheet({ kind, count: count0, media: media0 = 0, exportBackup
     {/* It names the button below it: Try again, or Pair again / Sign in where the server refuses. */}
     <div className="muted small" style={{ marginBottom: 18, lineHeight: 1.5 }}>
       {refused
-        ? (MOBILE
-          ? t('Pair again, or export a backup first. Going ahead anyway keeps a copy of these changes on this device until it connects to this server as this account again. Then they’re added back.')
-          : t('Sign in again, or export a backup first. Going ahead anyway keeps a copy of these changes on this device until it connects to this server as this account again. Then they’re added back.'))
+        ? t('Sign in again, or export a backup first. Going ahead anyway keeps a copy of these changes on this device until it connects to this server as this account again. Then they’re added back.')
         : t('Try again, or export a backup first. Going ahead anyway keeps a copy of these changes on this device until it connects to this server as this account again. Then they’re added back.')}
     </div>
-    {refused && MOBILE && <><button className="btn primary" disabled={busy} onClick={() => { close(); pairAgain() }}>{t('Pair again')}</button><div style={{ height: 8 }} /></>}
-    {refused && !MOBILE && canSignIn() && <><button className="btn primary" disabled={busy} onClick={() => { close(); signInAgain() }}>{pwOn() ? t('Sign in') : t('Sign in with passkey')}</button><div style={{ height: 8 }} /></>}
+    {refused && canSignIn() && <><button className="btn primary" disabled={busy} onClick={() => { close(); signInAgain() }}>{pwOn() ? t('Sign in') : t('Sign in with passkey')}</button><div style={{ height: 8 }} /></>}
     {!refused && <><button className="btn primary" disabled={busy} onClick={retry}>{busy ? t('Syncing…') : t('Try again')}</button><div style={{ height: 8 }} /></>}
     {media > 0 && exportBackupZip
       ? <Button icon="share" disabled={busy} onClick={exportBackupZip}>{t('Export with photos & videos (.zip)')}</Button>
