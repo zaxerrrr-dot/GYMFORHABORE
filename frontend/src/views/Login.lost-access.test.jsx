@@ -72,14 +72,18 @@ describe('Login: Lost access?', () => {
 })
 
 describe('LostAccessSheet', () => {
-  it('lists the ways back in, in order, with the server command, and no em dash', () => {
+  it('lists the ways back in, in order, ending with the trainer; no server command, no em dash', () => {
     const close = vi.fn()
     const host = mount(<LostAccessSheet close={close} />)
     const text = host.textContent
-    const order = ['Your passkey may be synced', 'Another device still signed in?', 'Ask your admin', 'Running the server yourself?'].map(s => text.indexOf(s))
+    const order = ['Your passkey may be synced', 'Another device still signed in?', 'Ask your trainer'].map(s => text.indexOf(s))
     expect(order.every(i => i >= 0)).toBe(true)
     expect([...order].sort((a, b) => a - b)).toEqual(order)
-    expect(text).toContain('docker compose exec api node recover.js')
+    expect(text).toContain('Your trainer at Habcore Gym can make you a recovery code.')
+    // Habcore Gym (patch 0012): the server command is not for members.
+    expect(text).not.toContain('recover.js')
+    expect(text).not.toContain('Running the server yourself?')
+    expect(text).not.toContain('Ask your admin')
     expect(text).not.toMatch(/—/)
   })
   it('"I have a code" opens the redemption a device link has', () => {
