@@ -1,0 +1,68 @@
+# The Apple Watch app on a branch, before it goes to main (where build-ios.yml builds and
+# publishes everything): WatchCore's tests (`swift test`, the rep counter's among them) and the
+# watch app compiled for watchOS, unsigned. Nothing is published. Also the rep counter's
+# JavaScript twin (WatchCore/port) with `node --test`.
+name: Watch check
+
+on:
+  push:
+    branches-ignore: [main]
+    paths:
+      - 'frontend/ios/App/Watch/**'
+      - 'frontend/ios/App/WatchCore/**'
+      - 'frontend/ios/ci/add-watch-app.rb'
+      - '.github/workflows/watch-check.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: watch-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  watch:
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 26
+      - name: Rep counter, JavaScript port
+        run: node --test "frontend/ios/App/WatchCore/port/*.test.mjs"
+      - name: WatchCore tests (swift test)
+        working-directory: frontend/ios/App/WatchCore
+        run: |
+          set +e
+          swift test --filter RepCounterTests > ../swift-test.log 2>&1
+          st=$?
+          set -e
+          grep -E "error:|Executed|failed" ../swift-test.log | head -60 || true
+          if [ $st -ne 0 ]; then grep -E "error:" ../swift-test.log | sort -u | head -40 | sed 's/^/::error::swift test: /' || true; tail -60 ../swift-test.log; exit 1; fi
+      - name: Add the watch app
+        working-directory: frontend
+        env:
+          NO_WATCH_WIDGETS: '1'
+        run: ruby ios/ci/add-watch-app.rb
+      - name: Build the watch app (watchOS, unsigned)
+        working-directory: frontend/ios/App
+        run: |
+          set +e
+          xcodebuild -project App.xcodeproj -scheme OpenGymWatch -configuration Debug \
+            -destination 'generic/platform=watchOS' -derivedDataPath build/dd \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            build > build-watch.log 2>&1
+          st=$?
+          set -e
+          grep -E "error:|\*\* BUILD" build-watch.log | head -60 || true
+          if [ $st -ne 0 ]; then grep -E "error:" build-watch.log | sort -u | head -40 | sed 's/^/::error::xcodebuild watch: /' || true; tail -80 build-watch.log; exit 1; fi
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        if: always()
+        with:
+          name: watch-check-logs
+          path: |
+            frontend/ios/App/swift-test.log
+            frontend/ios/App/build-watch.log
+          retention-days: 7

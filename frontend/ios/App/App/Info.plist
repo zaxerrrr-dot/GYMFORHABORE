@@ -151,5 +151,7 @@
 	<string>Used to talk to the Garmin watch you picked for Habcore Gym, so your workout shows on your wrist and the sets you log there land on your iPhone.</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Used to make sure it’s really you before your account is deleted.</string>
+	<key>UIFileSharingEnabled</key>
+	<true/>
 </dict>
 </plist>

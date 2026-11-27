@@ -141,11 +141,12 @@ struct LivePage: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.isLuminanceReduced) private var dimmed
 
-    private enum Panel: Hashable { case count, hold, fix, rest, set, done }
+    private enum Panel: Hashable { case count, hold, reps, fix, rest, set, done }
 
     private var panel: Panel {
         if store.holdCountFrom != nil { return .count }
         if store.holdEndsAt != nil { return .hold }
+        if store.repLive != nil { return .reps }
         if store.viewing != nil { return .fix }
         if store.restPanel { return .rest }
         return store.entry != nil ? .set : .done
@@ -161,6 +162,8 @@ struct LivePage: View {
                 }
             case .hold:
                 if let end = store.holdEndsAt { HoldView(end: end).transition(.opacity) }
+            case .reps:
+                RepCountView().transition(.opacity)
             case .rest:
                 if let end = store.restEndsAt { RestView(end: end).transition(.opacity) }
             case .fix, .set:

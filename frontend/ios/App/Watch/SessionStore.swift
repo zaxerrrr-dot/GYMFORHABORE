@@ -136,6 +136,16 @@ final class SessionStore: NSObject, ObservableObject, WCSessionDelegate, UNUserN
     /// A set picked by hand in an exercise (entry index → set index); otherwise the first not done.
     @Published private var picked: [Int: Int] = [:]
 
+    /* ---------- counting reps (RepCount.swift) ---------- */
+
+    /// The set being counted, or its count waiting to be confirmed.
+    @Published var repLive: RepLive?
+    let repSensor = RepSensor()
+    /// The set counting last started for (by hand or by itself): it never starts by itself twice.
+    var repAutoFor: String?
+    /// The test mode's readings of the set just counted, until they are written.
+    var repLines: [String]?
+
     /// When the set now up began: the end of the rest before it, or the start of the session.
     private var setStartedAt = Date()
     /// The last Done, against a double tap.
@@ -1553,6 +1563,7 @@ final class SessionStore: NSObject, ObservableObject, WCSessionDelegate, UNUserN
 
     /// The workout is over: its animations go, from memory and from the disk.
     func dropClips() {
+        cancelRepCount(record: false)
         clips = [:]
         try? FileManager.default.removeItem(at: SessionStore.clipDir)
         log("clips deleted")

@@ -42,6 +42,7 @@ struct HomeView: View {
                     }
                     // A workout finished here with the phone away: its sets are still on their way.
                     SyncLine(showSynced: false).padding(.top, 4)
+                    RepSettingsRow().padding(.top, 4)
                     VersionLine()
                 }
                 .padding(.horizontal, 2)
@@ -61,6 +62,7 @@ struct HomeView: View {
                         .font(.footnote)
                         .foregroundStyle(Theme.label2)
                         .multilineTextAlignment(.center)
+                    RepSettingsRow().padding(.top, 4)
                     VersionLine()
                 }
                 .padding(.horizontal, 6)
@@ -107,6 +109,21 @@ struct TodayCard: View {
             label.font(.caption2).foregroundStyle(Theme.label2).lineLimit(1)
         }
         .accessibilityElement(children: .combine)
+    }
+}
+
+/// The rep counter's settings (RepCountView.swift), a quiet row at the end of the start screen.
+struct RepSettingsRow: View {
+    var body: some View {
+        NavigationLink(destination: RepSettingsView()) {
+            HStack(spacing: 6) {
+                Image(systemName: "waveform.path").foregroundStyle(Theme.label2)
+                Text("Rep counter").lineLimit(1).minimumScaleFactor(0.7)
+                Spacer(minLength: 4)
+                Image(systemName: "chevron.right").font(.caption2).foregroundStyle(Theme.label3)
+            }
+        }
+        .buttonStyle(RowButtonStyle())
     }
 }
 

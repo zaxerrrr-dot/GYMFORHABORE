@@ -43,8 +43,8 @@ struct SetPanel: View {
             .padding(.horizontal, 2)
             .dynamicTypeSize(...DynamicTypeSize.accessibility1)
             .animation(Motion.fade(reduceMotion, dimmed), value: ref)
-            .onAppear { pickCrown(entry) }
-            .onChange(of: ref) { _ in pickCrown(entry) }
+            .onAppear { pickCrown(entry); if !fixing { store.autoRepCountIfDue() } }
+            .onChange(of: ref) { _ in pickCrown(entry); if store.viewing == nil { store.autoRepCountIfDue() } }
             .fullScreenCover(item: $keypad) { field in
                 KeypadView(field: field, unit: entry.weightUnit(w.unit), start: value(field)) { set(field, $0) }
             }
@@ -177,6 +177,11 @@ struct SetPanel: View {
                     .font(.system(.caption2, design: .rounded).weight(.semibold).monospacedDigit())
                     .foregroundStyle(store.accent)
                     .frame(maxWidth: 40)
+            }
+            // The rep counter (RepCount.swift), for the exercises it knows.
+            if !fixing, store.canCountReps {
+                Spacer(minLength: 0)
+                CountRepsButton()
             }
         }
         .padding(.leading, 8)

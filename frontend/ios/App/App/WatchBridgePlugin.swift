@@ -410,6 +410,24 @@ final class WatchLink: NSObject, WCSessionDelegate {
         return stored ? id : nil
     }
 
+    /// The watch's rep-counter test files (Watch/RepSensor.swift RepSamples, its "Counting test
+    /// mode"): kept in Documents/RepSamples, which a Mac's Finder shows with the iPhone plugged in
+    /// (iPhone › Files › Habcore Gym, Info.plist UIFileSharingEnabled; not the Files app), to be
+    /// passed on for tuning. Anything else is not taken.
+    public func session(_ session: WCSession, didReceive file: WCSessionFile) {
+        guard (file.metadata?["kind"] as? String) == "repSamples" else { return }
+        let fm = FileManager.default
+        let raw = (file.metadata?["name"] as? String) ?? file.fileURL.lastPathComponent
+        let name = raw.replacingOccurrences(of: "/", with: "_").replacingOccurrences(of: "..", with: "_")
+        guard name.hasSuffix(".csv") else { return }
+        let dir = fm.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("RepSamples")
+        try? fm.createDirectory(at: dir, withIntermediateDirectories: true)
+        let dest = dir.appendingPathComponent(name)
+        try? fm.removeItem(at: dest)
+        // The file is gone once this returns: moved now.
+        try? fm.moveItem(at: file.fileURL, to: dest)
+    }
+
     /// The page asked for the status before the session was up (right after launch): it is told now.
     public func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
         tell("watchState", ["activated": activationState == .activated])
