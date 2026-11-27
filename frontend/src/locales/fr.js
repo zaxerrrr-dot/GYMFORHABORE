@@ -609,6 +609,8 @@ export default {
   'Your workouts. Your weights. Your profile.': 'Tes séances. Tes charges. Ton profil.',
   'Sign in with passkey': 'Se connecter avec une passkey',
   'Create new profile': 'Créer un nouveau profil',
+  'Workouts this day': 'Séances de ce jour',
+  'Add a workout on this day': 'Ajouter une séance ce jour-là',
   'Add to Google Calendar': 'Ajouter à Google Agenda',
   'Add to Apple Calendar': 'Ajouter au Calendrier Apple',
   'Add to Outlook': 'Ajouter à Outlook',

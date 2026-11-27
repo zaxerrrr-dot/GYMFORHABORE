@@ -614,6 +614,8 @@ export default {
   'Your workouts. Your weights. Your profile.': 'การออกกำลังกายของคุณ น้ำหนักของคุณ โปรไฟล์ของคุณ',
   'Sign in with passkey': 'เข้าสู่ระบบด้วยพาสคีย์',
   'Create new profile': 'สร้างโปรไฟล์ใหม่',
+  'Workouts this day': 'การฝึกของวันนี้',
+  'Add a workout on this day': 'เพิ่มการฝึกในวันนี้',
   'Add to Google Calendar': 'เพิ่มลงใน Google ปฏิทิน',
   'Add to Apple Calendar': 'เพิ่มลงในปฏิทิน Apple',
   'Add to Outlook': 'เพิ่มลงใน Outlook',

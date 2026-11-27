@@ -609,6 +609,8 @@ export default {
   'Your workouts. Your weights. Your profile.': 'Senin antrenmanların. Senin ağırlıkların. Senin profilin.',
   'Sign in with passkey': 'Geçiş anahtarıyla giriş yap',
   'Create new profile': 'Yeni profil oluştur',
+  'Workouts this day': 'Bu günün antrenmanları',
+  'Add a workout on this day': 'Bu güne antrenman ekle',
   'Add to Google Calendar': 'Google Takvim’e ekle',
   'Add to Apple Calendar': 'Apple Takvim’e ekle',
   'Add to Outlook': 'Outlook’a ekle',

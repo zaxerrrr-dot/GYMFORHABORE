@@ -636,6 +636,8 @@ export default {
   "Your workouts. Your weights. Your profile.": "Dine træninger. Dine vægte. Din profil.",
   "Sign in with passkey": "Log ind med adgangsnøgle",
   "Create new profile": "Opret ny profil",
+  "Workouts this day": "Træninger denne dag",
+  "Add a workout on this day": "Tilføj en træning denne dag",
   "Add to Google Calendar": "Føj til Google Kalender",
   "Add to Apple Calendar": "Føj til Apple Kalender",
   "Add to Outlook": "Føj til Outlook",

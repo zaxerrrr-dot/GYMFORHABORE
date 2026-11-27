@@ -609,6 +609,8 @@ export default {
   'Your workouts. Your weights. Your profile.': 'आपके वर्कआउट। आपके वज़न। आपकी प्रोफ़ाइल।',
   'Sign in with passkey': 'पासकी से साइन इन करें',
   'Create new profile': 'नई प्रोफ़ाइल बनाएँ',
+  'Workouts this day': 'इस दिन के वर्कआउट',
+  'Add a workout on this day': 'इस दिन वर्कआउट जोड़ें',
   'Add to Google Calendar': 'Google Calendar में जोड़ें',
   'Add to Apple Calendar': 'Apple Calendar में जोड़ें',
   'Add to Outlook': 'Outlook में जोड़ें',

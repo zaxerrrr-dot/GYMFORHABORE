@@ -621,6 +621,8 @@ export default {
   'Your workouts. Your weights. Your profile.': 'Buổi tập của bạn. Mức tạ của bạn. Hồ sơ của bạn.',
   'Sign in with passkey': 'Đăng nhập bằng passkey',
   'Create new profile': 'Tạo hồ sơ mới',
+  'Workouts this day': 'Buổi tập trong ngày',
+  'Add a workout on this day': 'Thêm buổi tập vào ngày này',
   'Add to Google Calendar': 'Thêm vào Google Lịch',
   'Add to Apple Calendar': 'Thêm vào Lịch Apple',
   'Add to Outlook': 'Thêm vào Outlook',

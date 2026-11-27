@@ -605,6 +605,8 @@ export default {
   'Your workouts. Your weights. Your profile.': '掌控你的訓練、重量與個人檔案。',
   'Sign in with passkey': '使用通行密鑰登入',
   'Create new profile': '建立新個人檔案',
+  'Workouts this day': '當天的訓練',
+  'Add a workout on this day': '在這一天新增訓練',
   'Add to Google Calendar': '加入 Google 日曆',
   'Add to Apple Calendar': '加入 Apple 行事曆',
   'Add to Outlook': '加入 Outlook',

@@ -621,6 +621,8 @@ export default {
   'Your workouts. Your weights. Your profile.': 'Tvoje tréninky. Tvoje váhy. Tvůj profil.',
   'Sign in with passkey': 'Přihlásit se přístupovým klíčem',
   'Create new profile': 'Vytvořit nový profil',
+  'Workouts this day': 'Tréninky tohoto dne',
+  'Add a workout on this day': 'Přidat trénink v tento den',
   'Add to Google Calendar': 'Přidat do Kalendáře Google',
   'Add to Apple Calendar': 'Přidat do Kalendáře Apple',
   'Add to Outlook': 'Přidat do Outlooku',

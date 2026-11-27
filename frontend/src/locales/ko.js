@@ -609,6 +609,8 @@ export default {
   'Your workouts. Your weights. Your profile.': '당신의 운동. 당신의 무게. 당신의 프로필.',
   'Sign in with passkey': '패스키로 로그인',
   'Create new profile': '새 프로필 만들기',
+  'Workouts this day': '이날의 운동',
+  'Add a workout on this day': '이날에 운동 추가',
   'Add to Google Calendar': 'Google 캘린더에 추가',
   'Add to Apple Calendar': 'Apple 캘린더에 추가',
   'Add to Outlook': 'Outlook에 추가',

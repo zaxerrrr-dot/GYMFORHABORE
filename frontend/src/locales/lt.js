@@ -621,6 +621,8 @@ export default {
   "Your workouts. Your weights. Your profile.": "Jūsų treniruotės. Jūsų svoriai. Jūsų profilis.",
   "Sign in with passkey": "Prisijungti su prieigos raktu",
   "Create new profile": "Sukurti naują profilį",
+  "Workouts this day": "Šios dienos treniruotės",
+  "Add a workout on this day": "Pridėti treniruotę šią dieną",
   "Add to Google Calendar": "Pridėti į „Google“ kalendorių",
   "Add to Apple Calendar": "Pridėti į „Apple“ kalendorių",
   "Add to Outlook": "Pridėti į „Outlook“",

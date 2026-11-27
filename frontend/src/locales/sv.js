@@ -623,6 +623,8 @@ export default {
   'Your workouts. Your weights. Your profile.': 'Dina pass. Dina vikter. Din profil.',
   'Sign in with passkey': 'Logga in med passkey',
   'Create new profile': 'Skapa ny profil',
+  'Workouts this day': 'Pass den här dagen',
+  'Add a workout on this day': 'Lägg till ett pass den här dagen',
   'Add to Google Calendar': 'Lägg till i Google Kalender',
   'Add to Apple Calendar': 'Lägg till i Apple Kalender',
   'Add to Outlook': 'Lägg till i Outlook',

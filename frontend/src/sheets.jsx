@@ -3389,6 +3389,10 @@ function DayOverride({ iso, close }) {
   // like a run you forgot to start the app for (#284). Logging it opens "Log a past workout" on
   // that date with the day's routines picked, where the time and the duration can still change.
   const missed = iso < todayISO() && effIds.length > 0 && !workoutsOn(st, iso).length
+  // Habcore Gym (kl12): the workouts done on this day come first, whichever way they were logged
+  // (your own, a trainer leading you, joint, group, live: all land in S.workouts with this `d`).
+  // The sheet used to show only the plan, so a day with a workout read "Rest ✓".
+  const done = workoutsOn(st, iso).slice().sort((a, b) => (a.start || 0) - (b.start || 0))
   const logIt = () => { close(); logPastWorkoutSheet({ iso, routineIds: effIds }) }
   // A note on a day off (#261, lib/day-notes.js): offered on today and past days with nothing
   // logged, kept in view on any day that already has one. Quiet on purpose: a row, not a button.
@@ -3420,7 +3424,12 @@ function DayOverride({ iso, close }) {
   return <>
     <h3>{fmtDate(iso, true)}</h3>
     <div className="muted small" style={{ marginBottom: 12 }}>{t('Weekly plan:')} {weeklyNames.length ? deriveSessionName(weeklyNames) : t('Rest')}{changed && <span style={{ color: 'var(--orange-ink)' }}> · {t('changed for this day')}</span>}<br />{t('Sick, missed a day or want a different session? Pick what to train instead.')}</div>
+    {done.length > 0 && <div data-testid="day-workouts" style={{ marginBottom: 14 }}>
+      <h4 className="sec" style={{ marginTop: 0 }}>{t('Workouts this day')}</h4>
+      <div className="list">{done.map(w => <WorkoutRow key={w.id} w={w} onClick={() => { close(); workoutDetailSheet(w) }} />)}</div>
+    </div>}
     {missed && <div style={{ marginBottom: 14 }}><Button variant="primary" icon="checkCircle" onClick={logIt}>{t('Log this workout')}</Button></div>}
+    {!missed && iso < todayISO() && <div style={{ marginBottom: 14 }}><Button variant="tinted" icon="plus" onClick={() => { close(); logPastWorkoutSheet({ iso }) }} data-testid="day-add-past">{t('Add a workout on this day')}</Button></div>}
     {canNote && <div className="day-note" style={{ marginBottom: 14 }}>
       <div className="item day-note-row" {...tappable(() => dayNoteSheet(iso))}>
         <span className="lrow-i" style={{ background: 'var(--surface-3)' }}><Icon name={note?.tag ? DAY_NOTE_ICON[note.tag] : 'note'} /></span>
@@ -3454,7 +3463,7 @@ function DayOverride({ iso, close }) {
     </>}
     <div className="list">
       {st.routines.filter(r => !remaining.includes(r.id)).map(row)}
-      <div className="item" {...tappable(() => set('rest'))}><span className="lrow-i" style={{ background: 'var(--surface-3)' }}><Icon name="moon" /></span><div className="grow"><div className="tt">{t('Rest / skip this day')}</div></div>{effIds.length === 0 && <Icon name="check" className="accent" />}</div>
+      <div className="item" {...tappable(() => set('rest'))}><span className="lrow-i" style={{ background: 'var(--surface-3)' }}><Icon name="moon" /></span><div className="grow"><div className="tt">{t('Rest / skip this day')}</div></div>{effIds.length === 0 && !done.length && <Icon name="check" className="accent" />}</div>
       {hasOvr && <div className="item" {...tappable(() => set(''))}><span className="lrow-i" style={{ background: 'var(--surface-3)' }}><Icon name="reset" /></span><div className="grow"><div className="tt">{t('Back to weekly plan')}</div></div></div>}
     </div>
   </>

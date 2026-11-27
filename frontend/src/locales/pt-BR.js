@@ -1043,6 +1043,8 @@ export const PT_BR_OVERRIDES = {
   'Create passkey': 'Criar chave de acesso',
   'Your workouts. Your weights. Your profile.': 'Seus treinos. Seus pesos. Seu perfil.',
   'Create new profile': 'Criar novo perfil',
+  'Workouts this day': 'Treinos deste dia',
+  'Add a workout on this day': 'Adicionar um treino neste dia',
   'Add to Google Calendar': 'Adicionar ao Google Agenda',
   'Add to Apple Calendar': 'Adicionar ao Calendário da Apple',
   'Add to Outlook': 'Adicionar ao Outlook',

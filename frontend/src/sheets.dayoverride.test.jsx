@@ -149,3 +149,30 @@ describe('Day sheet list in a coach week', () => {
     expect(lists(host)).toEqual([['US W1 D1', 'US W1 D2', 'Core', 'Rest / skip this day']])
   })
 })
+
+// Habcore Gym (kl12): a day with a workout shows it first and is never "Rest ✓". The two shapes are
+// the live ones of 26 Nov: a trainer's entry the old way (start = end, `_by`, no duration) on the
+// admin account, and a "Trening z trenerem" (joint/live) on a client's.
+describe('Day sheet lists the workouts of the day', () => {
+  const day = daysFromToday(-2)
+  const t0 = new Date(day + 'T10:00:00').getTime()
+  const oldTrainer = { d: day, name: 'LOWER', start: t0, end: t0, prs: [], routineIds: [], routineId: null, id: 'w-old', _by: { id: 'tr', name: 'Trener' }, _ts: t0, entries: [{ id: '0025', sets: [{ w: 60, r: 8, done: true }] }] }
+  const joint = { id: 'w-joint', d: day, start: t0 + 3600e3, end: t0 + 5400e3, routineIds: [], routineId: null, name: 'Trening z trenerem', prs: [], vol: 1200, entries: [{ id: '0025', sets: [{ w: 40, r: 10, done: true }] }] }
+  it('shows both under "Workouts this day", in time order, and no check on Rest', () => {
+    setS({ workouts: [joint, oldTrainer], queue: null })
+    dayOverrideSheet(day)
+    const host = renderTop()
+    const box = host.querySelector('[data-testid="day-workouts"]')
+    expect(box.querySelector('h4').textContent).toBe('Workouts this day')
+    expect(box.textContent.indexOf('LOWER')).toBeLessThan(box.textContent.indexOf('Trening z trenerem'))
+    expect(rowOf(host, 'Rest / skip this day').querySelector('.accent')).toBeNull()
+  })
+  it('a past day without a workout offers to add one on that day; Rest is checked when nothing is planned', () => {
+    setS({ workouts: [], queue: null })
+    dayOverrideSheet(day)
+    const host = renderTop()
+    expect(host.querySelector('[data-testid="day-workouts"]')).toBeNull()
+    expect(host.querySelector('[data-testid="day-add-past"]').textContent).toBe('Add a workout on this day')
+    expect(rowOf(host, 'Rest / skip this day').querySelector('.accent')).toBeTruthy()
+  })
+})

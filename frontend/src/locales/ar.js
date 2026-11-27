@@ -589,6 +589,8 @@ export default {
   'Your workouts. Your weights. Your profile.': 'تمارينك. أوزانك. ملفك الشخصي.',
   'Sign in with passkey': 'تسجيل الدخول بمفتاح المرور',
   'Create new profile': 'إنشاء ملف شخصي جديد',
+  'Workouts this day': 'تمارين هذا اليوم',
+  'Add a workout on this day': 'أضف تمرينًا في هذا اليوم',
   'Add to Google Calendar': 'أضف إلى تقويم Google',
   'Add to Apple Calendar': 'أضف إلى تقويم Apple',
   'Add to Outlook': 'أضف إلى Outlook',

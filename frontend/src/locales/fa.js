@@ -574,6 +574,8 @@ export default {
   "Your workouts. Your weights. Your profile.": "تمرین‌های شما. وزنه‌های شما. پروفایل شما.",
   "Sign in with passkey": "با کلید عبور وارد شوید",
   "Create new profile": "پروفایل جدید ایجاد کنید",
+  "Workouts this day": "تمرین‌های این روز",
+  "Add a workout on this day": "افزودن تمرین در این روز",
   "Add to Google Calendar": "افزودن به تقویم Google",
   "Add to Apple Calendar": "افزودن به تقویم Apple",
   "Add to Outlook": "افزودن به Outlook",

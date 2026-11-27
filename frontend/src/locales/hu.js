@@ -614,6 +614,8 @@ export default {
   'Your workouts. Your weights. Your profile.': 'A te edzéseid. A te súlyaid. A te profilod.',
   'Sign in with passkey': 'Bejelentkezés jelszókulccsal',
   'Create new profile': 'Új profil létrehozása',
+  'Workouts this day': 'Edzések ezen a napon',
+  'Add a workout on this day': 'Edzés hozzáadása erre a napra',
   'Add to Google Calendar': 'Hozzáadás a Google Naptárhoz',
   'Add to Apple Calendar': 'Hozzáadás az Apple Naptárhoz',
   'Add to Outlook': 'Hozzáadás az Outlookhoz',

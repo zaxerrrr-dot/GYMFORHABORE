@@ -640,6 +640,8 @@ export default {
   "Your workouts. Your weights. Your profile.": "Latihanmu. Bebanmu. Profilmu.",
   "Sign in with passkey": "Masuk dengan kunci sandi",
   "Create new profile": "Buat profil baru",
+  "Workouts this day": "Latihan hari ini",
+  "Add a workout on this day": "Tambahkan latihan pada hari ini",
   "Add to Google Calendar": "Tambahkan ke Google Kalender",
   "Add to Apple Calendar": "Tambahkan ke Kalender Apple",
   "Add to Outlook": "Tambahkan ke Outlook",

@@ -609,6 +609,8 @@ export default {
   'Your workouts. Your weights. Your profile.': '你的训练。你的重量。你的档案。',
   'Sign in with passkey': '用通行密钥登录',
   'Create new profile': '创建新档案',
+  'Workouts this day': '当天的训练',
+  'Add a workout on this day': '在这一天添加训练',
   'Add to Google Calendar': '添加到 Google 日历',
   'Add to Apple Calendar': '添加到 Apple 日历',
   'Add to Outlook': '添加到 Outlook',
