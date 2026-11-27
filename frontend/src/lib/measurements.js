@@ -2,6 +2,7 @@
 // field's unit selects its display unit ('none' is a score or a count with no unit at all).
 // Legacy fields without one still follow the profile's cm/in choice.
 
+import { cleanBody, cleanBodyMeta } from './body.js'
 export const MEASUREMENT_FIELDS = [
   { key: 'neck', label: 'Neck', group: 'Torso' },
   { key: 'shoulders', label: 'Shoulders', group: 'Torso' },
@@ -98,6 +99,10 @@ export function normalizeMeasurementEntry(raw = {}, custom = []) {
   for (const key of MEASUREMENT_KEYS) entry[key] = valid(raw[key], builtinUnit(key))
   const note = typeof raw.note === 'string' ? raw.note.replace(/[\u0000-\u0009\u000b-\u001f\u007f]/g, ' ').trim().slice(0, MEASUREMENT_NOTE_MAX) : ''
   if (note) entry.note = note
+  // Habcore Gym (kl13, lib/body.js): body composition, source, who added it, time, raw scale data.
+  const body = cleanBody(raw.body)
+  if (body) entry.body = body
+  Object.assign(entry, cleanBodyMeta(raw))
 
   const known = new Map(custom.map(c => [c.id, c]))
   const seen = new Set()
@@ -119,6 +124,8 @@ function mergeMeasurementEntries(a, b) {
   const entry = { ...a, t: b.t }
   for (const key of MEASUREMENT_KEYS) entry[key] = b[key] ?? a[key]
   if (b.note || a.note) entry.note = b.note || a.note
+  if (a.body || b.body) entry.body = { ...(a.body || {}), ...(b.body || {}) }
+  for (const k of ['src', 'by', 'at', 'raw']) if (b[k] ?? a[k]) entry[k] = b[k] ?? a[k]
   const other = new Map(a.other.map(o => [o.id, o]))
   for (const o of b.other) {
     const prev = other.get(o.id)
@@ -204,7 +211,7 @@ export function latestMeasurement(state, key) {
 }
 
 export function measurementEntryHasValues(entry) {
-  return MEASUREMENT_KEYS.some(k => valid(entry?.[k], builtinUnit(k)) != null) ||
+  return !!(entry?.body && Object.keys(entry.body).length) || MEASUREMENT_KEYS.some(k => valid(entry?.[k], builtinUnit(k)) != null) ||
     (entry?.other || []).some(o => valid(o?.value, unitOf(o)) != null)
 }
 

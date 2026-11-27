@@ -21,6 +21,7 @@ import Heatmap from '../components/Heatmap.jsx'
 import { SeasonDeco } from '../components/Seasonal.jsx'
 import Icon from '../components/Icon.jsx'
 import { StreakCard } from '../components/Streak.jsx'
+import StatsTabs from '../components/StatsTabs.jsx'
 import { ChallengesStatsCard } from '../components/Challenges.jsx'
 import { wrappedYears } from '../lib/wrapped.js'
 import { openWrapped, openMonthStory } from '../lib/wrapped-ui.js'
@@ -910,6 +911,7 @@ export default function Stats() {
   </>
 
   return <>
+    <StatsTabs current="/stats" />
     <div className="hdr"><SeasonDeco spot="stats-hdr" /><div><h1>{t('Stats')}</h1><div className="sub">{t('Progress & history')}</div></div>
       <div className="row" style={{ gap: 8 }}>
         <button className="iconbtn" onClick={reportSheet} aria-label={t('Performance report')} title={t('Performance report')}><Icon name="note" /></button>
