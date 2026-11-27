@@ -159,14 +159,16 @@ test('invite link: the client sets a password, signs in and has the history; the
   assert.equal((await h.req('GET', '/api/gymv2/invite?c=nope')).status, 404);
   const consent = { v: look.body.consent.v, hash: look.body.consent.hash };
   assert.equal((await h.req('POST', '/api/gymv2/invite/claim', { body: { c: inv.body.token, password: 'short', consent } })).body.code, 'too-short');
+  // A client's own password needs 8 characters (Habcore Gym; upstream 10): 7 refused, 8 taken.
+  assert.equal((await h.req('POST', '/api/gymv2/invite/claim', { body: { c: inv.body.token, password: 'Kot.Las', consent } })).body.code, 'too-short');
   const jar = {};
-  const claim = await h.req('POST', '/api/gymv2/invite/claim', { jar, body: { c: inv.body.token, password: GOOD, email: 'kasia@example.com', consent } });
+  const claim = await h.req('POST', '/api/gymv2/invite/claim', { jar, body: { c: inv.body.token, password: 'Kot.Las7', email: 'kasia@example.com', consent } });
   assert.equal(claim.status, 200);
   assert.equal(claim.body.user.id, cid);
   assert.ok(jar.sid);
   assert.equal((await h.req('GET', '/api/data', { jar })).body.state.workouts[0].id, 'w9');
   assert.equal((await h.req('POST', '/api/gymv2/invite/claim', { body: { c: inv.body.token, password: GOOD, consent } })).status, 410);
-  assert.equal((await h.req('POST', '/api/login/password', { body: { name: 'Kasia', password: GOOD } })).status, 200);
+  assert.equal((await h.req('POST', '/api/login/password', { body: { name: 'Kasia', password: 'Kot.Las7' } })).status, 200);
   assert.equal(h.db().users.find(u => u.id === cid).gymVirtual, undefined);
   // Still in the gym: the trainers keep leading it.
   assert.equal((await h.req('POST', '/api/gymv2/act', { jar: tr1, body: { id: cid } })).status, 200);

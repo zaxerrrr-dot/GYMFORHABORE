@@ -7,9 +7,9 @@ import { DEMO, REPO } from '../lib/demo.js'
 import { guestAllowed } from '../lib/guest.js'
 import { useState, useRef, useEffect } from 'react'
 import BrandLogo from '../components/BrandLogo.jsx'
-import { Button, Segmented } from '../components/ui.jsx'
+import { Button } from '../components/ui.jsx'
 import { askAddDeviceData } from '../sheets.jsx'
-import { passwordOn, PasswordRegisterForm, openPasswordSignIn } from '../components/PasswordAuth.jsx'
+import { passwordOn, PasswordRegisterForm, PasswordSignInSheet, openPasswordSignIn } from '../components/PasswordAuth.jsx'
 import { openDeviceLinkRedeem } from '../components/Passkeys.jsx'
 import { openLostAccess } from '../components/LostAccess.jsx'
 import { oidcOn, oidcOnly, oidcLabel, startWebSignIn, oidcArrival, clearOidcArrival, oidcErrorText } from '../lib/oidc.js'
@@ -21,9 +21,10 @@ function RegisterSheet({ close }) {
   const [code, setCode] = useState('')
   const inviteOnly = !!config?.invite_only
   // A password is offered only where the instance allows it (#118), and is the only choice in a
-  // browser that cannot make a passkey. Where both work, the passkey stays the first one.
+  // browser that cannot make a passkey. Habcore Gym (kl9): where both work, the password comes
+  // first — people did not get on with passkeys — and the passkey is a link under the form.
   const pwOn = passwordOn(config)
-  const [how, setHow] = useState(webauthnOK() ? 'passkey' : 'password')
+  const [how, setHow] = useState(pwOn || !webauthnOK() ? 'password' : 'passkey')
   const ref = useRef(null)
   useEffect(() => { setTimeout(() => ref.current?.focus(), 250) }, [])
   // Boot already fetched this; retry here only if that attempt failed, so the invite field still
@@ -40,20 +41,21 @@ function RegisterSheet({ close }) {
       else { await pullState(); useUI.getState().toast(t('Welcome, {0}', u.name)) }
     } catch (e) { if (e.name !== 'NotAllowedError' && e.name !== 'AbortError') useUI.getState().toast(passkeyError(e, t('Registration failed'))) }
   }
-  const choose = pwOn && webauthnOK() && <>
-    <Segmented options={[{ value: 'passkey', label: t('Passkey'), icon: 'fingerprint' }, { value: 'password', label: t('Password'), icon: 'key' }]}
-      value={how} onChange={setHow} />
-    <div style={{ height: 12 }} />
+  // The other way, as a quiet link under the form; name and invite code typed so far are kept.
+  const other = pwOn && webauthnOK() && <>
+    <div style={{ height: 8 }} />
+    {how === 'password'
+      ? <Button variant="ghost" className="dim" icon="fingerprint" onClick={() => setHow('passkey')} data-testid="register-passkey-instead">{t('Register with a passkey instead')}</Button>
+      : <Button variant="ghost" className="dim" icon="key" onClick={() => setHow('password')} data-testid="register-password-instead">{t('Register with a password instead')}</Button>}
   </>
   if (pwOn && how === 'password') return <>
     <h3>{t('Create your profile')}</h3>
-    {choose}
     <div className="muted small" style={{ marginBottom: 14 }}>{t('Pick a name and a password. You sign in with both.')}</div>
     <PasswordRegisterForm close={close} inviteOnly={inviteOnly} name={name} setName={setName} code={code} setCode={setCode} />
+    {other}
   </>
   return <>
     <h3>{t('Create your profile')}</h3>
-    {choose}
     <div className="muted small" style={{ marginBottom: 14 }}>{t('Pick a name, then confirm with {0}. The passkey lives on your device, so no password needed.', bio())}</div>
     <input ref={ref} className="input" placeholder={t('Your name')} maxLength={40} value={name} onChange={e => setName(e.target.value)} />
     {inviteOnly && <>
@@ -64,6 +66,7 @@ function RegisterSheet({ close }) {
     </>}
     <div style={{ height: 12 }} />
     <Button variant="primary" onClick={go}>{t('Create passkey')}</Button>
+    {other}
   </>
 }
 
@@ -130,6 +133,31 @@ export default function Login() {
       {webauthnOK() && (adminWay
         ? <><div style={{ height: 14 }} /><Button icon="fingerprint" onClick={signIn}>{t('Sign in with passkey')}</Button></>
         : <Button variant="ghost" className="dim" onClick={() => setAdminWay(true)} style={{ marginTop: 10 }}>{t('Admin? Use your passkey')}</Button>)}
+    </div>
+  )
+
+  // Habcore Gym (kl9): where the server takes passwords, the start screen is the password form
+  // itself, then "Sign in with passkey" as a link, then Registration (which opens on the password
+  // form too). The rarer ways in stay, small, at the foot (a code from another device is under
+  // "Lost access?").
+  if (pwOn) return (
+    <div className="narrow" style={wrap}>
+      {head}
+      <div className="muted" style={{ marginBottom: 26 }}>{t('Your workouts. Your weights. Your profile.')}</div>
+      {ssoNote}
+      {ssoButton}
+      <div style={{ textAlign: 'start' }}><PasswordSignInSheet inline /></div>
+      {webauthnOK() && <>
+        <div style={{ height: 6 }} />
+        <Button variant="ghost" icon="fingerprint" onClick={signIn} data-testid="login-passkey">{t('Sign in with passkey')}</Button>
+      </>}
+      <div style={{ height: webauthnOK() ? 6 : 14 }} />
+      <Button variant="tinted" icon="plusCircle" onClick={register} data-testid="login-register">{t('Registration')}</Button>
+      <div style={{ height: 18 }} />
+      <Button variant="ghost" className="dim" size="sm" style={{ alignSelf: 'center' }} onClick={() => openPasswordSignIn(undefined, 'reset')}>{t('Have a reset code from your admin?')}</Button>
+      <Button variant="ghost" className="dim" size="sm" style={{ alignSelf: 'center' }} onClick={openLostAccess}>{t('Lost access?')}</Button>
+      {canGuest && <Button variant="ghost" className="dim" onClick={() => setGuest(true)}>{t('Continue without account')}</Button>}
+      <div className="dim small" style={{ marginTop: 20, lineHeight: 1.5 }}>{t('Each profile keeps its own plan, workouts & body weight.')}</div>
     </div>
   )
 

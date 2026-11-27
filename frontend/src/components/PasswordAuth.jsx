@@ -20,7 +20,7 @@ import { oidcOn, oidcLabel, startWebSignIn } from '../lib/oidc.js'
 
 // The server's floor (api/password.js MIN_LENGTH), checked here first so the common mistake is
 // answered without a round trip. The server still decides.
-export const MIN_PASSWORD = 10
+export const MIN_PASSWORD = 8
 export const passwordOn = config => !!config?.password_login
 // An address the way the server stores and compares it (nameKey in api/password.js): NFKC,
 // trimmed, lower-cased.
@@ -87,9 +87,12 @@ const codeStyle = { letterSpacing: '.14em', fontWeight: 600, textAlign: 'center'
 
 /* Sign in with name (or the profile's sign-in e-mail) and password, or — one tap away — redeem a reset code from the admin, which
    sets a new password and signs in. `onPasskey`, when given, offers the passkey instead. The
-   inputs carry the autocomplete names password managers look for, inside a real form. */
-export function PasswordSignInSheet({ close, onPasskey }) {
-  const [mode, setMode] = useState('signin')   // 'signin' | 'reset'
+   inputs carry the autocomplete names password managers look for, inside a real form.
+   `inline` (Habcore Gym, kl9): the same form straight on the start screen (Login.jsx), without the
+   sheet's title, the reset toggle and the passkey button, which the start screen lays out itself.
+   `start` opens the sheet on the reset form. */
+export function PasswordSignInSheet({ close = () => {}, onPasskey, inline = false, start = 'signin' }) {
+  const [mode, setMode] = useState(start)   // 'signin' | 'reset'
   const [name, setName] = useState('')
   const [pw, setPw] = useState('')
   const [code, setCode] = useState('')
@@ -98,7 +101,7 @@ export function PasswordSignInSheet({ close, onPasskey }) {
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState(null)
   const nameRef = useRef(null)
-  useEffect(() => { setTimeout(() => nameRef.current?.focus(), 250) }, [])
+  useEffect(() => { if (!inline) setTimeout(() => nameRef.current?.focus(), 250) }, [inline])
   const reset = mode === 'reset'
   const submit = async ev => {
     ev.preventDefault()
@@ -118,11 +121,11 @@ export function PasswordSignInSheet({ close, onPasskey }) {
     finally { setBusy(false) }
   }
   return <>
-    <h3>{reset ? t('Reset your password') : t('Sign in with password')}</h3>
+    {!inline && <><h3>{reset ? t('Reset your password') : t('Sign in with password')}</h3>
     <div className="muted small" style={{ marginBottom: 14 }}>{reset
       ? t('Enter the code your admin gave you and choose a new password. It signs you out everywhere else.')
-      : t('Use your profile name (or the e-mail you added to it) and your password.')}</div>
-    <form onSubmit={submit} noValidate>
+      : t('Use your profile name (or the e-mail you added to it) and your password.')}</div></>}
+    <form onSubmit={submit} noValidate data-testid={inline ? 'login-password-form' : undefined}>
       {/* One field for both: the server looks an entry with an "@" up as an e-mail first. Not
           type="email", which would refuse a plain name. */}
       <input ref={nameRef} className="input" name="username" autoComplete="username" placeholder={t('Name or e-mail')} maxLength={254}
@@ -144,16 +147,16 @@ export function PasswordSignInSheet({ close, onPasskey }) {
       <div style={{ height: 12 }} />
       <Button type="submit" variant="primary" disabled={busy}>{reset ? t('Set password & sign in') : t('Sign in')}</Button>
     </form>
-    <div style={{ height: 8 }} />
+    {!inline && <><div style={{ height: 8 }} />
     <Button type="button" variant="ghost" className="dim" onClick={() => { setErr(null); setMode(reset ? 'signin' : 'reset') }}>
       {reset ? t('Sign in with password') : t('Have a reset code from your admin?')}</Button>
     {onPasskey && !reset && webauthnOK() && <>
       <div style={{ height: 8 }} />
       <Button type="button" icon="fingerprint" onClick={() => { close(); onPasskey() }}>{t('Sign in with passkey')}</Button>
-    </>}
+    </>}</>}
   </>
 }
-export const openPasswordSignIn = onPasskey => ui().openSheet(close => <PasswordSignInSheet close={close} onPasskey={onPasskey} />)
+export const openPasswordSignIn = (onPasskey, start) => ui().openSheet(close => <PasswordSignInSheet close={close} onPasskey={onPasskey} start={start} />)
 
 /* The password half of creating a profile. Name and invite code are the caller's state, so
    switching between passkey and password on the sign-up sheet keeps what was typed. */

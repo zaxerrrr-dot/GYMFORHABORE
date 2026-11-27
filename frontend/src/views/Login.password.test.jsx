@@ -62,41 +62,55 @@ describe('Login with password sign-in', () => {
     expect(buttons(noPasskeys)).not.toContain('Sign in with password')
   })
 
-  it('next to passkeys it is a second button, and the footer no longer says "no passwords"', () => {
-    mocks.config = { password_login: true, allow_guest: true }
+  // Habcore Gym (kl9): the start screen is the password form itself, then "Sign in with passkey"
+  // as a link, then Registration, which opens on the password form.
+  it('the start screen: password form, then the passkey link, then Registration', () => {
+    mocks.config = { password_login: true, allow_guest: false }
     const page = mount(<Login />)
-    expect(buttons(page).slice(0, 3)).toEqual(['Sign in with passkey', 'Sign in with password', 'Create new profile'])
-    expect(page.textContent).toContain('Passkeys use your fingerprint. A password works too, where passkeys do not.')
-    act(() => button(page, 'Sign in with password').click())
+    const form = page.querySelector('[data-testid="login-password-form"]')
+    expect(form).toBeTruthy()
+    expect(form.querySelector('input[autocomplete="username"]').placeholder).toBe('Name or e-mail')
+    expect(form.querySelector('input[autocomplete="current-password"]').type).toBe('password')
+    expect(page.querySelector('h3')).toBeNull()
+    // In this order: the form's own Sign in, the passkey link, Registration, then the small links.
+    expect(buttons(page)).toEqual(['Sign in', 'Sign in with passkey', 'Registration', 'Have a reset code from your admin?', 'Lost access?'])
+    const order = ['login-password-form', 'login-passkey', 'login-register'].map(id => page.querySelector(`[data-testid="${id}"]`))
+    expect(order[0].compareDocumentPosition(order[1]) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(order[1].compareDocumentPosition(order[2]) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(page.textContent).not.toContain('No passwords to remember.')
+    // The reset code still has its form, on a sheet.
+    act(() => button(page, 'Have a reset code from your admin?').click())
     const sheet = mount(mocks.sheets[0](() => {}))
-    expect(sheet.querySelector('h3').textContent).toBe('Sign in with password')
-    expect(sheet.querySelector('input[autocomplete="current-password"]')).toBeTruthy()
+    expect(sheet.querySelector('h3').textContent).toBe('Reset your password')
   })
 
-  it('a browser without passkeys gets a way in instead of "stay local"', () => {
+  it('a browser without passkeys gets the same form, without the passkey link', () => {
     mocks.webauthn = false
     mocks.config = { password_login: true, allow_guest: false }
     const page = mount(<Login />)
-    expect(page.textContent).toContain("This browser doesn't support passkeys. Sign in with your name and password instead.")
     expect(page.textContent).not.toContain('Try a browser or device with passkey support.')
-    expect(buttons(page)).toEqual(['Sign in with password', 'Create new profile', 'Lost access?'])
-    // Creating a profile here can only mean a password: no passkey/password choice to make.
-    act(() => button(page, 'Create new profile').click())
+    expect(buttons(page)).toEqual(['Sign in', 'Registration', 'Have a reset code from your admin?', 'Lost access?'])
+    // Creating a profile here can only mean a password: no link to the passkey.
+    act(() => button(page, 'Registration').click())
     const sheet = mount(mocks.sheets[0](() => {}))
     expect(sheet.querySelector('.seg')).toBeNull()
     expect(sheet.querySelector('input[placeholder="Repeat the password"]')).toBeTruthy()
-    expect(buttons(sheet)).toContain('Create profile')
+    expect(buttons(sheet)).toEqual(['Create profile'])
   })
 
-  it('where both work, creating a profile starts on the passkey and switches to a password', () => {
+  it('where both work, Registration opens on the password and the passkey is a link under it', () => {
     mocks.config = { password_login: true, invite_only: true }
     const page = mount(<Login />)
-    act(() => button(page, 'Create new profile').click())
+    act(() => button(page, 'Registration').click())
     const sheet = mount(mocks.sheets[0](() => {}))
-    expect(buttons(sheet)).toContain('Create passkey')
-    act(() => button(sheet, 'Password').click())
-    expect(buttons(sheet)).toContain('Create profile')
+    expect(sheet.querySelector('.seg')).toBeNull()
+    expect(buttons(sheet)).toEqual(['Create profile', 'Register with a passkey instead'])
     expect(sheet.querySelector('input[placeholder="Invite code"]')).toBeTruthy()
     expect(sheet.querySelector('input[autocomplete="new-password"]')).toBeTruthy()
+    expect(sheet.textContent).toContain('At least 8 characters.')
+    act(() => button(sheet, 'Register with a passkey instead').click())
+    expect(buttons(sheet)).toEqual(['Create passkey', 'Register with a password instead'])
+    act(() => button(sheet, 'Register with a password instead').click())
+    expect(buttons(sheet)).toContain('Create profile')
   })
 })

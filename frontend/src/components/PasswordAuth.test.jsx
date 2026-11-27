@@ -96,7 +96,7 @@ describe('passwordError', () => {
     expect(passwordError(fail(400, { code: 'email-invalid' }))).toBe('That is not an e-mail address.')
     expect(passwordError(fail(409, { code: 'email-taken' }))).toBe('Another profile already uses this e-mail address.')
     expect(passwordError(fail(400, { code: 'too-common' }))).toMatch(/too easy to guess/)
-    expect(passwordError(fail(400, { code: 'too-short' }))).toBe('Use at least 10 characters.')
+    expect(passwordError(fail(400, { code: 'too-short' }))).toBe('Use at least 8 characters.')
     expect(passwordError(fail(409, { code: 'last-way-in' }))).toMatch(/only way into your profile/)
     expect(passwordError(fail(429, { code: 'locked', retryAfter: 120 }))).toBe('Too many attempts. Try again in 2 minutes.')
     expect(passwordError(fail(429, { code: 'locked', retryAfter: 30 }))).toBe('Too many attempts. Try again in 30 seconds.')
@@ -145,7 +145,7 @@ describe('PasswordSignInSheet', () => {
     type(byPlaceholder(host, 'Reset code'), 'k7wq-2mzp-4hxa')
     type(byPlaceholder(host, 'New password'), 'short')
     await submit(host)
-    expect(alertText(host)).toBe('Use at least 10 characters.')
+    expect(alertText(host)).toBe('Use at least 8 characters.')
     expect(mocks.passwordResetRedeem).not.toHaveBeenCalled()
     // A typo would only show at the next sign-in, and cost another code from the admin.
     const again = byPlaceholder(host, 'Repeat the password')
@@ -251,6 +251,22 @@ describe('PasswordRegisterForm', () => {
     expect(alertText(host)).toBe('Another profile already uses this e-mail address.')
     await submit(host)
     expect(mocks.setUser).toHaveBeenCalledWith({ id: 'u9', name: 'Cleo' })
+  })
+
+  it('the floor is 8 characters: 7 are caught here, 8 go to the server', async () => {
+    mocks.passwordRegister.mockResolvedValue({ id: 'u9', name: 'Cleo' })
+    const host = mount(<Harness />)
+    expect(host.textContent).toContain('At least 8 characters.')
+    type(byPlaceholder(host, 'Your name'), 'Cleo')
+    type(byPlaceholder(host, 'Password'), 'Kot.Las')
+    type(byPlaceholder(host, 'Repeat the password'), 'Kot.Las')
+    await submit(host)
+    expect(alertText(host)).toBe('Use at least 8 characters.')
+    expect(mocks.passwordRegister).not.toHaveBeenCalled()
+    type(byPlaceholder(host, 'Password'), 'Kot.Las7')
+    type(byPlaceholder(host, 'Repeat the password'), 'Kot.Las7')
+    await submit(host)
+    expect(mocks.passwordRegister).toHaveBeenCalledWith('Cleo', 'Kot.Las7', '', '')
   })
 
   it('a name already taken by a password profile is said in words', async () => {

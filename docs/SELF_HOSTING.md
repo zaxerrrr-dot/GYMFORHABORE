@@ -452,7 +452,7 @@ a LAN-only address, see [SELF_HOSTING_HTTPS.md](./SELF_HOSTING_HTTPS.md).
   working by sending wrong ones.
 - A pending reset code keeps its profile's name: until it is used or expires, nobody else can
   register that name with a password or set a first password on another profile of that name.
-- Passwords need 10 to 256 characters and may not be one of a short built-in list of the
+- Passwords need 8 to 256 characters and may not be one of a short built-in list of the
   passwords guessing scripts try first (`Password123!`, `qwerty…`, the profile's own name with
   digits). A long passphrase is the point.
 

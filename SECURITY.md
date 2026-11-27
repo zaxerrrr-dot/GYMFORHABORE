@@ -309,7 +309,7 @@ Read this before hosting openGym for anyone other than yourself.
   by whom), at the rate the throttle allows. Only two password checks run at once, with 32 queued behind
   them: someone sending from enough addresses can keep that queue full, and every password
   sign-in then answers `503` until they stop (passkeys are unaffected). The only password
-  policy is 10–256 characters and a short built-in list of the passwords guessing scripts try
+  policy is 8–256 characters and a short built-in list of the passwords guessing scripts try
   first; no breached-password database is bundled.
 - **Disabling someone isn't a ban.** They can still register a fresh profile with a new passkey
   unless `INVITE_ONLY=1` is set. It also makes them near-invisible in the activity log: a disabled

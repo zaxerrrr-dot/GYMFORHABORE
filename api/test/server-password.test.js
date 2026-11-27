@@ -298,6 +298,8 @@ test('registration with a password: policy, unique names among password holders,
   assert.deepEqual((await reg({ name: 'Cleo', password: GOOD })).body.code, 'invite');
   assert.equal((await reg({ name: 'Cleo', password: GOOD, code: 'WRONG' })).status, 403);
   assert.equal((await reg({ name: 'Cleo', password: 'short', code: 'invite1' })).body.code, 'too-short');
+  // The floor is 8 characters (Habcore Gym; upstream 10): 7 is refused.
+  assert.equal((await reg({ name: 'Cleo', password: 'Kot.Las', code: 'invite1' })).body.code, 'too-short');
   assert.equal((await reg({ name: 'Cleo', password: 'Password123!', code: 'invite1' })).body.code, 'too-common');
   assert.equal((await reg({ name: 'Cleo', password: 'cleo.2024.2024', code: 'invite1' })).body.code, 'too-common');
   assert.equal((await reg({ name: 'ANA', password: GOOD, code: 'invite1' })).status, 409);
@@ -314,6 +316,9 @@ test('registration with a password: policy, unique names among password holders,
   // A name that only a passkey profile has is free to take; the two never meet at sign-in.
   const h2 = await startServer(t, { users: [user('u2', 'Bea')] });
   assert.equal((await h2.req('POST', '/api/register/password', { body: { name: 'bea', password: GOOD }, ip: '198.51.100.82' })).status, 200);
+  // 8 characters are enough, and sign in.
+  assert.equal((await h2.req('POST', '/api/register/password', { body: { name: 'Dora', password: 'Kot.Las7' }, ip: '198.51.100.83' })).status, 200);
+  assert.equal((await login(h2, 'Dora', 'Kot.Las7', '198.51.100.84')).status, 200);
 });
 
 test('setting a first password needs a passkey made for it, not just a session', async t => {
@@ -355,6 +360,7 @@ test('changing a password takes the current one and signs out every other sessio
   const wrong = await h.req('POST', '/api/account/password', { body: { next, current: 'not it at all' }, cookie: a, ip });
   assert.equal(wrong.status, 403);
   assert.equal(wrong.body.code, 'current-wrong');
+  assert.equal((await h.req('POST', '/api/account/password', { body: { next: 'Kot.Las', current: GOOD }, cookie: a, ip })).body.code, 'too-short', '7 characters');
   const r = await h.req('POST', '/api/account/password', { body: { next, current: GOOD }, cookie: a, ip });
   assert.equal(r.status, 200);
   assert.equal(h.db().users[0].sv, 1);
@@ -531,6 +537,7 @@ test('an admin reset: a one-time code that ends the old password, works once, an
   assert.equal((await redeem({ name: 'Ana', code: 'ZZZZ-ZZZZ-ZZZZ', next: 'a brand new passphrase' })).body.code, 'reset-invalid');
   // A weak new password is refused without using up the code.
   assert.equal((await redeem({ name: 'Ana', code, next: 'short' })).body.code, 'too-short');
+  assert.equal((await redeem({ name: 'Ana', code, next: 'Kot.Las' })).body.code, 'too-short', '7 characters');
   const r = await redeem({ name: 'ana', code: code.toLowerCase().replace(/-/g, ' '), next: 'a brand new passphrase' });
   assert.equal(r.status, 200);
   assert.ok(r.cookie);

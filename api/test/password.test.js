@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
 import {
-  hashPassword, verifyPassword, needsRehash, passwordProblem, nameKey,
+  hashPassword, verifyPassword, needsRehash, passwordProblem, passwordLength, nameKey, MIN_LENGTH,
   makeResetCode, hashResetCode, resetCodeMatches
 } from '../password.js';
 
@@ -50,6 +50,16 @@ test('policy: length first, then the passwords every script tries first', () => 
   }
   for (const pw of ['correct horse battery', '日本語のパスワードです', '73920184652', 'Ana likes deadlifts']) {
     assert.equal(passwordProblem(pw, 'Ana'), null, pw);
+  }
+});
+
+test('policy: the floor is 8 characters (7 refused, 8 taken)', () => {
+  assert.equal(MIN_LENGTH, 8);
+  assert.equal(passwordProblem('Kot.Las', 'Ana'), 'too-short', '7 characters');
+  assert.equal(passwordProblem('Kot.Las7', 'Ana'), null, '8 characters');
+  assert.equal(passwordLength('Kot.Las7'), 8);
+  for (const pw of ['12345678', '123456789', 'qwertyui', '1q2w3e4r', 'abcd1234', 'password1']) {
+    assert.equal(passwordProblem(pw, 'Ana'), 'too-common', pw);
   }
 });
 

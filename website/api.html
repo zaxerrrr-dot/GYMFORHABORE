@@ -1380,7 +1380,7 @@ main.api-main .lead { color: var(--fg-2); max-width: 58ch; margin: 14px 0 0; fon
     <span class="ep-sum">Create a profile with a name and password</span>
   </summary>
   <div class="ep-body">
-<p>For browsers that cannot make a passkey (plain http on a LAN address, some Firefox setups). Creates the profile and signs it in. The same invite rules as passkey registration apply: on an invite-only instance the code is checked first, checked again after hashing, and burned. The password must be 10–256 characters and not one of the passwords guessing scripts try first; no two profiles with a password may share a name. An optional <code>email</code> is stored as the profile's sign-in e-mail (see <code>POST /api/account/email</code>); one that is not an address is refused with <code>400 email-invalid</code>, one that is in use with <code>409 email-taken</code>. Both are asked only after the hash and the second invite check, so without a valid code it is never answered, which counts against the caller's address like a wrong invite code. <b>Not</b> CSRF-exempt.</p>
+<p>For browsers that cannot make a passkey (plain http on a LAN address, some Firefox setups). Creates the profile and signs it in. The same invite rules as passkey registration apply: on an invite-only instance the code is checked first, checked again after hashing, and burned. The password must be 8–256 characters and not one of the passwords guessing scripts try first; no two profiles with a password may share a name. An optional <code>email</code> is stored as the profile's sign-in e-mail (see <code>POST /api/account/email</code>); one that is not an address is refused with <code>400 email-invalid</code>, one that is in use with <code>409 email-taken</code>. Both are asked only after the hash and the second invite check, so without a valid code it is never answered, which counts against the caller's address like a wrong invite code. <b>Not</b> CSRF-exempt.</p>
     <p class="ep-auth"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span>Public: no authentication required.</span></p>
 
 <p class="ep-h">Request body <span class="p-hint">(JSON)</span></p><div class="ptab">
@@ -1418,7 +1418,7 @@ main.api-main .lead { color: var(--fg-2); max-width: 58ch; margin: 14px 0 0; fon
   </div>
   <div class="prow rrow">
     <span class="r-code s4">400</span>
-    <span class="p-desc">The password breaks the policy with <code>too-short</code> (under 10 characters), <code>too-long</code> (over 256) or <code>too-common</code>; a field is <code>missing</code>; or <code>email-invalid</code>: the <code>email</code> given is not an e-mail address.<span class="r-sig"><code>{&quot;error&quot;:&quot;this password is too easy to guess&quot;}</code> &middot; <code>{&quot;error&quot;:&quot;that is not an e-mail address&quot;}</code></span></span>
+    <span class="p-desc">The password breaks the policy with <code>too-short</code> (under 8 characters), <code>too-long</code> (over 256) or <code>too-common</code>; a field is <code>missing</code>; or <code>email-invalid</code>: the <code>email</code> given is not an e-mail address.<span class="r-sig"><code>{&quot;error&quot;:&quot;this password is too easy to guess&quot;}</code> &middot; <code>{&quot;error&quot;:&quot;that is not an e-mail address&quot;}</code></span></span>
   </div>
   <div class="prow rrow">
     <span class="r-code s4">403</span>
@@ -1575,7 +1575,7 @@ main.api-main .lead { color: var(--fg-2); max-width: 58ch; margin: 14px 0 0; fon
   </div>
   <div class="prow rrow">
     <span class="r-code s4">400</span>
-    <span class="p-desc">The new password breaks the policy (<code>too-short</code> under 10 characters, <code>too-long</code> over 256, or <code>too-common</code>), or a field is <code>missing</code>.<span class="r-sig"><code>{&quot;error&quot;:&quot;this password is too easy to guess&quot;}</code></span></span>
+    <span class="p-desc">The new password breaks the policy (<code>too-short</code> under 8 characters, <code>too-long</code> over 256, or <code>too-common</code>), or a field is <code>missing</code>.<span class="r-sig"><code>{&quot;error&quot;:&quot;this password is too easy to guess&quot;}</code></span></span>
   </div>
   <div class="prow rrow">
     <span class="r-code s4">401</span>

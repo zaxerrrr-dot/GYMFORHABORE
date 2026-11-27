@@ -16,7 +16,8 @@
  * memory limit by a burst of logins. */
 import crypto from 'node:crypto';
 
-export const MIN_LENGTH = 10;
+// Habcore Gym: 8 (upstream 10). Hashes made under the old floor keep working; only new passwords are checked.
+export const MIN_LENGTH = 8;
 // Long passphrases are the point, so the cap is only there to bound the work: scrypt runs its
 // input through PBKDF2 first, and a 5 MiB "password" would be hashed in full.
 export const MAX_LENGTH = 256;
@@ -149,6 +150,11 @@ export const maskEmail = e => {
    it is megabytes, and an instance that locks an account after a handful of wrong guesses is
    not where the long tail of that list gets tried. */
 const COMMON = new Set([
+  // 8 and 9 characters, now that the floor is 8.
+  '12345678', '123456789', '87654321', '987654321', '11111111', '111111111', '00000000', '000000000',
+  '12341234', '11223344', '12121212', '123123123', '1q2w3e4r', '1qaz2wsx', 'zaq12wsx', 'q1w2e3r4',
+  'qwertyui', 'asdfghjk', 'zxcvbnm1', 'abcd1234', 'abc12345', 'a1b2c3d4', 'iloveyou1', 'password1',
+  'haslo1234', 'polska12', 'polska123', 'zaq1@wsx', 'qazwsx12', 'qwer1234', '1234qwer', 'aa123456',
   '1234567890', '0987654321', '12345678910', '123456789012', '1234567890123', '11111111111',
   '1111111111', '0000000000', '9999999999', '1q2w3e4r5t', '1q2w3e4r5t6y', 'q1w2e3r4t5',
   'qwertyuiop', 'qwertyuiop[]', 'asdfghjkl;', 'asdfghjkl', 'zxcvbnm,./', '1qaz2wsx3edc',
