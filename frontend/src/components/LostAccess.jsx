@@ -1,7 +1,7 @@
 // "Lost access?" on the sign-in screen (#584): what to do when no device signs you in any more.
 // In order of how often each one is the answer: a synced passkey, another device that is still
-// signed in, a recovery code from the server's admin, and for whoever runs the server, the
-// server's own command. "I have a code" opens the same redemption a device link has
+// signed in, a recovery code from the trainer (Habcore Gym, patch 0012: the server command is not
+// shown to members any more; trainers make the code in the admin dashboard). "I have a code" opens the same redemption a device link has
 // (Passkeys.jsx): a recovery code is redeemed exactly like one. The phone app cannot make a
 // passkey for the server, so there the code goes into a browser first and the app is paired again.
 import { useUI } from '../store/useUI.js'
@@ -14,8 +14,7 @@ import { Button } from './ui.jsx'
 const STEPS = () => [
   ['fingerprint', t('Your passkey may be synced'), t('Passkeys kept in iCloud Keychain, Google Password Manager or a password manager are on your other devices too. Try “Sign in with passkey” there.')],
   ['qr', t('Another device still signed in?'), t('On that one, open Settings → Account → Add another device, then enter its code here with “I have a code”.')],
-  ['person', t('Ask your admin'), t('Whoever runs your Habcore Gym server can make you a recovery code in the admin dashboard. Enter it with “I have a code”, and this device gets a new passkey.')],
-  ['wrench', t('Running the server yourself?'), t('Get a recovery code for any profile, the owner’s too, on the server: docker compose exec api node recover.js "Your name"')],
+  ['person', t('Ask your trainer'), t('Your trainer at Habcore Gym can make you a recovery code. Enter it with “I have a code”, and this device gets a new passkey.')],
 ]
 
 export function LostAccessSheet({ close }) {
