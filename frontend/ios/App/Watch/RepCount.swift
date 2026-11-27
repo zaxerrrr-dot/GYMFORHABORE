@@ -123,7 +123,7 @@ extension SessionStore {
         }
     }
 
-    /// Stop (or the set's end): the count waits to be confirmed. Nothing counted: back to the set page.
+    /// Stop (or the set's end): the count waits to be confirmed (0 too: − + can still set it).
     func stopRepCount() {
         guard let live = repLive, live.phase == .counting else { return }
         repSensor.stop { [weak self] result in
