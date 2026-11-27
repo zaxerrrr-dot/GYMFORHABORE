@@ -114,3 +114,36 @@ describe('Login with password sign-in', () => {
     expect(buttons(sheet)).toContain('Create profile')
   })
 })
+
+// Habcore Gym (patch 0013, lib/legal.jsx): with LEGAL=on (config.legal) both ways of signing up ask
+// for the Terms and the health-data consent, and the start screen links to both documents.
+describe('Login with the Terms and the health-data consent', () => {
+  it('the start screen links to the Terms and the Privacy policy', () => {
+    mocks.config = { password_login: true, legal: { v: 'V1' } }
+    const page = mount(<Login />)
+    const links = [...page.querySelectorAll('[data-testid="legal-links"] a')]
+    expect(links.map(a => a.textContent)).toEqual(['Terms', 'Privacy policy'])
+    expect(links[0].getAttribute('href')).toMatch(/\/terms$/)
+    expect(links[1].getAttribute('href')).toMatch(/\/privacy$/)
+  })
+  it('Registration has both boxes, under the password and under the passkey, and they are kept when switching', () => {
+    mocks.config = { password_login: true, legal: { v: 'V1' } }
+    const page = mount(<Login />)
+    act(() => button(page, 'Registration').click())
+    const sheet = mount(mocks.sheets[0](() => {}))
+    expect(sheet.querySelector('[data-testid="legal-terms"]')).toBeTruthy()
+    expect(sheet.querySelector('[data-testid="legal-health"]')).toBeTruthy()
+    act(() => sheet.querySelector('[data-testid="legal-terms"] [role=checkbox]').click())
+    act(() => button(sheet, 'Register with a passkey instead').click())
+    expect(sheet.querySelector('[data-testid="legal-terms"] [role=checkbox]').getAttribute('aria-checked')).toBe('true')
+    expect(sheet.querySelector('[data-testid="legal-health"] [role=checkbox]').getAttribute('aria-checked')).toBe('false')
+  })
+  it('without LEGAL nothing of it shows', () => {
+    mocks.config = { password_login: true }
+    const page = mount(<Login />)
+    expect(page.querySelector('[data-testid="legal-links"]')).toBeTruthy()   // the links are always there
+    act(() => button(page, 'Registration').click())
+    const sheet = mount(mocks.sheets[0](() => {}))
+    expect(sheet.querySelector('[data-testid="legal-checks"]')).toBeNull()
+  })
+})

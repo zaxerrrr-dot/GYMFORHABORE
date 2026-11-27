@@ -128,11 +128,13 @@ export default function IntegrationsPage({ android = false, ios = false }) {
   const webdav = useWebdavConfig()
   const nutrition = useNutritionLink()
   const tokens = tokensOn(config, user, DEMO) && isOn(S, 'integrations')
-  // The calendar feed's state, asked once per visit where the server has tokens.
+  // The calendar feed's state, asked once per visit where the server serves it (Habcore Gym:
+  // config.calendar, no longer the API tokens).
+  const calendarOn = (!!config?.calendar || tokens) && !!user && !DEMO && isOn(S, 'integrations')
   const [calendar, setCalendarState] = useState(null)
-  useEffect(() => { if (tokens) getCalendar().then(setCalendarState).catch(() => {}) }, [tokens])
+  useEffect(() => { if (calendarOn) getCalendar().then(setCalendarState).catch(() => {}) }, [calendarOn])
   const ctx = {
-    offline: offlineBuild(), webdav, tokens, calendar, nutrition,
+    offline: offlineBuild(), webdav, tokens, calendar, calendarOn, nutrition,
     mobile: MOBILE, platform, user, demo: DEMO, admin: !!user?.admin, health, server: server.data, offered,
     mod: id => isOn(S, id),
     coach: coachAvailable(config, user, { demo: DEMO }), coachMode: coachLocal?.mode === 'server' || coachLocal?.mode === 'byok' ? coachLocal.mode : null,

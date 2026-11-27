@@ -7,6 +7,7 @@ import { useStore } from '../store/useStore.js'
 import { Section, Button, TextField, Check } from '../components/ui.jsx'
 import BrandLogo from '../components/BrandLogo.jsx'
 import { g, gErr, fmtDay, lookInvite, claimInvite } from '../lib/gymv2.js'
+import { LegalChecks, legalOn, legalBody, legalMissing } from '../lib/legal.jsx'
 
 export default function GymClaim() {
   const loc = useLocation()
@@ -20,15 +21,20 @@ export default function GymClaim() {
   const [ok, setOk] = useState(false)
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState(null)
+  // Habcore Gym (patch 0013): the client accepts the Terms and the health-data consent here.
+  const config = useStore(s => s.config)
+  const asks = legalOn(config)
+  const [legal, setLegal] = useState({ terms: false, health: false })
   useEffect(() => { if (!c) { setBad(true); return } lookInvite(c).then(setInv).catch(() => setBad(true)) }, [c])
   const pl = g('gym') === 'Siłownia'
   const submit = async e => {
     e?.preventDefault?.()
     if (!ok || busy) return
     if (pw !== pw2) { setErr(g('pwMismatch')); return }
+    if (asks && !legalBody(config, legal)) { setErr(legalMissing()); return }
     setBusy(true); setErr(null)
     try {
-      await claimInvite(c, pw, email.trim() || undefined, { v: inv.consent.v, hash: inv.consent.hash })
+      await claimInvite(c, pw, email.trim() || undefined, { v: inv.consent.v, hash: inv.consent.hash }, asks ? legalBody(config, legal) : null)
       // The session cookie is the client's now: the app starts again as that account.
       try { sessionStorage.setItem('gymv2_welcome', inv.name) } catch { /* only the greeting */ }
       location.hash = '#/home'
@@ -52,6 +58,7 @@ export default function GymClaim() {
         <Section title={g('consentHead')}>
           <div className="gv-consent"><p>{pl ? inv.consent.pl : inv.consent.en}</p></div>
         </Section>
+        {asks && <LegalChecks value={legal} onChange={setLegal} />}
         <div className="gv-agree" data-testid="claim-agree"><Check checked={ok} onChange={setOk} label={g('agree')} /> <span onClick={() => setOk(!ok)}>{g('agree')}</span></div>
         {err && <p role="alert" style={{ color: 'var(--red)' }}>{err}</p>}
         <Button variant="primary" type="button" onClick={submit} disabled={busy || !ok || !pw || !pw2}>{g('claim')}</Button>

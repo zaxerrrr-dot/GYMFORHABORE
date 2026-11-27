@@ -18,6 +18,10 @@ const toast = m => useUI.getState().toast(m)
 
 export const calendarSheet = onChange => useUI.getState().openSheet(close => <CalendarSheet close={close} onChange={onChange} />)
 
+// Subscribe pages of the two web calendars (Apple takes the webcal:// address itself).
+export const googleCalUrl = url => 'https://calendar.google.com/calendar/r?cid=' + encodeURIComponent(webcalUrl(url))
+export const outlookCalUrl = url => 'https://outlook.live.com/calendar/0/addfromweb?url=' + encodeURIComponent(url) + '&name=' + encodeURIComponent('Habcore Gym')
+
 export function CalendarSheet({ close, onChange }) {
   const [feed, setFeed] = useState(null)
   const [done, setDone] = useState(false)
@@ -64,10 +68,14 @@ export function CalendarSheet({ close, onChange }) {
       ? <div className="cal-url" translate="no"><code>{feed.url}</code></div>
       : <p className="intg-note warn">{t('The server cannot show this link again. Make a new one.')}</p>}
     <p className="intg-note">{feed.used ? t('Last fetched by a calendar {0}', fmtAgo(feed.used)) : t('No calendar has fetched it yet.')}</p>
-    {feed.url && <div className="intg-btns" style={{ marginTop: 12 }}>
-      <Button variant="primary" icon="copy" onClick={copy}>{t('Copy link')}</Button>
-      <Button variant="tinted" icon="calendar" onClick={() => { window.location.href = webcalUrl(feed.url) }}>{t('Open in my calendar app')}</Button>
+    {/* Habcore Gym (patch 0013): one button per calendar, each the way that calendar subscribes. */}
+    {feed.url && <div className="intg-btns" style={{ marginTop: 12, flexWrap: 'wrap' }} data-testid="cal-add">
+      <Button variant="primary" icon="calendar" onClick={() => window.open(googleCalUrl(feed.url), '_blank', 'noopener')}>{t('Add to Google Calendar')}</Button>
+      <Button variant="tinted" icon="calendar" onClick={() => { window.location.href = webcalUrl(feed.url) }}>{t('Add to Apple Calendar')}</Button>
+      <Button variant="tinted" icon="calendar" onClick={() => window.open(outlookCalUrl(feed.url), '_blank', 'noopener')}>{t('Add to Outlook')}</Button>
+      <Button variant="tinted" icon="copy" onClick={copy}>{t('Copy link')}</Button>
     </div>}
+    {feed.url && <p className="intg-note">{t('Google Calendar: tap Add, then Add calendar. Apple: your iPhone or Mac asks to subscribe. Outlook: Import. Google refreshes a subscribed calendar every few hours, so a change can take a while to show.')}</p>}
     <div style={{ height: 12 }} />
     {doneRow}
     <div className="sect-b">

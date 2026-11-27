@@ -5,6 +5,7 @@
 // are the English keys the pages render with t(), so a search hit can find its row on the page
 // by the same text and flash it (views/Settings.jsx). settings-pages.test.jsx renders every page
 // and checks that each entry below really is a row there.
+import { AI_BUILT, ZEPP_BUILT, HABCORE_OFF_SEARCH } from '../lib/habcore-off.js'
 import { t } from '../lib/i18n.js'
 import { ACCENT_NAMES } from '../lib/format.js'
 import { MODULES } from '../lib/modules.js'
@@ -87,7 +88,9 @@ export function pageVisible(page, ctx) {
   // A page of a module that is off (ctx.mod answers isOn for this profile; absent: all on).
   if (PAGES[page]?.mod && ctx.mod && !ctx.mod(PAGES[page].mod)) return false
   if (page === 'reminders') return !!(ctx.user || ctx.mobile)
-  if (page === 'coach') return !!ctx.mobile && !ctx.offline
+  if (page === 'coach') return AI_BUILT && !!ctx.mobile && !ctx.offline
+  // Habcore Gym (patch 0013, lib/habcore-off.js): no Zepp OS page.
+  if (page === 'zepp' && !ZEPP_BUILT) return false
   // The phone app's network log: there only (a browser has its own developer tools for that).
   if (page === 'network') return !!ctx.mobile
   // Habcore Gym Offline (lib/build-caps.js) has no network: nothing that needs a server or a connection.
@@ -320,7 +323,7 @@ export const SEARCH = [
   { page: 'integrations', title: 'Spreadsheet (CSV)', icon: 'share', tint: 'var(--green)', kw: 'csv spreadsheet excel export' },
   { page: 'integrations', title: 'MCP server', net: true, icon: 'plug', tint: 'var(--purple)', mod: 'integrations', kw: 'mcp claude desktop cursor llm agent ai model context protocol api' },
   { page: 'integrations', title: 'WebDAV backup', net: true, icon: 'cloud', tint: 'var(--blue)', kw: 'webdav nextcloud owncloud cloud backup daily automatic', when: c => !c.demo },
-  { page: 'integrations', title: 'Calendar feed', net: true, icon: 'calendar', tint: 'var(--red)', mod: 'integrations', kw: 'calendar ics ical google outlook apple planned sessions feed subscribe', when: c => c.demo || !c.user || c.apiTokens },
+  { page: 'integrations', title: 'Calendar feed', net: true, icon: 'calendar', tint: 'var(--red)', mod: 'integrations', kw: 'calendar ics ical google outlook apple planned sessions feed subscribe', when: c => c.demo || !c.user || c.apiTokens || c.calendarFeed },
   { page: 'integrations', title: 'AI Coach', net: true, icon: 'sparkles', tint: 'var(--green)', mod: 'coach', kw: 'ai coach model llm plan review', when: c => c.mobile },
   { page: 'integrations', mod: 'health', title: 'Garmin', icon: 'watch', tint: 'var(--grey)', kw: 'garmin fenix forerunner venu watch heart rate' },
   { page: 'integrations', mod: 'health', title: 'COROS', icon: 'watch', tint: 'var(--grey)', kw: 'coros watch heart rate' },
@@ -339,6 +342,8 @@ export const SEARCH = [
   { page: 'about', title: 'Export & import', icon: 'folder', tint: 'var(--yellow)', kw: 'tutorial guide export import backup restore csv strong hevy sync help how to' },
   { page: 'about', title: 'Version', icon: 'info', tint: 'var(--grey)', kw: 'version about licence license source code open source' },
   { page: 'about', title: 'Licences', icon: 'info', tint: 'var(--grey)', kw: 'licence license licences licenses source code open source agpl notice notices copyright' },
+  { page: 'about', title: 'Terms', icon: 'clipboard', tint: 'var(--grey)', kw: 'terms regulamin terms of service rules legal' },
+  { page: 'about', title: 'Privacy policy', icon: 'shield', tint: 'var(--grey)', kw: 'privacy policy prywatnosc gdpr rodo data protection legal' },
   { page: 'about', title: 'In Chrome: ⋮ menu → Add to Home screen', icon: 'share', tint: 'var(--blue)', kw: 'install app home screen tip pwa', when: c => c.installTip && c.androidWeb },
   { page: 'about', title: 'In Safari: Share → Add to Home Screen', icon: 'share', tint: 'var(--blue)', kw: 'install app home screen tip pwa', when: c => c.installTip && !c.androidWeb && !c.desktopWeb },
   { page: 'about', title: 'In Chrome or Edge: the install icon in the address bar', icon: 'share', tint: 'var(--blue)', kw: 'install app home screen tip pwa desktop', when: c => c.installTip && c.desktopWeb },
@@ -431,6 +436,7 @@ export function searchSettings(query, ctx, tr = t) {
     consider({ page: id, title: PAGES[id].title, icon: PAGES[id].icon, tint: PAGES[id].tint, kw: PAGES[id].kw }, true)
   }
   for (const e of SEARCH) {
+    if (HABCORE_OFF_SEARCH.includes(e.title)) continue
     if (!pageVisible(PAGES[e.page].parent || e.page, ctx)) continue
     // A page under another that its own module hides (Look & Home → Seasonal themes).
     if (PAGES[e.page].mod && !pageVisible(e.page, ctx)) continue
@@ -442,7 +448,7 @@ export function searchSettings(query, ctx, tr = t) {
   }
   // The root's "Use your subscription" row (Connections) opens a screen of its own (views/Assistants.jsx), not a
   // settings page; it is found like one. Not in Habcore Gym Offline or the demo, as on the root.
-  if (!ctx.offline && !ctx.demo) {
+  if (AI_BUILT && !ctx.offline && !ctx.demo) {
     consider({ page: 'look', route: '/assistants', title: 'Use your subscription', icon: 'chat', tint: 'var(--acc)',
       kw: 'claude chatgpt gemini mcp connector assistant ai plan subscription' }, true)   // a root row: its trail is Settings
   }

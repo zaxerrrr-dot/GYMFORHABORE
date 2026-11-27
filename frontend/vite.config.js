@@ -130,5 +130,6 @@ export default defineConfig({
   // lower, scripts/check-bundle-syntax.mjs catches (its test builds the bundle).
   build: { chunkSizeWarningLimit: 1500, target: ['safari15', 'chrome100', 'firefox100', 'edge100'] },
   // Gives happy-dom tests a working localStorage on Node 24+ (#733).
-  test: { setupFiles: ['./src/test-setup.js'] }
+  // Habcore Gym (patch 0013, lib/habcore-off.js): the tests cover the switched-off parts too.
+  test: { setupFiles: ['./src/test-setup.js'], env: { VITE_AI_COACH: '1', VITE_ZEPP: '1', VITE_CHECKIN: '1', VITE_INTEGRATIONS_FULL: '1' } }
 })

@@ -2,6 +2,7 @@
    No framework, JSON-file storage, signed session cookies.               */
 import http from 'node:http';
 import crypto from 'node:crypto';
+import { LEGAL_VERSION, legalOn, legalAccepted, legalRecord, legalCurrent, LEGAL_REQUIRED } from './legal.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import https from 'node:https';
@@ -171,7 +172,9 @@ if (!fs.existsSync(secretFile)) fs.writeFileSync(secretFile, crypto.randomBytes(
 const SECRET = fs.readFileSync(secretFile, 'utf8').trim();
 // Integrations (integrations/, docs/INTEGRATIONS.md): off unless INTEGRATIONS names some. Their
 // connections live in DATA_DIR/integrations/, sealed with a key derived from SECRET.
-const integrations = createIntegrations({ dataDir: DATA, secret: SECRET, version: '1' });
+// Habcore Gym (patch 0013): no webhooks and no Strava for now; INTEGRATIONS is read only with
+// HABCORE_INTEGRATIONS=1, so a stray INTEGRATIONS line in .env cannot switch them on.
+const integrations = createIntegrations({ dataDir: DATA, secret: SECRET, version: '1', env: /^(1|true|yes|on)$/i.test(process.env.HABCORE_INTEGRATIONS || '') ? process.env : { ...process.env, INTEGRATIONS: '' } });
 
 const dbFile = path.join(DATA, 'db.json');
 // Every account, passkey and invite. Only a missing file starts empty: an unreadable one (a write
@@ -1301,7 +1304,10 @@ function auditFail(req, ev, f) {
 /* ---------- scoped tokens (tokens.js) ---------- */
 // API_TOKENS=off takes the routes away (404). MCP=on tells the app a /mcp endpoint is served next
 // to it (the mcp container, docs/MCP_REMOTE.md), so Settings can show its address.
-const API_TOKENS = !/^(0|false|no|off)$/i.test(process.env.API_TOKENS || '');
+// Habcore Gym (patch 0013): personal API tokens (and with them MCP) are off unless API_TOKENS=1.
+const API_TOKENS = /^(1|true|yes|on)$/i.test(process.env.API_TOKENS || '');
+// The calendar feed (integrations/calendar.js): on unless CALENDAR=0.
+const CALENDAR_ON = !/^(0|false|no|off)$/i.test(process.env.CALENDAR || '');
 const MCP_ON = /^(1|true|yes|on)$/i.test(process.env.MCP || '');
 // Per token: reads a minute and writes an hour. A client looping on a tool meets these long
 // before the profile's devices notice it; a refused token is not counted against an address,
@@ -1355,7 +1361,9 @@ function tokenAuth(req, res) {
 // show the address again. A new address ends the old one; "Turn off" ends it.
 const CAL_KEY = (() => { try { return deriveKey(SECRET); } catch { return null; } })();
 const calRow = uid => (db.apiTokens || []).find(r => r && r.userId === uid && r.kind === 'calendar' && !(r.exp && r.exp <= Date.now())) || null;
-const calUrl = token => ORIGIN.replace(/\/$/, '') + '/api/calendar/' + token + '.ics';
+// The app's own prefix (BASE_PATH, e.g. /opengym) belongs in the address: without it the feed
+// pointed at the site's root, where nothing answers (Habcore Gym kl11: the calendar did not work).
+const calUrl = token => ORIGIN.replace(/\/$/, '') + String(process.env.BASE_PATH || '').replace(/\/+$/, '') + '/api/calendar/' + token + '.ics';
 function calView(user) {
   const r = calRow(user.id);
   if (!r || r.sv !== (user.sv || 0)) return { on: false };
@@ -1442,7 +1450,14 @@ function loginTarget(body) {
 }
 const acctKey = u => 'acct:' + u.id;
 const passkeyCount = u => db.creds.filter(c => c.userId === u.id).length;
-const publicUser = u => ({ id: u.id, name: u.name, admin: isAdmin(u), ...(isOwner(u) ? { owner: true } : {}), ...(oidcWayIn(u) ? { oidc: true } : {}) });
+// Habcore Gym (patch 0013): `legal_ok` only with LEGAL=on, so an instance without it answers as before.
+const LEGAL_ON = legalOn(process.env.LEGAL);
+// Habcore Gym (patch 0013): the AI Coach is off unless AI_COACH=1. Off, every Coach route answers
+// 410 'ai-off' before it reads anything, /api/config has no coach block, and no scheduled review or
+// warm-up runs: nothing can reach an AI provider, not even a hand-made request.
+const AI_COACH = /^(1|true|yes|on)$/i.test(process.env.AI_COACH || '');
+const aiOff = routes => Object.fromEntries(Object.keys(routes).map(k => [k, async (req, res) => json(res, 410, { error: 'the AI Coach is not available on this server', code: 'ai-off' })]));
+const publicUser = u => ({ id: u.id, name: u.name, admin: isAdmin(u), ...(isOwner(u) ? { owner: true } : {}), ...(oidcWayIn(u) ? { oidc: true } : {}), ...(LEGAL_ON ? { legal_ok: legalCurrent(u) } : {}) });
 // A linked provider identity is a way in while the provider is configured (and the same issuer).
 const oidcWayIn = u => !!(OIDC.enabled && u?.oidc && String(u.oidc.iss || '').replace(/\/+$/, '') === OIDC.issuer);
 // The ways in besides passkeys, for "never remove the last one".
@@ -1677,6 +1692,7 @@ const passwordRoutes = {
     const body = await readBody(req);
     const name = text(body.name).trim().slice(0, 40);
     if (!name) return json(res, 400, { error: 'name required', code: 'missing' });
+    if (LEGAL_ON && !legalAccepted(body.legal)) return json(res, 400, LEGAL_REQUIRED);
     const code = text(body.code).trim().toUpperCase();
     const invite = () => db.invites.find(i => i.code === code && !i.usedBy && !i.revoked);
     if (INVITE_ONLY && addressPaused(req, res, 'signup')) return;
@@ -1725,7 +1741,7 @@ const passwordRoutes = {
     // No await from here to the push: nothing can take the address between this check and it.
     if (email && emailTaken(email)) return emailRefused();
     const created = new Date().toISOString();
-    const user = { id: crypto.randomBytes(12).toString('base64url'), name, created, pw: { h, set: created }, ...(email ? { email } : {}) };
+    const user = { id: crypto.randomBytes(12).toString('base64url'), name, created, pw: { h, set: created }, ...(email ? { email } : {}), ...(LEGAL_ON ? { legal: legalRecord('register') } : {}) };
     if (inv) { user.invitedBy = inv.code; inv.usedBy = user.id; inv.usedAt = created; }
     claimFirstAdmin(req, user);
     db.users.push(user);
@@ -2385,7 +2401,8 @@ const gym = GYM_V2 ? gymV2({
   secure: !!SECURE, sameSite: SAME_SITE, passwordLogin: PASSWORD_LOGIN, hashPassword, passwordProblem, policyError,
   setPassword, nameTaken, nameKey, normalizeEmail, emailTaken, sessionCookie, publicUser,
   limitAddress: req => limitAddress(req), readStateCached: uid => readStateCached(uid), readState,
-  merge: GYM_MERGE, writeStateAs: (uid, fn, opts) => writeStateAs(uid, fn, opts), live: GYM_LIVE
+  merge: GYM_MERGE, writeStateAs: (uid, fn, opts) => writeStateAs(uid, fn, opts), live: GYM_LIVE,
+  legal: LEGAL_ON ? { accepted: legalAccepted, record: legalRecord, required: LEGAL_REQUIRED } : null
 }) : null;
 // The app names the account it believes it is syncing (X-OpenGym-As). When the session now
 // belongs to another one (a trainer started or stopped leading a client in another tab, a sign-in
@@ -2616,14 +2633,19 @@ const routes = {
       // Scoped tokens (Settings → API tokens), and whether /mcp is served beside the app: for a
       // signed-in profile only, which is who can make one, so a stranger's answer stays as it was.
       ...(API_TOKENS && readSession(req) ? { api_tokens: true, ...(MCP_ON ? { mcp: true } : {}) } : {}),
+      // Habcore Gym (patch 0013): the calendar feed no longer rides on the API tokens.
+      ...(CALENDAR_ON && readSession(req) ? { calendar: true } : {}),
       // Public like the flags above: the sign-in screen draws its provider button from it.
       ...(oidcApi ? { oidc: { label: OIDC.label, ...(OIDC.only ? { only: true } : {}) } } : {}),
       // Public: the sign-in screen is the first thing that reads it.
       ...(DEFAULT_LANG ? { default_lang: DEFAULT_LANG } : {}),
+      // Habcore Gym (patch 0013): the version of the Terms and Privacy policy a profile accepts. Public:
+      // the sign-up form asks for it before anyone is signed in.
+      ...(LEGAL_ON ? { legal: { v: LEGAL_VERSION } } : {}),
       // Public like the two flags above: the caps are not a secret, and the absence of the
       // block is how the app knows this server does not take photos and videos at all.
       ...(MEDIA_ON ? { media: mediaConfig(MEDIA_LIMITS) } : {}),
-      ...(readSession(req) ? { coach: coachConfig.publicConfig() } : {}),
+      ...(AI_COACH && readSession(req) ? { coach: coachConfig.publicConfig() } : {}),
       // The community library: only to a session and only with LIBRARY=on.
       ...(LIBRARY.on && readSession(req) ? { shared: publicLibraryConfig(LIBRARY, currentConsent('library')) } : {}),
       // Which integrations this server offers (only to a session, like the Coach block). Absent
@@ -2645,6 +2667,23 @@ const routes = {
   // current session version into it, so "sign out everywhere" ends a renewed token exactly as it
   // ended the old one — and a revoked token never gets this far. A browser's cookie is left
   // alone: signing in renews it, as before.
+  // Habcore Gym (patch 0013): a profile made before the Terms, or before their current version,
+  // accepts them here, once. Only the profile itself: a trainer leading a client is refused
+  // (gymv2 lets an acting session reach only its own short list of routes, and this is not on it;
+  // the check below is the second lock).
+  'POST /api/account/legal': async (req, res) => {
+    if (!LEGAL_ON) return json(res, 404, { error: 'not found' });
+    const s = sessionOf(req);
+    if (!s) return json(res, 401, { error: 'not signed in' });
+    if (s.actor) return json(res, 403, { error: 'only the profile itself can accept', code: 'acting-forbidden' });
+    const body = await readBody(req);
+    if (!legalAccepted(body.legal)) return json(res, 400, LEGAL_REQUIRED);
+    s.user.legal = legalRecord('prompt');
+    saveDb();
+    audit(req, 'auth.legal.accept', { user: s.user, msg: LEGAL_VERSION });
+    json(res, 200, { user: publicUser(s.user) });
+  },
+
   'GET /api/me': async (req, res) => {
     const s = sessionOf(req);
     if (!s) return json(res, 401, { error: 'not signed in' });
@@ -2659,6 +2698,7 @@ const routes = {
     const body = await readBody(req);
     const name = text(body.name).trim().slice(0, 40);
     if (!name) return json(res, 400, { error: 'name required' });
+    if (LEGAL_ON && !legalAccepted(body.legal)) return json(res, 400, LEGAL_REQUIRED);
     const code = text(body.code).trim().toUpperCase();
     if (INVITE_ONLY && !db.invites.some(i => i.code === code && !i.usedBy && !i.revoked)) {
       // The rejected code itself is never recorded — a near-miss guess in the log is a liability.
@@ -2673,7 +2713,7 @@ const routes = {
       authenticatorSelection: { residentKey: 'required', userVerification: 'preferred' },
       excludeCredentials: []
     });
-    const cid = putChallenge({ kind: 'register', challenge: options.challenge, name, uid, code });
+    const cid = putChallenge({ kind: 'register', challenge: options.challenge, name, uid, code, ...(LEGAL_ON ? { legal: true } : {}) });
     json(res, 200, { cid, options });
   },
 
@@ -2717,6 +2757,7 @@ const routes = {
       }
     }
     const user = { id: c.uid, name: c.name, created: new Date().toISOString() };
+    if (LEGAL_ON) { if (!c.legal) return json(res, 400, LEGAL_REQUIRED); user.legal = legalRecord('register'); }
     if (invite) { user.invitedBy = invite.code; invite.usedBy = user.id; invite.usedAt = user.created; }
     claimFirstAdmin(req, user);
     db.users.push(user);
@@ -3037,6 +3078,11 @@ const routes = {
     // container on. What it hands out is an ordinary scoped token, made on the consent screen.
     ...(MCP_ON ? oauthRoutes() : {}),
 
+  } : {}),
+
+  // Habcore Gym (patch 0013): the calendar feed stands on its own, without API_TOKENS (which is off
+  // here): its `calendar` tokens are made and read only by these routes.
+  ...(CALENDAR_ON ? {
     // The calendar feed (Settings → Integrations → Calendar feed). Session routes, like the token list.
     'GET /api/calendar': async (req, res) => {
       const user = readSession(req);
@@ -3099,6 +3145,9 @@ const routes = {
       res.end(ics);
     },
 
+  } : {}),
+
+  ...(API_TOKENS ? {
     // The token's side. Whose profile, and what it may do.
     'GET /api/token/me': async (req, res) => {
       const t = tokenAuth(req, res); if (!t) return;
@@ -3652,7 +3701,7 @@ const routes = {
   // Routes live in coach/routes.js and are handed the helpers above rather than importing
   // them: they are closures over db and SECRET, and passing them in keeps that module free of
   // a cycle. Every one of them is inert while the feature is unconfigured.
-  ...coachRoutes({ json, readBody, readSession, requireAdmin }),
+  ...(AI_COACH ? coachRoutes({ json, readBody, readSession, requireAdmin }) : aiOff(coachRoutes({ json, readBody, readSession, requireAdmin }))),
 
   /* ---------- integrations ---------- */
   // integrations/routes.js, handed the same helpers. With INTEGRATIONS unset they answer an empty
@@ -3683,6 +3732,12 @@ const routes = {
   ...(MEDIA_ON ? mediaRoutes : {})
 };
 
+// Habcore Gym (patch 0013): no Zepp OS watches. The watch relay (watch-relay.js, /api/watch/*: the
+// pairing code, the redeem, the mailbox) answers 410 'zepp-off' unless ZEPP=1. Existing links in
+// db.watchLinks are left where they are and are simply never served.
+const ZEPP_ON = /^(1|true|yes|on)$/i.test(process.env.ZEPP || '');
+if (!ZEPP_ON) for (const k of Object.keys(routes)) if (/^[A-Z]+ \/api\/watch\//.test(k)) routes[k] = async (req, res) => json(res, 410, { error: 'Zepp OS watches are not available on this server', code: 'zepp-off' });
+
 /* ---------- Coach: boot recovery, notifications, scheduled reviews ---------- */
 // A job that was running when the process died is not coming back; say so rather than leaving
 // a spinner that never resolves.
@@ -3699,8 +3754,10 @@ coachJobs.setProposalHook((uid, pending) => {
   });
 });
 integrations.start();
-startCadence({ users: () => db.users.filter(u => !u.disabled), userNow, skip: uid => !stateSummary(uid)?.consent });
-startWarmup();
+if (AI_COACH) {
+  startCadence({ users: () => db.users.filter(u => !u.disabled), userNow, skip: uid => !stateSummary(uid)?.consent });
+  startWarmup();
+}
 
 // node's requestTimeout is one number for every route, and it is half an hour (below) for the
 // sake of one: a video uploaded over a slow uplink. Every other request keeps node's old five

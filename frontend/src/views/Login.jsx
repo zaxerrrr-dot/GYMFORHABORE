@@ -13,6 +13,7 @@ import { passwordOn, PasswordRegisterForm, PasswordSignInSheet, openPasswordSign
 import { openDeviceLinkRedeem } from '../components/Passkeys.jsx'
 import { openLostAccess } from '../components/LostAccess.jsx'
 import { oidcOn, oidcOnly, oidcLabel, startWebSignIn, oidcArrival, clearOidcArrival, oidcErrorText } from '../lib/oidc.js'
+import { LegalChecks, LegalLinks, legalOn, legalBody, legalMissing } from '../lib/legal.jsx'
 
 function RegisterSheet({ close }) {
   const { setUser, pushState, pullState, loadConfig } = useStore()
@@ -20,6 +21,9 @@ function RegisterSheet({ close }) {
   const [name, setName] = useState('')
   const [code, setCode] = useState('')
   const inviteOnly = !!config?.invite_only
+  // Habcore Gym (patch 0013): the Terms and the health-data consent, for both ways of signing up.
+  const asks = legalOn(config)
+  const [legal, setLegal] = useState({ terms: false, health: false })
   // A password is offered only where the instance allows it (#118), and is the only choice in a
   // browser that cannot make a passkey. Habcore Gym (kl9): where both work, the password comes
   // first — people did not get on with passkeys — and the passkey is a link under the form.
@@ -34,8 +38,9 @@ function RegisterSheet({ close }) {
     const n = name.trim()
     if (!n) { useUI.getState().toast(t('Enter a name')); return }
     if (inviteOnly && !code.trim()) { useUI.getState().toast(t('An invite code is required')); return }
+    if (asks && !legalBody(config, legal)) { useUI.getState().toast(legalMissing()); return }
     try {
-      const u = await passkeyRegister(n, code.trim())
+      const u = await passkeyRegister(n, code.trim(), asks ? legalBody(config, legal) : null)
       setUser(u); close()
       if (hasData(useStore.getState().S)) { await pushState(); useUI.getState().toast(t('Profile created, and this device’s data moved into it')) }
       else { await pullState(); useUI.getState().toast(t('Welcome, {0}', u.name)) }
@@ -51,7 +56,7 @@ function RegisterSheet({ close }) {
   if (pwOn && how === 'password') return <>
     <h3>{t('Create your profile')}</h3>
     <div className="muted small" style={{ marginBottom: 14 }}>{t('Pick a name and a password. You sign in with both.')}</div>
-    <PasswordRegisterForm close={close} inviteOnly={inviteOnly} name={name} setName={setName} code={code} setCode={setCode} />
+    <PasswordRegisterForm close={close} inviteOnly={inviteOnly} name={name} setName={setName} code={code} setCode={setCode} legal={legal} setLegal={setLegal} />
     {other}
   </>
   return <>
@@ -64,6 +69,7 @@ function RegisterSheet({ close }) {
         onChange={e => setCode(e.target.value.toUpperCase())} style={{ letterSpacing: '.14em', fontWeight: 600, textAlign: 'center' }} />
       <div className="dim small" style={{ marginTop: 6 }}>{t('This app is invite-only. Enter the code you were given.')}</div>
     </>}
+    {asks && <LegalChecks value={legal} onChange={setLegal} />}
     <div style={{ height: 12 }} />
     <Button variant="primary" onClick={go}>{t('Create passkey')}</Button>
     {other}
@@ -158,6 +164,7 @@ export default function Login() {
       <Button variant="ghost" className="dim" size="sm" style={{ alignSelf: 'center' }} onClick={openLostAccess}>{t('Lost access?')}</Button>
       {canGuest && <Button variant="ghost" className="dim" onClick={() => setGuest(true)}>{t('Continue without account')}</Button>}
       <div className="dim small" style={{ marginTop: 20, lineHeight: 1.5 }}>{t('Each profile keeps its own plan, workouts & body weight.')}</div>
+      <LegalLinks style={{ marginTop: 8 }} />
     </div>
   )
 

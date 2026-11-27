@@ -112,6 +112,8 @@ describe('the calendar card', () => {
     expect(cardState('calendar', { user: { id: 'u' }, tokens: false })).toBeNull()
     expect(cardState('calendar', { user: { id: 'u' }, tokens: true, calendar: { on: false } })).toEqual({ status: 'off', action: 'connect' })
     expect(cardState('calendar', { user: { id: 'u' }, tokens: true, calendar: { on: true } })).toEqual({ status: 'connected', action: 'manage' })
+    // Habcore Gym: the feed without API tokens (config.calendar)
+    expect(cardState('calendar', { user: { id: 'u' }, tokens: false, calendarOn: true, calendar: { on: false } })).toEqual({ status: 'off', action: 'connect' })
   })
 })
 

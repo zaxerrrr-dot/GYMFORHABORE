@@ -24,13 +24,7 @@
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize"
             android:exported="true">
-            <!-- Habcore Gym's own NFC stickers (NfcTagsPlugin, lib/nfc-tags.js): a tap opens the app,
-                 closed or not. Only links on our own stickers, nothing else NFC. -->
-            <intent-filter>
-                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <data android:scheme="https" android:host="opengym.ch" android:pathPrefix="/nfc" />
-            </intent-filter>
+            <!-- Habcore Gym (patch 0013): no NFC stickers, so no NDEF_DISCOVERED filter (Gym check-in is off). -->
             <!-- A friend's routine link, https://opengym.ch/r#<routine> (components/RoutineShare.jsx):
                  straight into the app instead of the page. Verified once opengym.ch serves
                  /.well-known/assetlinks.json for this app; until then Android may ask which app. -->
@@ -425,10 +419,7 @@
     <uses-feature android:name="android.hardware.location" android:required="false" />
     <uses-feature android:name="android.hardware.location.gps" android:required="false" />
     <uses-feature android:name="android.hardware.location.network" android:required="false" />
-    <!-- NFC stickers (Settings → NFC sticker): writing one, and the tap that opens the app. A
-         normal permission, no prompt; a phone without NFC still installs the app. -->
-    <uses-permission android:name="android.permission.NFC" />
-    <uses-feature android:name="android.hardware.nfc" android:required="false" />
+    <!-- Habcore Gym (patch 0013): no NFC permission (no NFC stickers). -->
 
     <!-- Whether the Health Connect app is there, on Android 13 and lower. -->
     <queries>

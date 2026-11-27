@@ -193,7 +193,9 @@ server {
         # \Q...\E makes BASE_PATH literal text here too, as in the map at the top: read as a
         # pattern, /g+ym never matched itself and /g+ym/ redirected to /g+ym/ forever.
         rewrite ^\Q${BASE_PATH}\E/(.*)$ /$1 break;
-        try_files $uri $uri/ @root;
+        # Habcore Gym (patch 0013): the Terms and Privacy pages answer at their plain address
+        # (/regulamin, /prywatnosc, /terms, /privacy -> the .html file beside index.html).
+        try_files $uri $uri/ $uri.html @root;
     }
     location @root {
         return 302 ${BASE_PATH}/$is_args$args;

@@ -1,4 +1,6 @@
 import { Suspense, lazy, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { LegalAccept, needsLegal } from './lib/legal.jsx'
+import { AI_BUILT, ZEPP_BUILT, CHECKIN_BUILT, WEBDAV_BUILT } from './lib/habcore-off.js'
 import { DEMO } from './lib/demo.js'
 import { useDailyWebdav } from './lib/use-daily-webdav.js'
 import { offlineBuild } from './lib/build-caps.js'
@@ -197,14 +199,15 @@ function Shell() {
   // the figure shown (components/Animations.jsx). Nothing on the web.
   useAnimPacksBoot()
   // Backup to WebDAV (#582): this device's daily copy, when one is set up (lib/webdav-run.js).
-  useDailyWebdav(ready && !DEMO && !offlineBuild())
+  // Habcore Gym (patch 0013): no WebDAV backup, so no daily copy either.
+  useDailyWebdav(WEBDAV_BUILT && ready && !DEMO && !offlineBuild())
   // A circuit's clock that was running before a reload carries on from where it is now.
   useEffect(() => { if (!ready) return; wireCircuit(); restoreCircuit() }, [ready])
   // Back from "Sign in with OpenRouter" on the admin card (lib/openrouter-signin.js): the code in
   // the address is traded for the key, which becomes the instance's OpenRouter key. Admin only,
   // English like the rest of the admin card.
   useEffect(() => {
-    if (!user?.admin || MOBILE) return
+    if (!AI_BUILT || !user?.admin || MOBILE) return
     import('./lib/openrouter-signin.js').then(async m => {
       if (!m.isWebReturn()) return
       const { api } = await import('./lib/api.js')
@@ -409,7 +412,7 @@ function Shell() {
   // Google Play: the one-time offer of sharper animations, once set up and not mid-workout.
   useAnimOffer(setupDone && !inWorkout)
   // A tapped NFC sticker (components/Nfc.jsx): one that opened the app waits for the setup.
-  useNfcTagLinks(setupDone)
+  useNfcTagLinks(setupDone && CHECKIN_BUILT)
   // A friend's routine link (components/RoutineShare.jsx): the same wait for the setup.
   useRoutineLinks(setupDone)
   useTourOffer(setupDone, loadTour)
@@ -423,7 +426,7 @@ function Shell() {
     </div>
   )
 
-  const view = l => (l.pathname === '/zaproszenie' ? <GymClaim /> : !authed ? <Login /> : needsMobileOnboarding ? <MobileOnboarding /> : permSteps ? <PermissionSteps /> : (
+  const view = l => (l.pathname === '/zaproszenie' ? <GymClaim /> : !authed ? <Login /> : needsLegal(config, user) ? <LegalAccept /> : needsMobileOnboarding ? <MobileOnboarding /> : permSteps ? <PermissionSteps /> : (
     <Routes location={l}>
       <Route path="/home" element={<Home />} />
       {/* A module switched off (Settings → Modules, lib/modules.js) takes its screens with it: the
@@ -447,7 +450,7 @@ function Shell() {
       {/* The MCP connector's consent screen (api/oauth.js): an assistant sent the browser here. */}
       <Route path="/connect/:id" element={<Connect />} />
       {/* Use your subscription: Habcore Gym as a connector in Claude, ChatGPT or Gemini (sub-connect-146). */}
-      <Route path="/assistants" element={<Assistants />} />
+      {AI_BUILT && <Route path="/assistants" element={<Assistants />} />}
       <Route path="/settings" element={<SettingsRoute />} />
       <Route path="/settings/:page" element={<SettingsRoute />} />
       {/* The Coach screens gate themselves on the instance config; the routes exist whenever the
@@ -553,7 +556,7 @@ export default function App() {
   useEffect(() => {
     let stop = null, gone = false, stopRelay = null
     if (MOBILE) startWatchSync({ useStore, useUI }).then(fn => { if (gone) fn(); else stop = fn })
-    startWatchRelay({ useStore, useUI }).then(fn => { if (gone) fn(); else stopRelay = fn }).catch(() => {})
+    if (ZEPP_BUILT) startWatchRelay({ useStore, useUI }).then(fn => { if (gone) fn(); else stopRelay = fn }).catch(() => {})
     // A session started on the watch starts here as the phone's Start does, with the watch's id
     // and start time, and no weigh-in question (the lifter is at the watch, not here).
     const unbind = bindWatchAppActions({

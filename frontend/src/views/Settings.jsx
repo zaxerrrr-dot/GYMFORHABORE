@@ -119,6 +119,8 @@ import { useOfflineBuild } from '../lib/use-offline-build.js'
 import { offlineBuild } from '../lib/build-caps.js'
 import NetworkLogPage, { NetworkLogRow } from './NetworkLog.jsx'
 import LicensesPage, { licT } from './Licenses.jsx'
+import { legalUrl } from '../lib/legal.jsx'
+import { AI_BUILT, WEBDAV_BUILT } from '../lib/habcore-off.js'
 import ReminderSounds from '../components/ReminderSounds.jsx'
 import DisplayRows from '../components/DisplayRows.jsx'
 
@@ -488,6 +490,7 @@ export default function Settings({ page = null, find = null, via = null, entryKe
     integrations: config?.integrations?.providers || [],
     trainers: !!config?.trainers?.on,
     apiTokens: !!config?.api_tokens,
+    calendarFeed: !!config?.calendar,
     library: libraryOn(config, user),
     rotation: scheduleModeOf(S) === 'rotation' && !externalQ,
     spokenCues: S.spokenCues === true,
@@ -1246,7 +1249,8 @@ export default function Settings({ page = null, find = null, via = null, entryKe
         {/* One row per set for spreadsheets and other apps (#647); our own importer reads it back. */}
         <Row icon="share" iconTint="var(--green)" title={t('Export as spreadsheet (CSV)')} subtitle={t('Workouts, body weight and measurements')} accessory="chevron" onClick={csvExportSheet} tour="data-csv" />
         {/* A daily copy in a WebDAV folder of your own (#582), the same sheet as Integrations'. */}
-        {!DEMO && !offline && <WebDavRow />}
+        {/* Habcore Gym (patch 0013): no WebDAV backup; export, import and the local backup stay. */}
+        {WEBDAV_BUILT && !DEMO && !offline && <WebDavRow />}
         {/* 14 is AUTO_BACKUP_KEEP in lib/mobile.js, written out because the Settings tests mock
             that module wholesale; mobile.autobackup.test.js pins the two together. */}
         {MOBILE && <Row icon="folder" iconTint="var(--blue)" title={t('Auto-backup on changes')} tour="data-auto"
@@ -1336,6 +1340,9 @@ export default function Settings({ page = null, find = null, via = null, entryKe
           version (AGPL-3.0 §13) and the notices, incl. the media attribution word for word. */}
       <Section>
         <Row icon="info" iconTint="var(--grey)" title={licT('row')} subtitle={licT('rowSub')} accessory="chevron" onClick={() => open('licenses')} />
+        {/* Habcore Gym (patch 0013): the Terms and the Privacy policy, public pages beside the app. */}
+        <Row icon="clipboard" iconTint="var(--grey)" title={t('Terms')} accessory="chevron" onClick={() => window.open(legalUrl('terms'), '_blank', 'noopener')} />
+        <Row icon="shield" iconTint="var(--grey)" title={t('Privacy policy')} accessory="chevron" onClick={() => window.open(legalUrl('privacy'), '_blank', 'noopener')} />
       </Section>
       <div className="dim small sp-version">
         Habcore Gym v{__APP_VERSION__}
@@ -1505,11 +1512,11 @@ function SettingsRoot({ ctx, preview, open, user, sync, home, go, entryKey }) {
           {/* The phone app sets up its own Coach on the Coach page in Connections; in a hosted app the
               Coach is the server's, set up by an admin on the admin dashboard. Its admins get the
               same row, in the same place, straight to that card; nobody else has anything to set. */}
-          {g.title === 'Connections' && adminCoach && <Row icon={PAGES.coach.icon} iconTint={PAGES.coach.tint} title={t(PAGES.coach.title)}
+          {g.title === 'Connections' && AI_BUILT && adminCoach && <Row icon={PAGES.coach.icon} iconTint={PAGES.coach.tint} title={t(PAGES.coach.title)}
             value={t('Admin')} accessory="chevron" onClick={() => nav('/admin', { state: { section: 'coach' } })} className="sp-root-row" />}
           {/* Claude, ChatGPT or Gemini on the plan people already pay for, with Habcore Gym as their
               connector (views/Assistants.jsx). Everywhere but the offline build and the demo. */}
-          {g.title === 'Connections' && !DEMO && !ctx.offline && <Row icon="chat" iconTint="var(--acc)" title={t('Use your subscription')}
+          {g.title === 'Connections' && AI_BUILT && !DEMO && !ctx.offline && <Row icon="chat" iconTint="var(--acc)" title={t('Use your subscription')}
             accessory="chevron" onClick={() => nav('/assistants')} className="sp-root-row" />}
         </Section>
       ))}

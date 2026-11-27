@@ -7,7 +7,7 @@
   "license": "AGPL-3.0-or-later",
   "scripts": {
     "start": "node server.js",
-    "test": "node --test test/*.test.js"
+    "test": "AI_COACH=1 ZEPP=1 API_TOKENS=1 HABCORE_INTEGRATIONS=1 node --test test/*.test.js"
   },
   "dependencies": {
     "@simplewebauthn/server": "^13.3.3",

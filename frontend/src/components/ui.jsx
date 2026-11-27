@@ -363,7 +363,10 @@ export function Slider({ value, min = 0, max = 100, step = 1, onChange, onEnd, c
 
 export function Check({ checked, onChange, className = '', size, label, tour }) {
   return (
+    // type="button": inside a <form> (the sign-up's Terms boxes, Habcore Gym patch 0013) a bare
+    // <button> is a submit button, and ticking a box sent the form.
     <button
+      type="button"
       data-tour={tour}
       role="checkbox"
       aria-checked={!!checked}

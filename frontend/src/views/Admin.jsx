@@ -11,6 +11,7 @@ import { confirmSheet } from '../sheets.jsx'
 import Icon from '../components/Icon.jsx'
 import { Button } from '../components/ui.jsx'
 import AdminCoach from './AdminCoach.jsx'
+import { AI_BUILT } from '../lib/habcore-off.js'
 import AdminCommunity from './AdminCommunity.jsx'
 import AdminOidc from '../components/AdminOidc.jsx'
 import '../admin.css'
@@ -496,7 +497,7 @@ export default function Admin() {
 
     {/* The Coach setup. Renders nothing at all unless the instance offers the Coach, so an admin
         page on a box that never enabled it is byte-for-byte the page it was before. */}
-    <div ref={coachRef} className="adm-coach-anchor"><AdminCoach /></div>
+    {AI_BUILT && <div ref={coachRef} className="adm-coach-anchor"><AdminCoach /></div>}
 
     <InvitesCard invites={invites} reload={loadInvites} inviteOnly={inviteOnly} />
 

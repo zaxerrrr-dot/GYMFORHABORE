@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import { HABCORE_OFF_CARDS } from '../lib/habcore-off.js'
+const NUTRITION_OFF = HABCORE_OFF_CARDS.includes('opennutrition')
 import { useUI } from '../store/useUI.js'
 import { t } from '../lib/i18n.js'
 import { dateLocale } from '../lib/i18n-core.js'
@@ -18,10 +20,11 @@ export const SISTER_DOCS = 'https://github.com/zaxerrrr-dot/GYMFORHABORE/blob/ma
 
 /** This device's openNutrition link, kept up to date; with `range`, the days of it are fetched too. */
 export function useNutritionLink(range = null) {
-  const [l, setL] = useState(() => loadLink())
-  useEffect(() => onNutritionChange(setL), [])
+  // Habcore Gym (patch 0013): no openNutrition. A link a device kept from before is never read.
+  const [l, setL] = useState(() => (NUTRITION_OFF ? null : loadLink()))
+  useEffect(() => (NUTRITION_OFF ? undefined : onNutritionChange(setL)), [])
   const from = range?.from, to = range?.to
-  useEffect(() => { if (loadLink()) refresh(from && to ? { from, to } : {}) }, [from, to])
+  useEffect(() => { if (!NUTRITION_OFF && loadLink()) refresh(from && to ? { from, to } : {}) }, [from, to])
   return l
 }
 

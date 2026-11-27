@@ -17,6 +17,7 @@ import { askAddDeviceData } from '../sheets.jsx'
 import { Row, Button } from './ui.jsx'
 import { MOBILE } from '../lib/mobile.js'
 import { oidcOn, oidcLabel, startWebSignIn } from '../lib/oidc.js'
+import { LegalChecks, legalOn, legalBody, legalMissing } from '../lib/legal.jsx'
 
 // The server's floor (api/password.js MIN_LENGTH), checked here first so the common mistake is
 // answered without a round trip. The server still decides.
@@ -160,7 +161,13 @@ export const openPasswordSignIn = (onPasskey, start) => ui().openSheet(close => 
 
 /* The password half of creating a profile. Name and invite code are the caller's state, so
    switching between passkey and password on the sign-up sheet keeps what was typed. */
-export function PasswordRegisterForm({ close, inviteOnly, name, setName, code, setCode }) {
+// `legal`/`setLegal` (Habcore Gym, patch 0013): the two boxes, kept by the caller so switching
+// between password and passkey keeps them; asked only where the server has LEGAL=on.
+export function PasswordRegisterForm({ close, inviteOnly, name, setName, code, setCode, legal: legalIn, setLegal: setLegalIn }) {
+  const config = useStore(s => s.config)
+  const [legalOwn, setLegalOwn] = useState({ terms: false, health: false })
+  const legal = legalIn || legalOwn, setLegal = setLegalIn || setLegalOwn
+  const asks = legalOn(config)
   const [email, setEmail] = useState('')
   const [pw, setPw] = useState('')
   const [again, setAgain] = useState('')
@@ -176,11 +183,12 @@ export function PasswordRegisterForm({ close, inviteOnly, name, setName, code, s
       : inviteOnly && !code.trim() ? t('An invite code is required')
       : length(pw) < MIN_PASSWORD ? t('Use at least {0} characters.', MIN_PASSWORD)
       : pw !== again ? t('The two passwords are not the same.')
+      : asks && !legalBody(config, legal) ? legalMissing()
       : null
     if (bad) { setErr(bad); return }
     setBusy(true); setErr(null)
     try {
-      const u = await passwordRegister(n, pw, code.trim(), mail)
+      const u = await passwordRegister(n, pw, code.trim(), mail, ...(asks ? [legalBody(config, legal)] : []))
       const st = useStore.getState()
       st.setUser(u); close()
       if (hasData(useStore.getState().S)) { await st.pushState(); toast(t('Profile created, and this device’s data moved into it')) }
@@ -208,6 +216,7 @@ export function PasswordRegisterForm({ close, inviteOnly, name, setName, code, s
     <input className="input" type="password" name="new-password-again" autoComplete="new-password" placeholder={t('Repeat the password')}
       value={again} onChange={e => setAgain(e.target.value)} />
     <div className="dim small" style={{ marginTop: 6 }}>{t('At least {0} characters. A few unrelated words make a good one.', MIN_PASSWORD)}</div>
+    {asks && <LegalChecks value={legal} onChange={setLegal} />}
     {err && <div className="small" role="alert" style={errStyle}>{err}</div>}
     <div style={{ height: 12 }} />
     <Button type="submit" variant="primary" disabled={busy}>{t('Create profile')}</Button>

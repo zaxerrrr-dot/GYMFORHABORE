@@ -28,8 +28,9 @@ const mocks = vi.hoisted(() => {
     if (a instanceof Error) throw a
     return a ?? {}
   })
+  state.config = { password_login: true }
   state.snapshot = () => ({
-    S: {}, config: { password_login: true },
+    S: {}, config: state.config,
     setUser: state.setUser, adoptProfile: state.adoptProfile, pushState: state.pushState, pullState: state.pullState,
   })
   return state
@@ -267,6 +268,28 @@ describe('PasswordRegisterForm', () => {
     type(byPlaceholder(host, 'Repeat the password'), 'Kot.Las7')
     await submit(host)
     expect(mocks.passwordRegister).toHaveBeenCalledWith('Cleo', 'Kot.Las7', '', '')
+  })
+
+  // Habcore Gym (patch 0013): with LEGAL=on both boxes are needed, and go to the server.
+  it('with LEGAL on, both boxes are asked here and their acceptance is sent', async () => {
+    mocks.config = { password_login: true, legal: { v: 'V1' } }
+    try {
+      mocks.passwordRegister.mockResolvedValue({ id: 'u9', name: 'Cleo' })
+      const host = mount(<Harness />)
+      type(byPlaceholder(host, 'Your name'), 'Cleo')
+      type(byPlaceholder(host, 'Password'), 'Kot.Las7')
+      type(byPlaceholder(host, 'Repeat the password'), 'Kot.Las7')
+      act(() => host.querySelector('[data-testid="legal-terms"] [role=checkbox]').click())
+      // Ticking a box is not sending the form.
+      expect(mocks.passwordRegister).not.toHaveBeenCalled()
+      expect(host.querySelector('[data-testid="legal-terms"] [role=checkbox]').getAttribute('type')).toBe('button')
+      await submit(host)
+      expect(alertText(host)).toBe('Tick both boxes to continue.')
+      expect(mocks.passwordRegister).not.toHaveBeenCalled()
+      act(() => host.querySelector('[data-testid="legal-health"] [role=checkbox]').click())
+      await submit(host)
+      expect(mocks.passwordRegister).toHaveBeenCalledWith('Cleo', 'Kot.Las7', '', '', { v: 'V1', terms: true, health: true })
+    } finally { mocks.config = { password_login: true } }
   })
 
   it('a name already taken by a password profile is said in words', async () => {

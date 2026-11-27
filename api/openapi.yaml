@@ -1727,6 +1727,47 @@ paths:
         '429': { $ref: '#/components/responses/TooManyRequests' }
         '503': { $ref: '#/components/responses/Busy' }
 
+  /api/account/legal:
+    post:
+      tags: [password]
+      operationId: acceptLegal
+      summary: Accept the Terms, the Privacy policy and the health-data consent (Habcore Gym, LEGAL=on)
+      description: |
+        Habcore Gym (local patch 0013). Only with `LEGAL=on`, otherwise 404. A profile made
+        before the current version of the documents (`GET /api/config` -> `legal.v`; the
+        profile's `legal_ok` in `GET /api/me`) accepts them here, once. Sign-up
+        (`POST /api/register/password`, `POST /api/register/options`) and a client taking over
+        an account a trainer made (`POST /api/gymv2/invite/claim`) take the same `legal`
+        object in their body and answer `400 legal-required` without it. A trainer leading a
+        client is refused (403). Stored on the profile as `legal: { v, at, terms, health, via }`;
+        audited as `auth.legal.accept`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [legal]
+              properties:
+                legal:
+                  type: object
+                  required: [v, terms, health]
+                  properties:
+                    v: { type: string }
+                    terms: { type: boolean, enum: [true] }
+                    health: { type: boolean, enum: [true] }
+            example: { legal: { v: "2026-11-28", terms: true, health: true } }
+      responses:
+        '200':
+          description: Accepted; the profile as /api/me shows it.
+        '400':
+          description: "`legal-required`: missing, not the current version, or a box not ticked."
+        '401':
+          description: Not signed in.
+        '403':
+          description: A trainer leading a client.
+        '404':
+          description: LEGAL is off.
   /api/account/email:
     post:
       tags: [password]

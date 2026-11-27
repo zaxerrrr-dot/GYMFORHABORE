@@ -8,6 +8,7 @@
 //
 // Names of services are names, not translated. Everything else is an English key for t().
 import { OFFLINE_OFF_CARDS } from './build-caps.js'
+import { HABCORE_OFF_CARDS } from './habcore-off.js'
 
 export const CATEGORIES = [
   { id: 'health', title: 'Health & devices' },
@@ -172,7 +173,8 @@ export function cardState(id, ctx) {
     case 'calendar':
       // A private address your server serves (api/integrations/calendar.js), on its token system.
       if (ctx.demo || !ctx.user) return { status: 'server', action: null }
-      if (!ctx.tokens) return null
+      // Habcore Gym (patch 0013): the server says so itself (config.calendar), tokens or not.
+      if (!ctx.calendarOn && !ctx.tokens) return null
       return ctx.calendar?.on ? { status: 'connected', action: 'manage' } : { status: 'off', action: 'connect' }
     case 'coach':
       if (ctx.mobile) return { status: ctx.coachMode ? 'connected' : 'off', action: ctx.coachMode ? 'manage' : 'connect' }
@@ -199,7 +201,8 @@ export const CARD_MODULE = { 'apple-health': 'health', 'health-connect': 'health
  *  `ctx.mod(id)` says whether a module is on (absent: all on). */
 export function directory(ctx) {
   // Habcore Gym Offline (lib/build-caps.js): only what works without a network (the health store, files).
-  const net = new Set(ctx.offline ? OFFLINE_OFF_CARDS : [])
+  // Habcore Gym (patch 0013, lib/habcore-off.js): the cards this app does not offer, everywhere.
+  const net = new Set([...HABCORE_OFF_CARDS, ...(ctx.offline ? OFFLINE_OFF_CARDS : [])])
   return CATEGORIES.map(cat => ({
     ...cat,
     cards: CARDS.filter(c => c.cat === cat.id && !net.has(c.id) && !(CARD_MODULE[c.id] && ctx.mod && !ctx.mod(CARD_MODULE[c.id]))).map(c => ({ ...c, state: cardState(c.id, ctx) })).filter(c => c.state),

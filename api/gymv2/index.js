@@ -108,7 +108,9 @@ export function gymV2({
   // Joint training (patch 0004, gymv2/merge.js): GYM_MERGE, and the server's own write into a profile.
   merge: mergeOn = false, writeStateAs = null,
   // Live joint training (patch 0006, gymv2/live.js): GYM_LIVE.
-  live: liveOn = false
+  live: liveOn = false,
+  // Habcore Gym (patch 0013, api/legal.js): with LEGAL=on the client accepts the Terms at take-over.
+  legal = null
 }) {
   const users = () => db().users;
   const userById = id => users().find(u => u.id === id) || null;
@@ -620,6 +622,7 @@ export function gymV2({
       if (body.consent?.v !== CONSENT.v) return json(res, 409, { error: 'the consent text changed', code: 'consent-outdated', consent: consentOut() });
       const u = userById(inv.userId);
       if (!u || !u.gymVirtual || u.disabled) return json(res, 410, { error: 'this link is not valid any more', code: 'invite-invalid' });
+      if (legal && !legal.accepted(body.legal)) return json(res, 400, legal.required);
       const problem = passwordProblem(body.password, u.name);
       if (problem) return policyError(res, problem);
       const hasEmail = typeof body.email === 'string' && body.email.trim() !== '';
@@ -632,6 +635,7 @@ export function gymV2({
       if (email && emailTaken(email, u.id)) return json(res, 409, { error: 'another profile already uses this e-mail address', code: 'email-taken' });
       setPassword(u, h);
       if (email) u.email = email;
+      if (legal) u.legal = legal.record('invite');
       delete u.gymVirtual;
       u.gymClaimed = nowIso();
       inv.usedAt = Date.now();

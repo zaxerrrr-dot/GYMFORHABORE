@@ -41,6 +41,7 @@ const LABELS = {
   'admin.oidc.check': 'Checked the identity provider',
   'auth.watch.pair': 'Created a watch pairing code',
   'auth.watch.ok': 'Paired a Zepp OS watch',
+  'auth.legal.accept': 'Accepted the Terms and Privacy policy',
   'auth.watch.fail': 'Watch pairing failed',
   'auth.watch.unlink': 'Unpaired a watch',
   // Scoped tokens (Settings → API tokens). `msg` is the token's name, never the token; on a write,

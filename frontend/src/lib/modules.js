@@ -1,3 +1,4 @@
+import { HABCORE_OFF_MODULES } from './habcore-off.js'
 // Modules (v1.4.4, Settings → Modules): whole feature areas switched on and off, so the app can
 // be just a training log or the whole thing. Discord (seals187, Shadowbyte): "it's important not
 // to overload the app with 1000 functions and settings", "like a plugin system where you can
@@ -31,7 +32,7 @@ export const MODULES = [
   { id: 'videos', group: 'training', icon: 'camera', tint: 'var(--teal)', title: 'Form videos',
     desc: 'Film a set and watch it back right under the row.' },
   { id: 'watch', group: 'training', icon: 'watch', tint: 'var(--grey)', title: 'Watch',
-    desc: 'Log sets from your wrist on an Apple Watch, Wear OS, Garmin or Zepp watch.' },
+    desc: 'Log sets from your wrist on an Apple Watch, Wear OS or Garmin watch.' },
   { id: 'checkin', group: 'training', icon: 'qr', tint: 'var(--blue)', title: 'Gym check-in',
     desc: 'Your membership codes on Home, and NFC stickers that start a workout.' },
   { id: 'body', group: 'body', icon: 'scale', tint: 'var(--teal)', title: 'Body',
@@ -72,8 +73,9 @@ const isMap = v => !!v && typeof v === 'object' && !Array.isArray(v)
 // Modules this build cannot have at all (lib/build-caps.js: the Coach, Integrations and Community
 // in Habcore Gym Offline, which has no network). Off whatever S.modules says, and not offered on the
 // Modules page; the choice itself is kept, so the same profile on a normal build is unchanged.
-let unavailable = new Set()
-export function setUnavailableModules(ids) { unavailable = new Set(Array.isArray(ids) ? ids : []) }
+// Habcore Gym (patch 0013): the modules this build has not got at all are always among them.
+let unavailable = new Set(HABCORE_OFF_MODULES)
+export function setUnavailableModules(ids) { unavailable = new Set([...HABCORE_OFF_MODULES, ...(Array.isArray(ids) ? ids : [])]) }
 /** Whether this build has module `id` at all. */
 export const moduleBuilt = id => !unavailable.has(id)
 

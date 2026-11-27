@@ -231,3 +231,101 @@ test('diffStates names what a write changed', () => {
   assert.deepEqual(d.other, ['unit']);
   assert.equal(diffStates(a, a), null);
 });
+
+// Habcore Gym (patch 0013, api/legal.js): with LEGAL=on a new profile needs the Terms, the Privacy
+// policy and the health-data consent; an older profile accepts once; a trainer cannot for a client.
+test('LEGAL=on: sign-up needs the acceptance, an older profile accepts once, a trainer cannot for a client', async t => {
+  const { LEGAL_VERSION } = await import('../legal.js');
+  const ok = { v: LEGAL_VERSION, terms: true, health: true };
+  const h = await startServer(t, { users: people(), env: { LEGAL: 'on', INVITE_ONLY: '' } });
+  assert.deepEqual((await h.req('GET', '/api/config')).body.legal, { v: LEGAL_VERSION });
+  // Password sign-up.
+  const reg = body => h.req('POST', '/api/register/password', { body: { name: 'Zosia', password: 'Kot.Las7', ...body } });
+  assert.equal((await reg({})).body.code, 'legal-required');
+  assert.equal((await reg({ legal: { ...ok, health: false } })).body.code, 'legal-required', 'the health consent is its own box');
+  assert.equal((await reg({ legal: { ...ok, v: '2000-01-01' } })).body.code, 'legal-required', 'an old version');
+  const r = await reg({ legal: ok });
+  assert.equal(r.status, 200);
+  assert.equal(r.body.user.legal_ok, true);
+  const zosia = h.db().users.find(u => u.name === 'Zosia');
+  assert.equal(zosia.legal.v, LEGAL_VERSION); assert.equal(zosia.legal.via, 'register'); assert.ok(Date.parse(zosia.legal.at));
+  // Passkey sign-up asks before the options.
+  assert.equal((await h.req('POST', '/api/register/options', { body: { name: 'Ula' } })).body.code, 'legal-required');
+  assert.equal((await h.req('POST', '/api/register/options', { body: { name: 'Ula', legal: ok } })).status, 200);
+  // A profile from before: legal_ok false until it accepts.
+  const ola = { sid: mint('MEM') };
+  assert.equal((await h.req('GET', '/api/me', { jar: ola })).body.user.legal_ok, false);
+  assert.equal((await h.req('POST', '/api/account/legal', { jar: ola, body: {} })).body.code, 'legal-required');
+  const acc = await h.req('POST', '/api/account/legal', { jar: ola, body: { legal: ok } });
+  assert.equal(acc.status, 200); assert.equal(acc.body.user.legal_ok, true);
+  assert.equal(h.db().users.find(u => u.id === 'MEM').legal.via, 'prompt');
+  assert.equal((await h.req('GET', '/api/me', { jar: ola })).body.user.legal_ok, true);
+  // A trainer leading a client never accepts for them; the client does at take-over.
+  const admin = { sid: mint('ADM') }, tr1 = { sid: mint('TR1') };
+  await h.req('POST', '/api/gymv2/trainer', { jar: admin, body: { id: 'TR1', trainer: true } });
+  const cid = (await h.req('POST', '/api/gymv2/clients', { jar: tr1, body: { name: 'Kasia' } })).body.client.id;
+  await h.req('POST', '/api/gymv2/act', { jar: tr1, body: { id: cid } });
+  assert.equal((await h.req('GET', '/api/me', { jar: tr1 })).body.user.legal_ok, false);
+  assert.equal((await h.req('POST', '/api/account/legal', { jar: tr1, body: { legal: ok } })).status, 403);
+  assert.equal(h.db().users.find(u => u.id === cid).legal, undefined);
+  await h.req('POST', '/api/gymv2/act/end', { jar: tr1, body: {} });
+  const inv = await h.req('POST', '/api/gymv2/invite', { jar: tr1, body: { id: cid } });
+  const look = await h.req('GET', '/api/gymv2/invite?c=' + inv.body.token);
+  const consent = { v: look.body.consent.v, hash: look.body.consent.hash };
+  assert.equal((await h.req('POST', '/api/gymv2/invite/claim', { body: { c: inv.body.token, password: 'Kot.Las7', consent } })).body.code, 'legal-required');
+  const claim = await h.req('POST', '/api/gymv2/invite/claim', { jar: {}, body: { c: inv.body.token, password: 'Kot.Las7', consent, legal: ok } });
+  assert.equal(claim.status, 200);
+  assert.equal(h.db().users.find(u => u.id === cid).legal.via, 'invite');
+});
+
+test('LEGAL unset: nothing asked, nothing said', async t => {
+  const h = await startServer(t, { users: people(), env: { INVITE_ONLY: '' } });
+  assert.equal((await h.req('GET', '/api/config')).body.legal, undefined);
+  const r = await h.req('POST', '/api/register/password', { body: { name: 'Zosia', password: 'Kot.Las7' } });
+  assert.equal(r.status, 200); assert.equal('legal_ok' in r.body.user, false);
+  assert.equal((await h.req('POST', '/api/account/legal', { jar: { sid: mint('MEM') }, body: {} })).status, 404);
+});
+
+// Habcore Gym (patch 0013): the AI Coach and the Zepp watch relay are off unless switched on.
+test('AI_COACH and ZEPP unset: every Coach route is 410, /api/config has no coach, the watch relay is 410', async t => {
+  const h = await startServer(t, { users: people(), env: { AI_COACH: '', ZEPP: '' } });
+  const ola = { sid: mint('MEM') }, admin = { sid: mint('ADM') };
+  for (const [m, p] of [['GET', '/api/coach/status'], ['POST', '/api/coach/ask'], ['POST', '/api/coach/plan'], ['GET', '/api/coach/disclosure']]) {
+    const r = await h.req(m, p, { jar: ola, body: m === 'POST' ? { q: 'hi' } : undefined });
+    assert.equal(r.status, 410, p); assert.equal(r.body.code, 'ai-off');
+  }
+  for (const [m, p] of [['GET', '/api/admin/coach'], ['POST', '/api/admin/coach/config'], ['POST', '/api/admin/coach/connect']]) {
+    assert.equal((await h.req(m, p, { jar: admin, body: m === 'POST' ? { provider: 'openrouter' } : undefined })).status, 410, p);
+  }
+  assert.equal('coach' in (await h.req('GET', '/api/config', { jar: ola })).body, false);
+  for (const [m, p] of [['POST', '/api/watch/pair'], ['GET', '/api/watch/links'], ['POST', '/api/watch/redeem'], ['GET', '/api/watch/box']]) {
+    const r = await h.req(m, p, { jar: ola, body: m === 'POST' ? {} : undefined });
+    assert.equal(r.status, 410, p); assert.equal(r.body.code, 'zepp-off');
+  }
+});
+
+// Habcore Gym (patch 0013): the calendar feed works without API tokens, and its address carries the
+// app's prefix (BASE_PATH): it used to point at the site's root (ORIGIN + /api/...), where nothing answers.
+test('calendar feed: on without API_TOKENS, its address under BASE_PATH, a real ICS; tokens are off', async t => {
+  const h = await startServer(t, { users: people(), env: { API_TOKENS: '', BASE_PATH: '/opengym' } });
+  const ola = { sid: mint('MEM') };
+  assert.equal((await h.req('GET', '/api/config', { jar: ola })).body.calendar, true);
+  assert.equal((await h.req('GET', '/api/config', { jar: ola })).body.api_tokens, undefined);
+  assert.equal((await h.req('POST', '/api/tokens', { jar: ola, body: { name: 'x', scopes: { workouts: 'view' } } })).status, 404);
+  const made = await h.req('POST', '/api/calendar', { jar: ola, body: { done: true } });
+  assert.equal(made.status, 200);
+  assert.match(made.body.url, new RegExp('^' + ORIGIN + '/opengym/api/calendar/ogt_[A-Za-z0-9_-]{43}\\.ics$'));
+  const r = await fetch(h.api + made.body.url.slice((ORIGIN + '/opengym').length));
+  assert.equal(r.status, 200);
+  assert.match(r.headers.get('content-type'), /^text\/calendar/);
+  const ics = await r.text();
+  assert.match(ics, /^BEGIN:VCALENDAR\r\n/); assert.match(ics, /END:VCALENDAR\r\n$/);
+});
+
+test('INTEGRATIONS is ignored without HABCORE_INTEGRATIONS: no webhooks, no Strava', async t => {
+  const h = await startServer(t, { users: people(), env: { INTEGRATIONS: 'webhook', HABCORE_INTEGRATIONS: '' } });
+  const ola = { sid: mint('MEM') };
+  assert.equal((await h.req('GET', '/api/config', { jar: ola })).body.integrations, undefined);
+  const r = await h.req('POST', '/api/integrations', { jar: ola, body: { provider: 'webhook', url: 'https://example.com/hook' } });
+  assert.notEqual(r.status, 200);
+});
