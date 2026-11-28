@@ -2470,7 +2470,8 @@ const gym = GYM_V2 ? gymV2({
   setPassword, nameTaken, nameKey, normalizeEmail, emailTaken, sessionCookie, publicUser,
   limitAddress: req => limitAddress(req), readStateCached: uid => readStateCached(uid), readState,
   merge: GYM_MERGE, writeStateAs: (uid, fn, opts) => writeStateAs(uid, fn, opts), live: GYM_LIVE,
-  legal: LEGAL_ON ? { accepted: legalAccepted, record: legalRecord, required: LEGAL_REQUIRED } : null
+  legal: LEGAL_ON ? { accepted: legalAccepted, record: legalRecord, required: LEGAL_REQUIRED } : null,
+  sendPush: (uid, p) => sendPush(uid, p), langOf: uid => readStateCached(uid)?.lang || 'en'
 }) : null;
 // The app names the account it believes it is syncing (X-OpenGym-As). When the session now
 // belongs to another one (a trainer started or stopped leading a client in another tab, a sign-in
@@ -3402,6 +3403,8 @@ const routes = {
     // Joint training (patch 0004): a pair of one session's workouts is joined in a revision of its
     // own after this one; the device sees it on its next check, like any other device's write.
     if (gym && done.status === 200) gym.afterWrite(user);
+    // Workout notes (kl14): a new one is pushed to the other side (the client, or their trainer).
+    if (gym && done.status === 200) gym.notesAfterWrite(user, sess.actor || null, cur, body.state);
     json(res, done.status, done.body);
   },
 

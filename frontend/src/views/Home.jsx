@@ -1,6 +1,6 @@
 import TrainerNotice from '../components/TrainerNotice.jsx'
 import GymHomeCard from '../components/GymHomeCard.jsx'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../store/useStore.js'
 import { effectiveRoutines, effectiveRoutineIds, nextTrainingDay, lastBW, setsDoneActive } from '../lib/history.js'
@@ -10,7 +10,9 @@ import { PassaCard, passaSheet } from '../components/Passa.jsx'
 import { StreakRuleWelcome } from '../components/StreakRule.jsx'
 import { fmtNum, fmtDate, todayISO, isoOf, weekStartOf, weekDayOffset, DAYS, DAYN } from '../lib/format.js'
 import { t, tn, dateLocale } from '../lib/i18n.js'
-import { bwSheet, goalSheet, dayOverrideSheet, calendarSheet, starterPlanSheet, bwDeltaColor, weighInsSheet } from '../sheets.jsx'
+import { bwSheet, goalSheet, dayOverrideSheet, calendarSheet, starterPlanSheet, bwDeltaColor, weighInsSheet, workoutDetailSheet } from '../sheets.jsx'
+import { WorkoutCard, feedNameOf } from '../components/WorkoutFeed.jsx'
+import { feedSorted } from '../lib/workout-feed.js'
 import { startOrPreview, startPickerSheet } from '../components/StartSheets.jsx'
 import { daySessionsStatus } from '../lib/day-sessions.js'
 import { deriveSessionName } from '../lib/session-merge.js'
@@ -45,6 +47,14 @@ export default function Home() {
   const nav = useNavigate()
   const S = useStore(s => s.S)
   const user = useStore(s => s.user)
+  const lastW = useMemo(() => feedSorted(S.workouts)[0] || null, [S.workouts])
+  // The gym panel's "lead and open this day" (kl14): #/home?day=YYYY-MM-DD opens that day's sheet.
+  useEffect(() => {
+    const m = /[?&]day=(\d{4}-\d{2}-\d{2})/.exec(location.hash || '')
+    if (!m) return
+    try { history.replaceState(null, '', location.pathname + location.search + '#/home') } catch { /* fine */ }
+    dayOverrideSheet(m[1])
+  }, [])
   // The banner switched off and the sync stuck: a dot on the gear (Settings → Show connection status).
   const trouble = useConnectionTrouble()
   const [weekOffset, setWeekOffset] = useState(0)
@@ -223,6 +233,16 @@ export default function Home() {
       </div>}
       <SeasonDeco spot="home-hero" />
     </div>
+
+    {/* Habcore Gym (kl14): the last workout as its feed card, one tap to its details; "All workouts"
+        opens the feed (views/Workouts.jsx). */}
+    {lastW && <div className="wf-home" data-testid="home-last-workout">
+      <div className="row between" style={{ alignItems: 'baseline', margin: '4px 2px 6px' }}>
+        <h2 style={{ margin: 0 }}>{t('Last workout')}</h2>
+        <button type="button" className="wf-link small" onClick={() => nav('/treningi')}>{t('All workouts')}</button>
+      </div>
+      <WorkoutCard w={lastW} S={S} nameOf={feedNameOf} body={S.body} onOpen={x => workoutDetailSheet(x)} />
+    </div>}
 
     {/* Monday: Your week; the 1st: Your month (lib/recap.js). Off in Settings → Look & Home. */}
     <RecapHomeCard S={S} />

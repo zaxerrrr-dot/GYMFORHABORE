@@ -20,5 +20,5 @@ export default function StatsTabs({ current }) {
       onClick={() => { if (loc.pathname !== x.path) nav(x.path, { replace: true }) }}>{x.label}</button>)}
   </nav>
 }
-// kl14 switches the workout feed on.
-export const TRENINGI = false
+// kl14 (patch 0016): the workout feed is on.
+export const TRENINGI = true

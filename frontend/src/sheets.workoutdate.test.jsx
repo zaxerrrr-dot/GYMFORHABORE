@@ -165,7 +165,7 @@ describe('changing the date of a saved workout', () => {
     const host = render(() => workoutDetailSheet(legacy))
     setHistory([{ ...legacy, id: '2026-08-25|1767636000000', d: '2026-08-24', _ts: 5 }])
     act(() => { type(host.querySelector('textarea'), 'felt strong') })
-    act(() => { host.querySelector('textarea').dispatchEvent(new FocusEvent('focusout', { bubbles: true })) })
+    act(() => { host.querySelector('[data-testid=wf-send]').click() })
     expect(history()).toHaveLength(1)
     expect(history()[0].note).toBe('felt strong')
   })

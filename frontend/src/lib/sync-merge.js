@@ -75,6 +75,7 @@
  * device that came back online after any time away brought back every workout, routine, custom
  * exercise, weigh-in or favourite the other device had removed meanwhile.
  */
+import { mergeWorkoutNotes } from './workout-notes.js'
 import { beatsWeight } from './exercises.js'
 import { bestWeightForEntry } from './history.js'
 import { convertStateUnit, convertBodyWeight } from './units.js'
@@ -897,7 +898,7 @@ export function mergeStates(a0, b0, { prefer } = {}) {
     for (const w of out.workouts) {
       const key = workoutKey(w)
       const x = nBy.get(key), y = oBy.get(key)
-      if (x && y) { mergeWorkoutMedia(w, x); mergeWorkoutMedia(w, y) }
+      if (x && y) { mergeWorkoutMedia(w, x); mergeWorkoutMedia(w, y); mergeWorkoutNotes(w, x); mergeWorkoutNotes(w, y) }
     }
   }
   out.workouts.sort(byDayStart)

@@ -126,6 +126,7 @@ const Programmes = lazyView(() => import('./views/Programmes.jsx'))
 const ProgrammeEdit = lazyView(() => import('./views/Programmes.jsx').then(m => ({ default: m.ProgrammeEdit })))
 const Stats = lazyView(() => import('./views/Stats.jsx'))
 const History = lazyView(() => import('./views/History.jsx'))
+const Workouts = lazyView(() => import('./views/Workouts.jsx'))
 const Library = lazyView(() => import('./views/Library.jsx'))
 const Muscles = lazyView(() => import('./views/Muscles.jsx'))
 // The community library of the server (views/Community.jsx): only with LIBRARY=on and the module on.
@@ -441,6 +442,7 @@ function Shell() {
       <Route path="/workout" element={<Workout />} />
       <Route path="/stats" element={<Stats />} />
       <Route path="/history" element={<History />} />
+      <Route path="/treningi" element={<Workouts />} />
       <Route path="/library" element={<Library />} />
       <Route path="/muscles" element={<Muscles />} />
       {isOn(S, 'community') && <Route path="/community" element={<Community />} />}

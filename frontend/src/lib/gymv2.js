@@ -32,6 +32,7 @@ const W = {
   copied: ['Skopiowano', 'Copied'],
   inviteOpen: ['zaproszenie ważne do {0}', 'invite valid until {0}'],
   history: ['Dziennik zmian', 'Change log'],
+  feed: ['Treningi', 'Workouts'],
   noHistory: ['Brak wpisów.', 'Nothing logged.'],
   code: ['Kod siłowni', 'Gym code'],
   codeFoot: ['Osoba z własnym kontem wpisuje ten kod w Ustawienia → Konto → Siłownia i od razu daje trenerom pełny dostęp. Możesz też wysłać link.', 'Someone with their own account enters this code in Settings → Account → Gym and gives the trainers full access at once. You can also send the link.'],

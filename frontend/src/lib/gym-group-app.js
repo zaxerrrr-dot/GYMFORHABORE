@@ -2,7 +2,7 @@
 // the client's app would add it, a finished workout as Finish builds it) and lib/api.js.
 import { createGroup } from './gym-group.js'
 import { api } from './api.js'
-import { DEF } from '../store/useStore.js'
+import { DEF, useStore } from '../store/useStore.js'
 import { freestyleConfig, pickedExerciseConfig, workoutVolume } from './history.js'
 import { sessionHistory } from './backfill.js'
 import { buildSessionEntry } from './session-start.js'
@@ -30,6 +30,9 @@ export const groupBuild = {
   finished: (A, end) => {
     const w = buildCompletedWorkout(A, { end })
     w.vol = workoutVolume(w)
+    // Habcore Gym (kl14): the trainer running the group, for the client's feed and notes.
+    const me = useStore.getState().user
+    if (me?.id) w.led = { kind: 'group', id: String(me.id), name: String(me.name || '') }
     return w
   },
 }

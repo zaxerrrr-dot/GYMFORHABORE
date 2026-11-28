@@ -71,7 +71,7 @@ export default function Heatmap({ S, onDay, metric: selectedMetric, onMetricChan
       const cls = 'hm-c l' + level(a) + (note ? ' noted' : '') + (key === todayISO() ? ' today' : '') + (day > today ? ' future' : '')
       cells.push(<div key={d} className={cls}
         title={key + (a && counts ? ` · ${countLabel ? countLabel(a.n) : a.n}` : a ? ` · ${tn('{0} workout', '{0} workouts', a.n)} · ${t('{0} min', a.min)} · ${fmtVol(a.vol, S.unit)}` : note ? ` · ${dayNoteLine(note, t)}` : '')}
-        {...tappable(a || note ? () => onDay?.(key) : undefined)} />)
+        {...tappable(a || note || (!counts && onDay) ? () => onDay?.(key) : undefined)} />)
     }
     cols.push(<div key={wk} className="hm-col">{cells}</div>)
   }

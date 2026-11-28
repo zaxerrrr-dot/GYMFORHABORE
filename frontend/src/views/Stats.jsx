@@ -955,7 +955,7 @@ export default function Stats() {
         S={S}
         metric={S.heatmapMetric === 'vol' ? 'vol' : 'time'}
         onMetricChange={metric => useStore.getState().update(s => { s.heatmapMetric = metric })}
-        onDay={iso => { const ws = workouts.filter(w => workoutDay(w) === iso); if (ws.length === 1) workoutDetailSheet(ws[0]); else if (ws.length) calendarSheet(iso); else dayOverrideSheet(iso) }}
+        onDay={iso => dayOverrideSheet(iso)}
       />
     </div>
 

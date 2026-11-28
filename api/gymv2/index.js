@@ -16,6 +16,7 @@ import path from 'node:path';
 import { stampEntry } from '../sync-stamps.js';
 import { findPairs, joinWorkouts, entriesCore, placeJoin, WINDOW_MS } from './merge.js';
 import { createLive, liveRoutes } from './live.js';
+import { addedNotes, trainersOf, notePush, applyNote } from './notes.js';
 
 export const ACT_TTL_MS = 12 * 3600 * 1000;
 export const INVITE_TTL_MS = 7 * 86400 * 1000;
@@ -110,7 +111,9 @@ export function gymV2({
   // Live joint training (patch 0006, gymv2/live.js): GYM_LIVE.
   live: liveOn = false,
   // Habcore Gym (patch 0013, api/legal.js): with LEGAL=on the client accepts the Terms at take-over.
-  legal = null
+  legal = null,
+  // Habcore Gym (kl14, gymv2/notes.js): a push about a new note on a workout.
+  sendPush = null, langOf = () => 'en'
 }) {
   const users = () => db().users;
   const userById = id => users().find(u => u.id === id) || null;
@@ -981,6 +984,61 @@ export function gymV2({
     };
   }
 
+  // Habcore Gym (kl14, patch 0016): a client's workouts in the gym panel (the same feed the client
+  // has), and the trainer's notes on them, without leading the client. Read and write go through
+  // canLead on every request; never while leading one client (act token).
+  if (on) {
+    const panelClient = (req, res, id) => {
+      const m = staffOnly(req, res); if (!m) return null;
+      if (m.acting) { json(res, 403, { error: 'not while leading a client', code: 'acting-forbidden' }); return null; }
+      const c = userById(str(id));
+      if (!c || !canLead(m.self, c)) { json(res, 403, { error: 'you cannot lead this account', code: 'not-allowed' }); return null; }
+      return { m, c };
+    };
+    // Newest first, `n` (max 60) from `off`; with the client's units, own exercises and plan names.
+    routes['GET /api/gymv2/client/workouts'] = async (req, res) => {
+      const p = new URL(req.url, 'http://x').searchParams;
+      const x = panelClient(req, res, p.get('id')); if (!x) return;
+      const S = readStateCached(x.c.id) || {};
+      const all = (Array.isArray(S.workouts) ? S.workouts : []).filter(w => w && typeof w === 'object')
+        .slice().sort((a, b) => (String(b.d || '') < String(a.d || '') ? -1 : String(b.d || '') > String(a.d || '') ? 1 : (Number(b.start) || 0) - (Number(a.start) || 0)));
+      const off = Math.max(0, Math.floor(Number(p.get('off')) || 0));
+      const n = Math.max(1, Math.min(60, Math.floor(Number(p.get('n')) || 30)));
+      const since = /^\d{4}-\d{2}-\d{2}$/.test(p.get('from') || '') ? p.get('from') : null;
+      const until = /^\d{4}-\d{2}-\d{2}$/.test(p.get('to') || '') ? p.get('to') : null;
+      const pick = all.filter(w => (!since || String(w.d) >= since) && (!until || String(w.d) <= until));
+      json(res, 200, {
+        client: who(x.c), total: pick.length, off, workouts: pick.slice(off, off + n),
+        unit: S.unit === 'lb' ? 'lb' : 'kg', weekStart: S.weekStart ?? null,
+        customEx: (Array.isArray(S.customEx) ? S.customEx : []).filter(e => e && e.id).map(e => ({ id: e.id, name: str(e.name).slice(0, 80), muscles: e.muscles, primary: e.primary, secondary: e.secondary })),
+        routines: (Array.isArray(S.routines) ? S.routines : []).filter(r => r && r.id).map(r => ({ id: r.id, name: str(r.name).slice(0, 80), emoji: r.emoji })),
+        // Every trained day (for the panel's calendar), not only this page.
+        days: [...new Set(all.map(w => String(w.d || '')).filter(Boolean))],
+      });
+    };
+    routes['POST /api/gymv2/client/note'] = async (req, res) => {
+      const body = await readBody(req);
+      const x = panelClient(req, res, body.id); if (!x) return;
+      const wid = str(body.wid);
+      if (!wid) return json(res, 400, { error: 'workout required', code: 'bad-workout' });
+      const by = { id: x.m.self.id, name: String(x.m.self.name || '').slice(0, 60), role: 'trainer' };
+      let out;
+      try {
+        out = writeStateAs(x.c.id, next => {
+          const w = (Array.isArray(next.workouts) ? next.workouts : []).find(y => y && String(y.id) === wid);
+          if (!w) return 'no-workout';
+          const r = applyNote(w, by, { nid: str(body.nid), text: str(body.text), del: body.del === true });
+          return typeof r === 'string' && !['edited', 'deleted'].includes(r) ? r : { r, w: JSON.parse(JSON.stringify(w)) };
+        }, { skipIf: r => typeof r === 'string' });
+      } catch (e) { return json(res, e.status || 500, { error: e.message, code: e.code || 'error' }); }
+      if (typeof out === 'string') return json(res, out === 'no-workout' || out === 'no-note' ? 404 : out === 'not-yours' ? 403 : 400, { error: out, code: out });
+      log(x.c.id, { ev: 'note', by: who(x.m.self), wid, what: out.r?.added ? 'added' : out.r });
+      if (out.r?.added && sendPush) { try { sendPush(x.c.id, notePush(langOf(x.c.id), 'toClient', by.name, out.w, out.r.added.text)); } catch (e) { console.error('gymv2 note push', e.message); } }
+      audit(req, 'gymv2.note', { user: x.m.self, target: x.c });
+      json(res, 200, { ok: true, workout: out.w });
+    };
+  }
+
   return {
     on: !!on,
     live,
@@ -994,6 +1052,22 @@ export function gymV2({
       let d = null;
       try { d = diffStates(cur, next); } catch (e) { d = { error: String(e.message).slice(0, 80) }; }
       if (d) log(client.id, { ev: 'write', by: who(actor), changes: d });
+    },
+    // A write that added notes to workouts (kl14): a push to the other side. A trainer leading the
+    // client wrote it: to the client. The client wrote it: to the trainers of that workout's thread
+    // (who led it, who wrote in it) still allowed to lead them. Never throws into the request.
+    notesAfterWrite(u, actor, cur, next) {
+      if (!on || !sendPush || !u) return;
+      try {
+        for (const { w, n } of addedNotes(cur, next)) {
+          if (actor) { sendPush(u.id, notePush(langOf(u.id), 'toClient', actor.name || n.by?.name, w, n.text)); continue; }
+          if (n.by?.role === 'trainer') continue;
+          for (const tid of trainersOf(w)) {
+            const t = userById(tid);
+            if (t && t.id !== u.id && canLead(t, u)) sendPush(t.id, { ...notePush(langOf(t.id), 'toTrainer', u.name, w, n.text), url: '#/silownia?feed=' + encodeURIComponent(u.id) + '&w=' + encodeURIComponent(String(w.id)) });
+          }
+        }
+      } catch (e) { console.error('gymv2 notes push', e.message); }
     },
     // After a write of a client's document (patch 0004): join a trainer's and the client's workout
     // of one session. Never throws into the request: the write itself is done.

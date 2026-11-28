@@ -63,10 +63,19 @@ describe('session note', () => {
     expect(useStore.getState().S.workouts[0].note).toBe('good session')
   })
 
+  // Habcore Gym (kl14): the note is a thread; an empty box adds nothing, and deleting the old note
+  // (now the thread's first one) removes the field rather than storing an empty string.
   it('clearing it removes the note rather than storing an empty string', () => {
     useStore.setState(s => ({ S: { ...s.S, workouts: [{ ...workout(), note: 'old' }] } }))
     const host = render(() => workoutDetailSheet(useStore.getState().S.workouts[0]))
-    act(() => { type(host.querySelector('textarea'), '   ') })
+    act(() => { type(host.querySelector('[data-tour=wd-note]'), '   ') })
+    act(() => { host.querySelector('[data-testid=wf-note] .wf-link.danger').click() })
+    const confirm = useUI.getState().sheets.at(-1)
+    const box = document.createElement('div'); document.body.appendChild(box)
+    const r = createRoot(box)
+    act(() => r.render(confirm.render(() => useUI.getState().closeSheet(confirm.id))))
+    act(() => { [...box.querySelectorAll('button')].find(b => b.textContent === 'Delete').click() })
+    act(() => r.unmount())
     unmountAll()
     expect(useStore.getState().S.workouts[0].note).toBeUndefined()
   })

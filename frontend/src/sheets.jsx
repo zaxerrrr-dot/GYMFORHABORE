@@ -1,4 +1,7 @@
 import { liveFinishGate } from './lib/gym-live-app.js'
+import { addNote, editNote, deleteNote, notesText } from './lib/workout-notes.js'
+import { ledOf, previousSame, compareWorkouts } from './lib/workout-feed.js'
+import { NotesThread, CompareBlock, ledLabel } from './components/WorkoutFeed.jsx'
 import { tempoSheet } from './components/Tempo.jsx'
 import { useCircuit } from './store/useCircuit.js'
 import { CircuitResults } from './components/CircuitCard.jsx'
@@ -3392,7 +3395,7 @@ function DayOverride({ iso, close }) {
   // Habcore Gym (kl12): the workouts done on this day come first, whichever way they were logged
   // (your own, a trainer leading you, joint, group, live: all land in S.workouts with this `d`).
   // The sheet used to show only the plan, so a day with a workout read "Rest ✓".
-  const done = workoutsOn(st, iso).slice().sort((a, b) => (a.start || 0) - (b.start || 0))
+  const done = st.workouts.filter(w => workoutDay(w) === iso).sort((a, b) => (a.start || 0) - (b.start || 0))
   const logIt = () => { close(); logPastWorkoutSheet({ iso, routineIds: effIds }) }
   // A note on a day off (#261, lib/day-notes.js): offered on today and past days with nothing
   // logged, kept in view on any day that already has one. Quiet on purpose: a row, not a button.
@@ -3430,6 +3433,9 @@ function DayOverride({ iso, close }) {
     </div>}
     {missed && <div style={{ marginBottom: 14 }}><Button variant="primary" icon="checkCircle" onClick={logIt}>{t('Log this workout')}</Button></div>}
     {!missed && iso < todayISO() && <div style={{ marginBottom: 14 }}><Button variant="tinted" icon="plus" onClick={() => { close(); logPastWorkoutSheet({ iso }) }} data-testid="day-add-past">{t('Add a workout on this day')}</Button></div>}
+    {/* Habcore Gym (kl14): today starts one (the day's plan, if any); a day to come is planned below. */}
+    {iso === todayISO() && !st.active && <div style={{ marginBottom: 14 }}><Button variant={done.length ? 'tinted' : 'primary'} icon="play" data-testid="day-start" onClick={() => { close(); import('./components/StartSheets.jsx').then(m => { if (effIds.length) m.startOrPreview(effIds); else m.startPickerSheet() }) }}>{effIds.length ? t('Start {0}', deriveSessionName(effIds.map(id => st.routines.find(r => r.id === id)?.name).filter(Boolean))) : t('Start a workout')}</Button></div>}
+    {iso > todayISO() && <div className="muted small" data-testid="day-planned" style={{ marginBottom: 10 }}>{effIds.length ? t('Planned: {0}', deriveSessionName(effIds.map(id => st.routines.find(r => r.id === id)?.name).filter(Boolean))) : t('Nothing planned yet. Pick a session below to plan it for this day.')}</div>}
     {canNote && <div className="day-note" style={{ marginBottom: 14 }}>
       <div className="item day-note-row" {...tappable(() => dayNoteSheet(iso))}>
         <span className="lrow-i" style={{ background: 'var(--surface-3)' }}><Icon name={note?.tag ? DAY_NOTE_ICON[note.tag] : 'note'} /></span>
@@ -3630,35 +3636,36 @@ function WorkoutDetail({ w, close }) {
   const onNoteFocus = useSheetKeyboard(noteRef)
   const st = useStore(s => s.S)
   const update = useStore(s => s.update)
-  // The session note is editable here rather than only at the finish sheet: what you want to
-  // record about a session is often clearer once you have looked at what you actually did.
-  const [note, setNote] = useState(w.note || '')
-  // A note written here is an edit of the saved workout, stamped for the sync to keep it over an
-  // older copy of the same workout (stampWorkout) — and only when it changed, since a stamp
-  // outranks what another device wrote since.
-  const saveNote = () => update(s => {
+  const user = useStore(s => s.user)
+  // Habcore Gym (kl14, patch 0016): the session note is a thread (lib/workout-notes.js): the client
+  // and their trainer each add notes, edit or delete their own. The box writes the next note; what is
+  // typed and not yet added goes in when the sheet closes, as the single note did before.
+  const rec0 = st.workouts.find(x => sameWorkout(x, w)) || w
+  const owner = user?.id ? { id: user.id, name: user.name || '' } : null
+  const by = user?.acting?.by?.id ? { id: user.acting.by.id, name: user.acting.by.name || '', role: 'trainer' } : { id: user?.id || 'me', name: user?.name || '', role: 'self' }
+  const [note, setNote] = useState('')
+  const writeNotes = fn => update(s => {
     const rec = s.workouts.find(x => sameWorkout(x, w))
     if (!rec) return
-    const text = note.trim().slice(0, NOTE_MAX)
-    if (text === (rec.note || '')) return
-    if (text) rec.note = text; else delete rec.note
-    stampWorkout(rec)
+    if (fn(rec)) stampWorkout(rec)
   })
-  // onBlur alone loses the note: Escape, the Android back gesture and swipe-to-dismiss all
-  // close the sheet without ever moving focus out of the textarea. Flush on unmount too. The
-  // ref is what makes that work — a cleanup closes over the note from its own render, which
-  // is the empty string this started with.
+  const addThreadNote = text => writeNotes(rec => !!addNote(rec, { text, by, owner }))
+  const saveNote = () => {
+    const text = latest.current.trim().slice(0, NOTE_MAX)
+    if (!text) return
+    addThreadNote(text)
+    latest.current = ''
+    setNote('')
+  }
   const latest = useRef(note)
   latest.current = note
-  const initial = useRef(w.note || '')
   useEffect(() => () => {
     const text = latest.current.trim().slice(0, NOTE_MAX)
-    if (text === initial.current) return
+    if (!text) return
     update(s => {
       const rec = s.workouts.find(x => sameWorkout(x, w))
-      if (!rec || text === (rec.note || '')) return   // deleted from this very sheet, or already saved
-      if (text) rec.note = text; else delete rec.note
-      stampWorkout(rec)
+      if (!rec) return
+      if (addNote(rec, { text, by, owner })) stampWorkout(rec)
     })
   }, [])
   const nameOf = e => (EXIDX[e.id] ? exerciseNameFor(EXIDX[e.id]) : (e.n || e.id))
@@ -3723,7 +3730,8 @@ function WorkoutDetail({ w, close }) {
   })
   // Copied with the note as it stands in the box, which may not be saved yet.
   const copyAsText = async () => {
-    const rec = { ...(st.workouts.find(x => sameWorkout(x, w)) || w), note: note.trim() }
+    const base = st.workouts.find(x => sameWorkout(x, w)) || w
+    const rec = { ...base, note: [notesText(base, { trainerWord: t('Trainer') }), note.trim()].filter(Boolean).join('\n\n') }
     toast(await copyText(workoutText(rec, { unit: st.unit, nameOf, speedUnit: speedUnitOf(st), warmups: countsWarmups(st), state: st })) ? t('Copied') : t('Could not copy'))
   }
   // A Garmin .fit activity (#447) of the saved record, for Garmin Connect's Import Data.
@@ -3736,7 +3744,8 @@ function WorkoutDetail({ w, close }) {
   }
   const saveAsPdf = () => {
     saveNote()
-    const rec = { ...(st.workouts.find(x => sameWorkout(x, w)) || w), note: note.trim() }
+    const base = S().workouts.find(x => sameWorkout(x, w)) || w
+    const rec = { ...base, note: notesText(base, { trainerWord: t('Trainer') }) }
     printWorkout(st, rec, { owner: useStore.getState().user?.name || '' })
   }
   const shareAsImage = () => shareWorkoutSheet(st.workouts.find(x => sameWorkout(x, w)) || w)
@@ -3747,10 +3756,7 @@ function WorkoutDetail({ w, close }) {
   // The note lives in a textarea that only writes on blur, and moving the workout re-keys a
   // legacy record — so whatever leaves this sheet flushes it first and stops the unmount hook
   // writing it a second time.
-  const flushNote = () => {
-    saveNote()
-    initial.current = latest.current.trim().slice(0, NOTE_MAX)
-  }
+  const flushNote = () => { saveNote() }
   const saveAsRoutine = () => confirmSheet({
     title: t('Save as routine?'),
     message: t('Create an independent routine from these exercise targets. Your workout history is kept.'),
@@ -3802,9 +3808,18 @@ function WorkoutDetail({ w, close }) {
   }
   const groups = sessionSections(w.entries)
   const grouped = groups.length > 1 || (groups[0] && groups[0].rid && (w.routineIds || []).length > 1)
+  const led = ledOf(rec0)
+  const cmp = compareWorkouts(rec0, previousSame(st.workouts, rec0), st)
+  const wLoad = loadOfWorkouts([rec0])
+  const prNames = (rec0.prs || []).map(id => (EXIDX[id] ? exerciseNameFor(EXIDX[id]) : id))
   return <>
     <h3>{w.name}</h3>
-    <div className="muted small" style={{ marginBottom: 12 }}>{[fmtDate(w.d, true), ...durPart(w.end - w.start), fmtVol(sessionVolume(w, st), st.unit), ...(w.bw ? [fmtWeight(w.bw, st.unit)] : [])].join(' · ')}</div>
+    <div className="muted small" style={{ marginBottom: led ? 4 : 12 }}>{[fmtDate(w.d, true) + (w.start ? ' ' + new Date(w.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''), ...durPart(w.end - w.start), fmtVol(sessionVolume(w, st), st.unit), tn('{0} set', '{0} sets', setsDone(rec0)), ...(w.bw ? [fmtWeight(w.bw, st.unit)] : []), ...(rec0.hr?.avg ? [Math.round(rec0.hr.avg) + ' bpm'] : [])].join(' · ')}</div>
+    {led && <div className="wf-led small" style={{ marginBottom: 12 }} data-testid="wd-led"><Icon name="person" />{ledLabel(led)}</div>}
+    {(Object.values(wLoad).some(v => v > 0) || prNames.length > 0) && <div className="row" style={{ gap: 12, alignItems: 'center', marginBottom: 12 }}>
+      {Object.values(wLoad).some(v => v > 0) && <span className="wf-map" aria-hidden="true"><BodyMap className="bm-mini" load={wLoad} body={st.body} /></span>}
+      {prNames.length > 0 && <div className="small" data-testid="wd-prs"><span className="pr"><Icon name="trophy" />{t('Records')}</span> {prNames.join(' · ')}</div>}
+    </div>}
     {/* Ended by itself (lib/forgotten-workout.js): said so, with Reopen for 24 hours. */}
     <AutoEndedNote w={w} close={close} />
     {/* Circuits, AMRAPs, EMOMs and intervals: the score and the round times (lib/circuit.js). */}
@@ -3824,12 +3839,13 @@ function WorkoutDetail({ w, close }) {
         {entryRows(g.units)}
       </div>
     }) : entryRows(groups[0]?.units || [])}
+    <CompareBlock cmp={cmp} S={st} nameOf={id => (EXIDX[id] ? exerciseNameFor(EXIDX[id]) : id)} onOpenPrev={() => { flushNote(); close(); workoutDetailSheet(cmp.prev) }} />
     {/* Progress photos and form-check videos: added and removed right here, on the saved record. */}
     <WorkoutMediaSection w={w} />
-    <div className="small muted" style={{ margin: '4px 0 6px' }}>{t('Session note')}</div>
-    <textarea ref={noteRef} className="input" rows={2} maxLength={NOTE_MAX} value={note} data-tour="wd-note"
-      placeholder={t('How the session went as a whole.')}
-      onFocus={onNoteFocus} onChange={e => setNote(e.target.value)} onBlur={saveNote} />
+    <NotesThread w={rec0} me={by.id} owner={owner} draft={note} setDraft={setNote} textareaRef={noteRef} onFocus={onNoteFocus}
+      onAdd={text => { latest.current = ''; addThreadNote(text) }}
+      onEdit={(id, text) => writeNotes(rec => editNote(rec, id, text, { owner }))}
+      onDelete={id => confirmSheet({ title: t('Delete this note?'), confirmText: t('Delete'), danger: true, onConfirm: () => writeNotes(rec => deleteNote(rec, id, { owner })) })} />
     <div style={{ height: 14 }} />
     {st.active && <p className="small muted">{t('Finish the current workout first.')}</p>}
     {/* The editor starts from the record as it is, so a note typed here goes in first — the same
@@ -3937,9 +3953,9 @@ function Calendar({ start, close, help = false }) {
       aria-label={missed ? fmtDate(iso, true) + ': ' + t('Missed plan') : undefined} onClick={() => {
       // With the streak shown, a missed planned day first says what it meant; its line has the way in.
       if (missed && weeks) { setSelWkRaw(null); setSelDay(selDay === iso ? null : iso); return }
-      if (!ws) { close(); dayOverrideSheet(iso); return }
-      if (ws.length === 1) { close(); workoutDetailSheet(ws[0]); return }
-      close(); ui().openSheet(c2 => <><h3>{fmtDate(iso, true)}</h3><div className="list">{ws.map(w => <WorkoutRow key={w.id} w={w} onClick={() => { c2(); workoutDetailSheet(w) }} />)}</div></>)
+      // Habcore Gym (kl14): every day opens the day's sheet: its workouts (tap: the summary), adding one
+      // on that day, and what is planned.
+      close(); dayOverrideSheet(iso)
     }}><span>{d}</span><i className={dotCls} /></button>)
     // The week's mark closes its row (the last row too, short as it may be: it sits in column 8).
     if (weeks && ((startOffset + d) % 7 === 0 || d === daysIn)) {
@@ -3970,7 +3986,7 @@ function Calendar({ start, close, help = false }) {
     {weeks && <><StreakLegend /><WeekNote wk={selWk} day={selDay}
       entry={selDay ? weeks.log.get(weekKey(selDay, weekStartOf(st))) : selWk ? weeks.log.get(selWk) : null}
       onOpenDay={iso => { close(); dayOverrideSheet(iso) }} /></>}
-    <div className="small dim" style={{ textAlign: 'center', marginTop: 10 }}>{t('Tap a trained day for details · tap any other day to plan a session')}</div>
+    <div className="small dim" style={{ textAlign: 'center', marginTop: 10 }}>{t('Tap a day: its workouts, add one, or plan a session')}</div>
   </>
 }
 // `help` opens the streak's how-to even after "Got it" (Stats → the streak card's link).
@@ -4793,6 +4809,9 @@ function doFinishWorkout({ end: endAt, auto } = {}) {
     brandFor: id => (isGymSplit(st, id) ? brandAt(st, id, A.gym?.id) : ''),
   })
   w.vol = workoutVolume(w)
+  // Habcore Gym (kl14): a workout a trainer finished while leading the client says who led it (the
+  // feed's card, the notes' push to that trainer).
+  { const by = useStore.getState().user?.acting?.by; if (by?.id && !w.led) w.led = { kind: 'trainer', id: String(by.id), name: String(by.name || '') } }
   // A run/walk session's step up its ladder was only noted when the run ended (store/useCircuit.js);
   // it is taken below, with the save, and the saved workout does not carry it.
   if (Array.isArray(w.circuits)) w.circuits = withoutAdvances(w.circuits)

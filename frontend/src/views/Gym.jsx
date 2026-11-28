@@ -12,6 +12,7 @@ import { confirmSheet } from '../sheets.jsx'
 import { Section, Row, Button, TextField, Switch, Check, SearchField } from '../components/ui.jsx'
 import { GymGroups, openPicker, filterClients } from '../components/GymPicker.jsx'
 import Icon from '../components/Icon.jsx'
+import { ClientFeedSheet } from '../components/GymClientFeed.jsx'
 import { pathBefore } from '../lib/nav.js'
 import {
   g, gErr, fmtDay, fmtWhen, gymStatus, gymClients, createClient, makeInvite, gymCode, newGymCode, joinGym, leaveGym,
@@ -96,6 +97,7 @@ function ClientRow({ c, onInvite, onLog, onMerges }) {
       {live && <Button variant="primary" size="sm" icon="play" disabled={busy || !c.canLead} onClick={() => lead('#/workout')} data-testid="gym-live-join">{busy ? g('switching') : g('liveJoin')}</Button>}
       <Button variant={live ? undefined : 'primary'} size="sm" icon="play" disabled={busy || !c.canLead} onClick={() => lead()}>{busy ? g('switching') : g('lead')}</Button>
       {c.virtual && <Button size="sm" icon="envelope" onClick={() => onInvite(c)}>{g('invite')}</Button>}
+      <Button size="sm" icon="list" onClick={() => openSheet(close => <ClientFeedSheet c={c} close={close} />)} data-testid="gym-feed">{g('feed')}</Button>
       <Button size="sm" icon="history" onClick={() => onLog(c)}>{g('history')}</Button>
       {c.merges?.length > 0 && <Button size="sm" icon="reset" data-testid="gym-merges" onClick={() => onMerges(c)}>{g('undoMerge')}</Button>}
     </div>
@@ -110,6 +112,15 @@ function StaffView({ st, reload }) {
   const [q, setQ] = useState('')
   const load = () => gymClients().then(r => setClients(r.clients || [])).catch(e => toast(gErr(e)))
   useEffect(() => { load(); gymCode().then(r => setCode(r.code)).catch(() => setCode(null)) }, [])
+  // A note's push (kl14): #/silownia?feed=<client>&w=<workout> opens that client's feed and workout.
+  useEffect(() => {
+    if (!clients) return
+    const m = /[?&]feed=([^&]+)/.exec(location.hash || ''); if (!m) return
+    const c = clients.find(x => x.id === decodeURIComponent(m[1]))
+    const w = /[?&]w=([^&]+)/.exec(location.hash || '')
+    try { history.replaceState(null, '', location.pathname + location.search + '#/silownia') } catch { /* fine */ }
+    if (c) openSheet(close => <ClientFeedSheet c={c} close={close} openWid={w ? decodeURIComponent(w[1]) : null} />)
+  }, [!!clients]) // eslint-disable-line react-hooks/exhaustive-deps
   // From Home's gym card, "Nowy klient": straight to the name field (patch 0006).
   useEffect(() => {
     if (!/[?&]nowy=1/.test(location.hash || '')) return

@@ -4951,3 +4951,43 @@ button.wl-summary{width:100%;padding:0 0 10px;text-align:start;border-radius:var
 .body-grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .body-f{display:flex;flex-direction:column;gap:4px}
 .seg-none .seg-sel{opacity:0}
+
+/* Habcore Gym (kl14, patch 0016): the workout feed and a workout's notes thread (components/WorkoutFeed.jsx). */
+.wf-search{margin-bottom:8px}
+.wf-filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.wf-by{margin-bottom:10px}
+.wf-gh{display:flex;flex-direction:column;gap:2px;margin:14px 0 8px}
+.wf-card{padding:0;overflow:hidden;margin-bottom:10px}
+.wf-open{display:block;width:100%;text-align:start;background:none;border:0;color:inherit;font:inherit;padding:14px 16px;cursor:pointer}
+.wf-head{display:flex;gap:12px;align-items:flex-start}
+.wf-name{font-weight:700;font-size:var(--fs-headline,17px);margin-top:2px;overflow-wrap:anywhere}
+.wf-led{display:flex;align-items:center;gap:5px;margin-top:3px;color:var(--acc-ink,var(--acc))}
+.wf-map{flex:none;width:54px}
+.wf-map .bm-mini{width:54px;height:auto}
+.wf-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px 12px;margin-top:10px}
+.wf-stats>div{display:flex;flex-direction:column;min-width:0}
+.wf-k{font-size:var(--fs-caption,12px);color:var(--label-2)}
+.wf-v{font-weight:700;font-variant-numeric:tabular-nums}
+.wf-v.up,.wf-cmp .up{color:var(--green-ink,var(--green))}
+.wf-v.down,.wf-cmp .down{color:var(--red-ink,var(--red))}
+.wf-ex{margin-top:8px;overflow-wrap:anywhere}
+.wf-foot{display:flex;gap:12px;align-items:center;margin-top:8px}
+.wf-notes{display:inline-flex;gap:4px;align-items:center;color:var(--label-2)}
+.wf-thread{margin:8px 0 4px}
+.wf-note{border-radius:12px;background:var(--surface-2,var(--fill));padding:9px 12px;margin-bottom:8px}
+.wf-note.trainer{border-inline-start:3px solid #ba1a18}
+.wf-note-h{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.wf-role{font-size:var(--fs-caption2,11px);font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:6px;background:#ba1a18;color:#fff}
+.wf-note-t{white-space:pre-wrap;overflow-wrap:anywhere;margin-top:3px}
+.wf-note-a{display:flex;gap:14px;margin-top:4px}
+.wf-link{background:none;border:0;padding:0;color:var(--acc-ink,var(--acc));font:inherit;cursor:pointer}
+.wf-link.danger{color:var(--red-ink,var(--red))}
+.wf-compose{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.wf-compose textarea{width:100%}
+.wf-cmp{margin:6px 0 10px}
+.wf-day-cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin:8px 0}
+.wf-day-cal button{aspect-ratio:1;border-radius:9px;border:0;background:var(--surface-2,var(--fill));color:inherit;font:inherit;cursor:pointer;position:relative}
+.wf-day-cal button.has::after{content:'';position:absolute;left:50%;bottom:5px;width:6px;height:6px;margin-left:-3px;border-radius:50%;background:#ba1a18}
+.wf-day-cal button.today{outline:2px solid #ba1a18;outline-offset:-2px}
+.wf-day-cal .h{font-size:var(--fs-caption,12px);color:var(--label-2);text-align:center}
+.wf-last{cursor:pointer}
