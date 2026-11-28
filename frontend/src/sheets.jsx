@@ -143,6 +143,7 @@ import { isOn } from './lib/modules.js'
 import { checkinMode, withForm, readForm, goLighter, canGoLighter, LIGHTER_KINDS } from './lib/daily-form.js'
 import { sleepHoursOn } from './lib/vitals.js'
 import DailyCheckin from './components/DailyCheckin.jsx'
+import { DaySessions } from './components/Sessions.jsx'
 
 const S = () => useStore.getState().S
 const update = (...a) => useStore.getState().update(...a)
@@ -3431,6 +3432,8 @@ function DayOverride({ iso, close }) {
       <h4 className="sec" style={{ marginTop: 0 }}>{t('Workouts this day')}</h4>
       <div className="list">{done.map(w => <WorkoutRow key={w.id} w={w} onClick={() => { close(); workoutDetailSheet(w) }} />)}</div>
     </div>}
+    {/* Habcore Gym (kl16): sessions the trainer planned at a time of day; leading, plan one. */}
+    <div style={{ marginBottom: 14 }}><DaySessions S={st} iso={iso} close={close} /></div>
     {missed && <div style={{ marginBottom: 14 }}><Button variant="primary" icon="checkCircle" onClick={logIt}>{t('Log this workout')}</Button></div>}
     {!missed && iso < todayISO() && <div style={{ marginBottom: 14 }}><Button variant="tinted" icon="plus" onClick={() => { close(); logPastWorkoutSheet({ iso }) }} data-testid="day-add-past">{t('Add a workout on this day')}</Button></div>}
     {/* Habcore Gym (kl14): today starts one (the day's plan, if any); a day to come is planned below. */}

@@ -36,6 +36,7 @@ import { groupRoutines, folderOpen, setFolderOpen, folderOf } from '../lib/routi
 import { isFavRoutine } from '../lib/routine-favs.js'
 import { routineFromWorkoutSheet } from '../components/RoutineFromWorkout.jsx'
 import { routineSources } from '../lib/session-routines.js'
+import { PlanSessions } from '../components/Sessions.jsx'
 
 // Plan has two views (v1.3.11): Schedule (how you train, and when) and Routines (what you
 // train). The last one you looked at comes back: a per-device convenience, never synced, so it
@@ -195,6 +196,8 @@ export default function Plan() {
     {progChip && <button type="button" className="prog-strip" onClick={() => nav('/plan/programmes')}>
       <Icon name="calendar" /><span className="grow">{S.programmes?.[S.programme?.id]?.name || t('Programme')}</span><span className="tag acc">{progChip}</span>
     </button>}
+    {/* Habcore Gym (kl16): the next two weeks of sessions the trainer planned at a time of day. */}
+    {view !== 'routines' && <PlanSessions S={S} />}
     {view === 'routines'
       ? <Routines S={S} update={update} nav={nav} />
       : <Schedule S={S} update={update} nav={nav} mode={mode} />}

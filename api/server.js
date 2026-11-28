@@ -43,7 +43,9 @@ import { atomicWrite as durableWrite } from './durable.js';
 import { ipv6Groups, guardedLookup, pushEndpointError, MAX_PUSH_ENDPOINT, outboundLookup } from './net-guard.js';
 import { createIntegrations } from './integrations/index.js';
 import { integrationRoutes } from './integrations/routes.js';
-import { buildIcs } from './integrations/calendar.js';
+import { buildIcs, buildTrainerIcs } from './integrations/calendar.js';
+import { upcoming as sessUpcoming } from './sessions-core.js';
+import { remindersDue as sessRemindersDue, remindPush as sessRemindPush } from './gymv2/sessions.js';
 import { deriveKey, seal as sealText, open as openSealed } from './integrations/crypto.js';
 import { excusedOn, nudgeFor, nudgeWindowOpen, toneOf } from './nudge.js';
 import { wrappedPushYear, wrappedSummary, wrappedPushOwed, wrappedPush } from './wrapped.js';
@@ -643,6 +645,10 @@ function stateSummary(uid) {
     wrapped: wrappedSummary(S),   // the December push (wrapped.js): a flag, a year, a few years
     chk: (() => { const c = checkinReminderOf(S); return { on: c.on && Object.keys(c.items).length > 0, tz: c.tz || r?.tz, time: c.time }; })(),
     chkSettled: '',   // a local date the check-in reminder was found to owe nothing on
+    // Habcore Gym (kl16): the next sessions a trainer planned, for the reminder before each.
+    sess: sessUpcoming(S?.sessions, Date.now(), 20),
+    sessBefore: r && typeof r === 'object' ? r.sessBefore : undefined,
+    lang: S?.lang,
   };
   stateSummaries.set(uid, sum);
   return sum;
@@ -663,6 +669,19 @@ function checkinTick(user, sum) {
   user.lastCheckin = now.date;
   saveDb();
   sendPush(user.id, checkinPush(S?.lang, kind));
+}
+// Habcore Gym (kl16, gymv2/sessions.js): a push before a session a trainer planned, by default an
+// hour before (Settings → Reminders, `reminder.sessBefore`, 0 = off), within the same catch-up
+// window as the other reminders. Once per occurrence and time (`user.sessSent`): a session moved
+// to another hour is reminded again.
+function sessionTick(user, sum) {
+  const sent = new Set(Array.isArray(user.sessSent) ? user.sessSent : []);
+  const due = sessRemindersDue({ sessions: sum.sess, reminder: { sessBefore: sum.sessBefore } }, Date.now(), sent, REMINDER_WINDOW_MIN);
+  if (!due.length) return;
+  for (const { key } of due) sent.add(key);
+  user.sessSent = [...sent].slice(-200);
+  saveDb();
+  for (const { s } of due) { console.log('session reminder firing', user.id, s.id); sendPush(user.id, sessRemindPush(sum.lang, s)); }
 }
 // "Your year in Habcore Gym" (wrapped.js): once per user and year, on Dec 1 from 18:00 server time.
 // The year it went out for is written to db.json before the send, so a crash after it, a restart
@@ -687,6 +706,7 @@ setInterval(() => {
       const sum = stateSummary(user.id);
       if (wrappedYear && sum && user.wrappedPush !== wrappedYear) wrappedTick(user, sum, wrappedYear);
       if (sum?.chk?.on) checkinTick(user, sum);
+      if (sum?.sess?.length) sessionTick(user, sum);
       if (!sum?.rem.on) continue;
       const now = userNow(sum.rem.tz || 'UTC');
       if (!now) continue;
@@ -1372,16 +1392,21 @@ function tokenAuth(req, res) {
 // One feed address per profile: a `calendar` token in its path, sealed in its row so Settings can
 // show the address again. A new address ends the old one; "Turn off" ends it.
 const CAL_KEY = (() => { try { return deriveKey(SECRET); } catch { return null; } })();
-const calRow = uid => (db.apiTokens || []).find(r => r && r.userId === uid && r.kind === 'calendar' && !(r.exp && r.exp <= Date.now())) || null;
+// Habcore Gym (kl16): a trainer has a second one, `calendar-trainer`, for their schedule.
+const calKind = feed => (feed === 'trainer' ? 'calendar-trainer' : 'calendar');
+const calRow = (uid, kind = 'calendar') => (db.apiTokens || []).find(r => r && r.userId === uid && r.kind === kind && !(r.exp && r.exp <= Date.now())) || null;
 // The app's own prefix (BASE_PATH, e.g. /opengym) belongs in the address: without it the feed
 // pointed at the site's root, where nothing answers (Habcore Gym kl11: the calendar did not work).
 const calUrl = token => ORIGIN.replace(/\/$/, '') + String(process.env.BASE_PATH || '').replace(/\/+$/, '') + '/api/calendar/' + token + '.ics';
-function calView(user) {
-  const r = calRow(user.id);
+function calView(user, kind = 'calendar') {
+  const r = calRow(user.id, kind);
   if (!r || r.sv !== (user.sv || 0)) return { on: false };
   const token = CAL_KEY ? openSealed(CAL_KEY, r.seal, 'calendar:' + r.id) : null;
   return { on: true, id: r.id, done: r.scopes?.workouts === 'view', created: r.created, used: r.used || null, ...(token ? { url: calUrl(token) } : {}) };
 }
+
+// The trainer's schedule feed (kl16): gym mode on and a trainer or an admin of the gym.
+const trainerFeedAllowed = user => !!user && !user.disabled && !!gym && ['trainer', 'admin'].includes(gym.roleOf(user));
 
 /* ---------- password sign-in (#118) ---------- */
 // Optional, per instance (PASSWORD_LOGIN) and per profile: nobody has a password until they set
@@ -3169,7 +3194,9 @@ const routes = {
     'GET /api/calendar': async (req, res) => {
       const user = readSession(req);
       if (!user) return json(res, 401, { error: 'not signed in' });
-      json(res, 200, calView(user));
+      const feed = new URL(req.url, 'http://x').searchParams.get('feed');
+      if (feed === 'trainer' && !trainerFeedAllowed(user)) return json(res, 403, { error: 'trainers only', code: 'not-trainer' });
+      json(res, 200, calView(user, calKind(feed)));
     },
     // { done: bool } with the feed on changes what it shows and keeps the address; `renew: true`
     // (or no feed yet) makes a new address and ends the old.
@@ -3177,30 +3204,33 @@ const routes = {
       const user = readSession(req);
       if (!user) return json(res, 401, { error: 'not signed in' });
       const body = await readBody(req);
+      const kind = calKind(body.feed);
+      if (kind === 'calendar-trainer' && !trainerFeedAllowed(user)) return json(res, 403, { error: 'trainers only', code: 'not-trainer' });
       const done = body.done === true;
       const scopes = { plans: 'view', workouts: done ? 'view' : 'off' };
-      const cur = calRow(user.id);
+      const cur = calRow(user.id, kind);
       if (cur && cur.sv === (user.sv || 0) && body.renew !== true) {
         cur.scopes = { ...cur.scopes, ...scopes };
         saveDb();
-        return json(res, 200, calView(user));
+        return json(res, 200, calView(user, kind));
       }
       if (!CAL_KEY) return json(res, 503, { error: 'the server secret is missing' });
-      const gone = (db.apiTokens || []).filter(r => r && r.userId === user.id && r.kind === 'calendar').flatMap(r => revokeTokens(db, user.id, r.id));
+      const gone = (db.apiTokens || []).filter(r => r && r.userId === user.id && r.kind === kind).flatMap(r => revokeTokens(db, user.id, r.id));
       let made;
-      try { made = createToken(db, user, { name: 'Calendar feed', scopes, days: 0, kind: 'calendar' }); }
+      try { made = createToken(db, user, { name: kind === 'calendar' ? 'Calendar feed' : 'Trainer schedule feed', scopes, days: 0, kind }); }
       catch (e) { if (e instanceof ScopeError) return json(res, e.status, { error: e.message, code: e.code }); throw e; }
       made.row.seal = sealText(CAL_KEY, made.token, 'calendar:' + made.row.id);
       saveDb();
       audit(req, 'auth.token.create', { user, msg: made.row.name });
       for (const r of gone) logToken(user.id, 'token.end', r);
       logToken(user.id, 'token.create', made.row);
-      json(res, 200, calView(user));
+      json(res, 200, calView(user, kind));
     },
     'POST /api/calendar/revoke': async (req, res) => {
       const user = readSession(req);
       if (!user) return json(res, 401, { error: 'not signed in' });
-      const r = calRow(user.id);
+      const body = await readBody(req).catch(() => ({}));
+      const r = calRow(user.id, calKind(body?.feed));
       const gone = r ? revokeTokens(db, user.id, r.id) : [];
       if (gone.length) {
         saveDb();
@@ -3212,7 +3242,7 @@ const routes = {
     // The feed itself, for a calendar app: no cookie, no header, the token in the path.
     'GET /api/calendar/{token}.ics': async (req, res) => {
       const row = findToken(db, req.calToken, uid => db.users.find(u => u.id === uid) || null);
-      if (!row || row.kind !== 'calendar') {
+      if (!row || (row.kind !== 'calendar' && row.kind !== 'calendar-trainer')) {
         auditFail(req, 'auth.token.fail', { ok: false, msg: 'token-invalid' });
         return json(res, 404, { error: 'not found' });
       }
@@ -3220,10 +3250,23 @@ const routes = {
       if (wait) return tooMany(res, wait);
       if (touchToken(row)) saveDb();
       const user = db.users.find(u => u.id === row.userId);
-      const state = readStateStrict(user.id);
-      if (state === UNREADABLE) return json(res, 503, { error: 'state unreadable' });
-      const ics = buildIcs(state ? scopedState(state, row.scopes) : {}, { uid: user.id, done: row.scopes?.workouts === 'view', tz: state?.reminder?.tz, name: user.name || '' });
-      res.writeHead(200, { 'Content-Type': 'text/calendar; charset=utf-8', 'Cache-Control': 'private, max-age=900', 'Content-Disposition': 'inline; filename="opengym.ics"', 'X-Content-Type-Options': 'nosniff' });
+      let ics;
+      if (row.kind === 'calendar-trainer') {
+        // Habcore Gym (kl16): a trainer's schedule, while they are still a trainer of the gym.
+        if (!trainerFeedAllowed(user)) return json(res, 404, { error: 'not found' });
+        ics = buildTrainerIcs(gym.trainerSessions(user), { uid: user.id, lang: readStateCached(user.id)?.lang || 'pl', name: user.name || '' });
+      } else {
+        const state = readStateStrict(user.id);
+        if (state === UNREADABLE) return json(res, 503, { error: 'state unreadable' });
+        ics = buildIcs(state ? scopedState(state, row.scopes) : {}, { uid: user.id, done: row.scopes?.workouts === 'view', tz: state?.reminder?.tz, name: user.name || '' });
+      }
+      // A calendar asks every hour or so (REFRESH-INTERVAL / X-PUBLISHED-TTL in the feed); an
+      // unchanged feed answers 304 to a fetcher that sends the ETag back. DTSTAMP moves every
+      // minute, so the tag is taken over the feed without it.
+      const etag = '"' + crypto.createHash('sha256').update(ics.replace(/^DTSTAMP:.*$/gm, '')).digest('base64url').slice(0, 27) + '"';
+      const head = { 'Content-Type': 'text/calendar; charset=utf-8', 'Cache-Control': 'private, max-age=900, must-revalidate', ETag: etag, 'Content-Disposition': 'inline; filename="habcore-gym.ics"', 'X-Content-Type-Options': 'nosniff' };
+      if (String(req.headers['if-none-match'] || '').split(/\s*,\s*/).includes(etag)) { res.writeHead(304, head); return res.end(); }
+      res.writeHead(200, head);
       res.end(ics);
     },
 

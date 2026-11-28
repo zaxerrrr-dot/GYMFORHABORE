@@ -16,20 +16,21 @@ import Icon from './Icon.jsx'
 export const CALENDAR_DOCS = 'https://github.com/zaxerrrr-dot/GYMFORHABORE/blob/main/docs/CALENDAR.md'
 const toast = m => useUI.getState().toast(m)
 
-export const calendarSheet = onChange => useUI.getState().openSheet(close => <CalendarSheet close={close} onChange={onChange} />)
+export const calendarSheet = (onChange, { feed = '' } = {}) => useUI.getState().openSheet(close => <CalendarSheet close={close} onChange={onChange} feed={feed} />)
 
 // Subscribe pages of the two web calendars (Apple takes the webcal:// address itself).
 export const googleCalUrl = url => 'https://calendar.google.com/calendar/r?cid=' + encodeURIComponent(webcalUrl(url))
 export const outlookCalUrl = url => 'https://outlook.live.com/calendar/0/addfromweb?url=' + encodeURIComponent(url) + '&name=' + encodeURIComponent('Habcore Gym')
 
-export function CalendarSheet({ close, onChange }) {
+export function CalendarSheet({ close, onChange, feed: kind = '' }) {
+  const trainer = kind === 'trainer'
   const [feed, setFeed] = useState(null)
   const [done, setDone] = useState(false)
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState(false)
   useEffect(() => {
     let gone = false
-    getCalendar().then(f => { if (!gone) { setFeed(f || { on: false }); setDone(!!f?.done) } }).catch(() => { if (!gone) setErr(true) })
+    getCalendar(kind).then(f => { if (!gone) { setFeed(f || { on: false }); setDone(!!f?.done) } }).catch(() => { if (!gone) setErr(true) })
     return () => { gone = true }
   }, [])
   const apply = async (fn, msg) => {
@@ -40,22 +41,25 @@ export function CalendarSheet({ close, onChange }) {
   }
   const copy = async () => { if (await copyText(feed.url)) toast(t('Link copied. Paste it into your calendar app.')); else toast(t('Something went wrong')) }
   const head = <div className="intg-head">
-    <h3 className="intg-h"><Icon name="calendar" /><span>{t('Calendar feed')}</span></h3>
+    <h3 className="intg-h"><Icon name="calendar" /><span>{trainer ? t('My schedule in a calendar') : t('Calendar feed')}</span></h3>
     {feed?.on && <span className="intg-pill connected">{t('Connected')}</span>}
   </div>
   if (err) return <>{head}<p className="intg-lead">{t('Could not reach your server')}</p><Button variant="plain" onClick={close}>{t('Done')}</Button></>
   if (!feed) return <>{head}<p className="intg-lead">{t('Loading…')}</p></>
-  const doneRow = <Section footer={t('A tick on every day you trained, with how many sets. Only you see it, the same as the plan.')}>
+  // Habcore Gym (kl16): calendars fetch the feed on their own clock; the app is the one that tells at once.
+  const lag = <p className="intg-note" data-testid="cal-lag">{t('Google, Apple and Outlook refresh the calendar on their own – new sessions and changes can show up late (Apple: usually within an hour, Outlook: a few hours, Google: up to several hours). The app tells you straight away.')}</p>
+  const doneRow = trainer ? null : <Section footer={t('A tick on every day you trained, with how many sets. Only you see it, the same as the plan.')}>
     <Row icon="checkCircle" iconTint="var(--green)" title={t('Show finished workouts too')}>
       <Switch aria-label={t('Show finished workouts too')} checked={done} disabled={busy}
-        onChange={v => { setDone(v); if (feed.on) apply(() => setCalendar({ done: v })) }} />
+        onChange={v => { setDone(v); if (feed.on) apply(() => setCalendar({ done: v, feed: kind })) }} />
     </Row>
   </Section>
   if (!feed.on) return <>
     {head}
-    <p className="intg-lead">{t('Your planned sessions in Apple Calendar, Google Calendar or Outlook, kept up to date. A private link only your calendar knows.')}</p>
+    <p className="intg-lead">{trainer ? t('Every session you lead, with each client’s first name and plan only, in Apple Calendar, Google Calendar or Outlook. A private link only your calendar knows.') : t('Your planned sessions in Apple Calendar, Google Calendar or Outlook, kept up to date. A private link only your calendar knows.')}</p>
+    {lag}
     {doneRow}
-    <Button variant="primary" disabled={busy} onClick={() => apply(() => setCalendar({ done }))}>{t('Make my calendar link')}</Button>
+    <Button variant="primary" disabled={busy} onClick={() => apply(() => setCalendar({ done, feed: kind }))} data-testid="cal-make">{t('Make my calendar link')}</Button>
     <div style={{ height: 8 }} />
     <Button variant="tinted" onClick={() => window.open(CALENDAR_DOCS, '_blank', 'noopener')}>{t('How to set it up')}</Button>
     <div style={{ height: 8 }} />
@@ -75,19 +79,20 @@ export function CalendarSheet({ close, onChange }) {
       <Button variant="tinted" icon="calendar" onClick={() => window.open(outlookCalUrl(feed.url), '_blank', 'noopener')}>{t('Add to Outlook')}</Button>
       <Button variant="tinted" icon="copy" onClick={copy}>{t('Copy link')}</Button>
     </div>}
-    {feed.url && <p className="intg-note">{t('Google Calendar: tap Add, then Add calendar. Apple: your iPhone or Mac asks to subscribe. Outlook: Import. Google refreshes a subscribed calendar every few hours, so a change can take a while to show.')}</p>}
+    {feed.url && <p className="intg-note">{t('Google Calendar: tap Add, then Add calendar. Apple: your iPhone or Mac asks to subscribe. Outlook: Import.')}</p>}
+    {lag}
     <div style={{ height: 12 }} />
     {doneRow}
     <div className="sect-b">
       <button type="button" className="lrow tap" disabled={busy} onClick={() => confirmSheet({
         title: t('Make a new link?'), message: t('The old link stops working, and every calendar that uses it needs the new one.'),
-        confirmText: t('Make a new link'), onConfirm: () => apply(() => setCalendar({ done, renew: true }), t('New link made. The old one is gone.')),
+        confirmText: t('Make a new link'), onConfirm: () => apply(() => setCalendar({ done, renew: true, feed: kind }), t('New link made. The old one is gone.')),
       })}><Icon name="reset" className="intg-act-i" /><span className="lrow-m"><span className="lrow-t">{t('Make a new link')}</span></span></button>
     </div>
     <div className="sect-b intg-end">
       <button type="button" className="lrow tap danger" disabled={busy} onClick={() => confirmSheet({
         title: t('Turn off the calendar feed?'), message: t('The link stops working at once. What your calendar already shows may stay until it refreshes.'),
-        confirmText: t('Turn off'), danger: true, onConfirm: () => apply(() => stopCalendar(), t('Calendar feed off')),
+        confirmText: t('Turn off'), danger: true, onConfirm: () => apply(() => stopCalendar(kind), t('Calendar feed off')),
       })}><Icon name="trash" className="intg-act-i" /><span className="lrow-m"><span className="lrow-t">{t('Turn off')}</span></span></button>
     </div>
     <div style={{ height: 8 }} />

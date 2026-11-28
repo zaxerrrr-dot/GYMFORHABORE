@@ -43,8 +43,9 @@ export const endsLabel = (exp, now = Date.now()) => {
 
 // The calendar feed (api/integrations/calendar.js, docs/CALENDAR.md): a private ICS address of the
 // plan, made of a token of its own kind. Settings → Integrations → Calendar feed.
-export const getCalendar = () => api('/api/calendar')
-export const setCalendar = ({ done, renew = false }) => api('/api/calendar', { method: 'POST', body: JSON.stringify({ done: !!done, ...(renew ? { renew: true } : {}) }) })
-export const stopCalendar = () => api('/api/calendar/revoke', { method: 'POST', body: '{}' })
+// Habcore Gym (kl16): `feed: 'trainer'` is a trainer's schedule feed, an address of its own.
+export const getCalendar = (feed = '') => api('/api/calendar' + (feed === 'trainer' ? '?feed=trainer' : ''))
+export const setCalendar = ({ done, renew = false, feed = '' }) => api('/api/calendar', { method: 'POST', body: JSON.stringify({ done: !!done, ...(renew ? { renew: true } : {}), ...(feed === 'trainer' ? { feed } : {}) }) })
+export const stopCalendar = (feed = '') => api('/api/calendar/revoke', { method: 'POST', body: JSON.stringify(feed === 'trainer' ? { feed } : {}) })
 /** The address a calendar app opens straight away: the same feed as webcal://. */
 export const webcalUrl = url => String(url || '').replace(/^https?:\/\//, 'webcal://')

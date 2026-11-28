@@ -16,6 +16,7 @@ import { NUDGE_COPY, lineIndex, nudgeFor, nudgeMinute, toneOf } from './nudge.js
 import { excusedOn } from './day-notes.js'
 import { stateJson } from './state-json.js'
 import { buildCheckinNotifications, checkinNames, reminderOf, CHECKIN_WINDOW_DAYS, CHECKIN_ID_BASE } from './checkin-reminder.js'
+import { sessionsOf, sessionStart, sessionEnd, remindBefore, upcoming as upcomingSessions } from './sessions-core.js'
 
 export const MOBILE = import.meta.env.VITE_MOBILE === '1'
 
@@ -230,6 +231,50 @@ export function buildNudgeNotifications(S, now = new Date()) {
   return notifications
 }
 
+// Habcore Gym (kl16, lib/sessions-core.js): sessions a trainer planned at a time of day. The phone
+// app has no server push (no APNs), so it plans the reminder before each one itself (Settings →
+// Reminders, an hour before by default), and tells about a session the trainer added, moved or
+// cancelled as soon as it learns of it (every sync and every return to the app), once per change.
+export const SESSION_WINDOW = 40
+const SESSION_ID_BASE = 3000
+const SESSION_CHANGE_BASE = 3900
+export function buildSessionNotifications(S, now = Date.now()) {
+  const before = remindBefore(S)
+  if (!before) return []
+  return upcomingSessions(sessionsOf(S), now, SESSION_WINDOW)
+    .map((s, i) => ({ s, i, at: sessionStart(s) - before * 60000 }))
+    .filter(x => x.at > now)
+    .map(({ s, i, at }) => ({
+      id: SESSION_ID_BASE + i,
+      title: s.tr?.name ? t('Workout with {0} at {1}', s.tr.name, s.t) : t('Workout at {0}', s.t),
+      body: [s.rname, 'Habcore, ul. Mickiewicza 25J'].filter(Boolean).join(' · '),
+      schedule: { at: new Date(at), allowWhileIdle: true },
+      extra: { url: '#/home?sess=' + encodeURIComponent(s.id) },
+    }))
+}
+const SEEN_KEY = 'og_sess_seen'
+/** What changed since this phone last looked (by a trainer), as notifications to show now. Updates the record. */
+export function sessionChangeNotifications(S, storage, now = Date.now()) {
+  let seen = null
+  try { seen = JSON.parse(storage.getItem(SEEN_KEY) || 'null') } catch { seen = null }
+  const list = sessionsOf(S)
+  const next = Object.fromEntries(list.map(s => [s.id, s.seq + (s.cx ? 1000 : 0)]))
+  try { storage.setItem(SEEN_KEY, JSON.stringify(next)) } catch { /* full */ }
+  if (!seen || typeof seen !== 'object') return []   // the first look: nothing is news
+  const fresh = list.filter(s => sessionEnd(s) > now && s.by?.role === 'trainer' && seen[s.id] !== next[s.id] && !(s.cx && seen[s.id] == null))
+  const kinds = { added: [], changed: [], cancelled: [] }
+  for (const s of fresh) kinds[s.cx ? 'cancelled' : seen[s.id] == null ? 'added' : 'changed'].push(s)
+  const out = []
+  let i = 0
+  for (const [k, ss] of Object.entries(kinds)) {
+    if (!ss.length) continue
+    const who = ss[0].tr?.name || ss[0].by?.name || t('Your trainer')
+    const title = k === 'added' ? tn('{1} planned a workout', '{1} planned {0} workouts', ss.length, who) : k === 'changed' ? t('{0} moved a workout', who) : t('{0} cancelled a workout', who)
+    out.push({ id: SESSION_CHANGE_BASE + i++, title, body: ss.slice(0, 3).map(s => s.d + ' ' + s.t + (s.rname ? ' · ' + s.rname : '')).join('; '), schedule: { at: new Date(now + 1500), allowWhileIdle: true }, extra: { url: '#/home?sess=' + encodeURIComponent(ss[0].id) } })
+  }
+  return out
+}
+
 // The channel ids of the workout and check-in reminders' sounds, null for the default channel.
 const reminderChannels = S => import('./reminder-sounds.js')
   .then(m => Promise.all([m.reminderChannel(S, 'workout'), m.reminderChannel(S, 'checkin')]))
@@ -251,20 +296,24 @@ export async function syncReminder(S, interactive = false) {
       ...Array.from({ length: REMINDER_WINDOW_DAYS }, (_, d) => ({ id: REMINDER_ID_BASE + d })),
       ...Array.from({ length: NUDGE_WINDOW_DAYS }, (_, d) => ({ id: NUDGE_ID_BASE + d })),
       ...Array.from({ length: CHECKIN_WINDOW_DAYS }, (_, d) => ({ id: CHECKIN_ID_BASE + d })),
+      ...Array.from({ length: SESSION_WINDOW }, (_, d) => ({ id: SESSION_ID_BASE + d })),
     ] }).catch(() => {})
     const r = S.reminder
     // The check-in reminder (lib/checkin-reminder.js) is its own switch: on without the workout one.
     const checkin = reminderOf(S).on
     // The background check (lib/nudge-check.js) follows what is scheduled: nothing, nothing to check.
     const check = notifications => import('./nudge-check.js').then(m => m.armNudgeCheck(S, notifications)).catch(() => {})
-    if (!r?.on && !checkin) { await check([]); return true }
+    const sessions = buildSessionNotifications(S)
+    let changes = []
+    try { changes = sessionChangeNotifications(S, window.localStorage) } catch { changes = [] }
+    if (!r?.on && !checkin && !sessions.length && !changes.length) { await check([]); return true }
     let perm = await LocalNotifications.checkPermissions()
     if (perm.display !== 'granted' && interactive) perm = await LocalNotifications.requestPermissions()
     if (perm.display !== 'granted') { await check([]); return false }
     // Settings → Reminders → Sounds (lib/reminder-sounds.js): each kind on the channel of its sound.
     const [workoutCh, checkinCh] = await reminderChannels(S)
     const notifications = onChannel(r?.on ? [...buildReminderNotifications(S), ...buildNudgeNotifications(S)] : [], workoutCh)
-    const checkins = onChannel(checkin ? buildCheckinNotifications(S, { t, names: keys => checkinNames(S, keys, t) }) : [], checkinCh)
+    const checkins = [...onChannel(checkin ? buildCheckinNotifications(S, { t, names: keys => checkinNames(S, keys, t) }) : [], checkinCh), ...onChannel([...sessions, ...changes], workoutCh)]
     // Exact when Android allows it; the "Alarms & reminders" screen only from the Settings switch (lib/exact-alarm.js).
     if (notifications.length || checkins.length) {
       const { withoutAlarmPrompt } = await import('./exact-alarm.js')

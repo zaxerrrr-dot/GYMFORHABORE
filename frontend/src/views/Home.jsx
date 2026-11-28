@@ -42,6 +42,7 @@ import RecoveryHint from '../components/RecoveryHint.jsx'
 import { FastingLine } from '../components/SisterApps.jsx'
 import { ChallengesCard } from '../components/Challenges.jsx'
 import { isOn } from '../lib/modules.js'
+import { UpcomingSessions } from '../components/Sessions.jsx'
 
 // Home = what to do now + a quick glance. Deep charts & history live in Stats.
 export default function Home() {
@@ -237,6 +238,9 @@ export default function Home() {
       </div>}
       <SeasonDeco spot="home-hero" />
     </div>
+
+    {/* Habcore Gym (kl16): sessions the trainer planned at a time of day (components/Sessions.jsx). */}
+    <UpcomingSessions S={S} />
 
     {/* Habcore Gym (kl14): the last workout as its feed card, one tap to its details; "All workouts"
         opens the feed (views/Workouts.jsx). */}

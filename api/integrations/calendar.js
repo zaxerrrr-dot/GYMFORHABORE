@@ -18,6 +18,7 @@
 import { effectiveRoutineId, queueLiveOn } from '../queue.js';
 import { libraryName } from '../coach/core/library.js';
 import { workoutTime } from './events.js';
+import { sessionsOf, sessionStart, sessionEnd, SESS_LOCATION, firstName } from '../sessions-core.js';
 
 export const PAST_DAYS = 7;
 export const AHEAD_DAYS = 56;
@@ -92,6 +93,7 @@ export function buildIcs(S, { uid = 'u', now = Date.now(), tz = S?.reminder?.tz,
   const lines = [
     'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Habcore Gym//Calendar feed//EN', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH',
     'X-WR-CALNAME:' + icsText(name ? `Habcore Gym · ${name}` : 'Habcore Gym'),
+    'X-WR-TIMEZONE:Europe/Warsaw',
     'X-PUBLISHED-TTL:PT1H', 'REFRESH-INTERVAL;VALUE=DURATION:PT1H',
   ];
   let n = 0;
@@ -138,6 +140,80 @@ export function buildIcs(S, { uid = 'u', now = Date.now(), tz = S?.reminder?.tz,
       ]);
     }
   }
+  // Habcore Gym (kl16): sessions a trainer planned at a time of day, as timed events.
+  for (const ev of sessionEvents(sessionsOf(S), { now, lang: S?.lang, uidTag: 'c-' + uid, kind: 'client' })) event(ev);
+  lines.push('END:VCALENDAR');
+  return lines.map(fold).join('\r\n') + '\r\n';
+}
+
+/* ---------- Habcore Gym (kl16, local patch 0018): sessions at a time of day ----------
+ * Times go out in UTC (DTSTART:…Z). Every occurrence is its own event (the server expands a repeat
+ * when it is planned, no RRULE), so nothing is left for a calendar to work out across a change of
+ * summer/winter time, and Google Calendar, Apple Calendar and Outlook all read a UTC time the same
+ * way; a TZID with a VTIMEZONE of our own is what Outlook's subscriptions have read wrongly before.
+ * The wall time in Poraj was turned into UTC with that day's offset (sessions-core.js wallToUtc).
+ * UID: one per occurrence and feed, never reused; SEQUENCE counts its changes, LAST-MODIFIED says
+ * when. A cancelled occurrence stays for CANCEL_SHOWN_MS as STATUS:CANCELLED (a calendar that
+ * refreshes in that time strikes it out or removes it), then leaves the feed. */
+export const SESS_PAST_DAYS = 30;
+export const SESS_AHEAD_DAYS = 180;
+export const CANCEL_SHOWN_MS = 2 * 86400000;
+const SESS_COPY = {
+  pl: { with: 'Trening z trenerem {0} – Habcore Gym', alone: 'Trening – Habcore Gym', cancelled: 'Odwołany: ', plan: 'Plan: {0}', note: 'Notatka: {0}', trainer: 'Prowadzi: {0}',
+    client: 'Trening: {0} – Habcore Gym', clientPlan: 'Trening: {0} · {1} – Habcore Gym', cal: 'Habcore Gym · grafik {0}' },
+  en: { with: 'Workout with {0} – Habcore Gym', alone: 'Workout – Habcore Gym', cancelled: 'Cancelled: ', plan: 'Plan: {0}', note: 'Note: {0}', trainer: 'Trainer: {0}',
+    client: 'Session: {0} – Habcore Gym', clientPlan: 'Session: {0} · {1} – Habcore Gym', cal: 'Habcore Gym · {0}’s schedule' },
+};
+const copyOf = lang => (String(lang || '').toLowerCase().startsWith('pl') ? SESS_COPY.pl : SESS_COPY.en);
+const fillIn = (s, ...a) => a.reduce((x, v, i) => x.split('{' + i + '}').join(String(v)), s);
+
+/** The VEVENT lines of sessions. `kind` 'client' (a client's own feed) or 'trainer' (`s.client` set). */
+export function sessionEvents(list, { now = Date.now(), lang = 'pl', uidTag = 'x', kind = 'client' } = {}) {
+  const c = copyOf(lang);
+  const from = now - SESS_PAST_DAYS * 86400000, to = now + SESS_AHEAD_DAYS * 86400000;
+  const out = [];
+  for (const s of list) {
+    const a = sessionStart(s), b = sessionEnd(s);
+    if (!Number.isFinite(a) || a < from || a > to) continue;
+    if (s.cx && s.cx < now - CANCEL_SHOWN_MS) continue;
+    const plan = String(s.rname || '').slice(0, NAME_MAX);
+    let title, desc;
+    if (kind === 'trainer') {
+      const who = firstName(s.client?.name);
+      title = plan ? fillIn(c.clientPlan, who, plan) : fillIn(c.client, who);
+      // Only the client's first name and the plan: no note, nothing about health.
+      desc = [plan ? fillIn(c.plan, plan) : null].filter(Boolean);
+    } else {
+      title = s.tr?.name ? fillIn(c.with, String(s.tr.name).slice(0, 40)) : c.alone;
+      desc = [plan ? fillIn(c.plan, plan) : null, s.tr?.name ? fillIn(c.trainer, s.tr.name) : null, s.note ? fillIn(c.note, String(s.note).slice(0, 500)) : null].filter(Boolean);
+    }
+    out.push([
+      'UID:' + icsText(`sess-${String(s.id).slice(0, 60)}-${uidTag}@habcore-gym`),
+      'DTSTAMP:' + stamp(now),
+      ...(s.at ? ['CREATED:' + stamp(s.at)] : []),
+      'LAST-MODIFIED:' + stamp(s.mod || s.at || now),
+      'SEQUENCE:' + (Number(s.seq) || 0),
+      'DTSTART:' + stamp(a), 'DTEND:' + stamp(b),
+      'SUMMARY:' + icsText((s.cx ? c.cancelled : '') + title),
+      ...(desc.length ? ['DESCRIPTION:' + icsText(desc.join('\n'))] : []),
+      'LOCATION:' + icsText(SESS_LOCATION),
+      'STATUS:' + (s.cx ? 'CANCELLED' : 'CONFIRMED'),
+      'TRANSP:OPAQUE', 'CATEGORIES:Habcore Gym',
+    ]);
+    if (out.length >= MAX_EVENTS) break;
+  }
+  return out;
+}
+
+/** A trainer's feed: every session they lead, of every client of the gym (`list` items carry `client`). */
+export function buildTrainerIcs(list, { uid = 't', now = Date.now(), lang = 'pl', name = '' } = {}) {
+  const lines = [
+    'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Habcore Gym//Trainer schedule//EN', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH',
+    'X-WR-CALNAME:' + icsText(fillIn(copyOf(lang).cal, name || 'Habcore Gym')),
+    'X-WR-TIMEZONE:Europe/Warsaw',
+    'X-PUBLISHED-TTL:PT1H', 'REFRESH-INTERVAL;VALUE=DURATION:PT1H',
+  ];
+  for (const ev of sessionEvents(list, { now, lang, uidTag: 't-' + uid, kind: 'trainer' })) lines.push('BEGIN:VEVENT', ...ev, 'END:VEVENT');
   lines.push('END:VCALENDAR');
   return lines.map(fold).join('\r\n') + '\r\n';
 }

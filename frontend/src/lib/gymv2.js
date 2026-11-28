@@ -98,6 +98,10 @@ const W = {
   other: ['ustawienia ({0})', 'settings ({0})'],
   // Joint training (patch 0004)
   mergeHint: ['Gdy klient ma włączony trening na zegarku lub w aplikacji, wpisuj ćwiczenia przez „Prowadź jako klient” – po zakończeniu obu treningów zapisy połączą się w jeden.', 'When the client has a workout running on the watch/in the app, log the exercises through Lead as client — once both workouts are finished, they are joined into one.'],
+  // Habcore Gym (kl16): sessions planned at a time of day.
+  'ev_session-add': ['{0} zaplanował(a) trening{1}', '{0} planned a session{1}'],
+  'ev_session-edit': ['{0} zmienił(a) termin treningu{1}', '{0} moved a session{1}'],
+  'ev_session-cancel': ['{0} odwołał(a) trening{1}', '{0} cancelled a session{1}'],
   ev_merge: ['scalono trening trenera {0} z treningiem z zegarka{1}', 'joined trainer {0}\'s workout with the watch workout{1}'],
   'ev_merge-again': ['ponownie scalono trening trenera {0} (urządzenie przysłało starszą wersję)', 'joined trainer {0}\'s workout again (a device sent an older copy)'],
   'ev_merge-skip': ['nie scalono treningu trenera {0}: w tym czasie pasuje kilka treningów, scal je ręcznie', 'trainer {0}\'s workout not joined: more than one workout fits the time'],
@@ -324,6 +328,7 @@ export function logLine(e) {
     if (e.ev === 'group-edit' && !e.by) return g('ev_group-left', '', nm)
     return g('ev_' + e.ev, by, nm + was)
   }
+  if (e.ev === 'session') return g('ev_session-' + (['add', 'edit', 'cancel'].includes(e.op) ? e.op : 'edit'), by, (e.d ? ' ' + fmtDay(e.d) + (e.t ? ' ' + e.t : '') : '') + (e.n > 1 ? ` (×${e.n})` : ''))
   if (e.ev !== 'write') return g('ev_' + e.ev, by)
   const c = e.changes || {}, parts = []
   const add = (k, list, label) => { for (const x of list || []) parts.push(g(k) + (label(x) ? ' ' + label(x) : '')) }

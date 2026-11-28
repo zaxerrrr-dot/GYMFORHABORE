@@ -17,6 +17,8 @@ import { stampEntry } from '../sync-stamps.js';
 import { findPairs, joinWorkouts, entriesCore, placeJoin, WINDOW_MS } from './merge.js';
 import { createLive, liveRoutes } from './live.js';
 import { addedNotes, trainersOf, notePush, applyNote } from './notes.js';
+import { changePushes } from './sessions.js';
+import { sessionsOf, applySessionOp, sessionChanges, overlapping, validDay } from '../sessions-core.js';
 
 export const ACT_TTL_MS = 12 * 3600 * 1000;
 export const INVITE_TTL_MS = 7 * 86400 * 1000;
@@ -35,6 +37,8 @@ export const ACT_ALLOWED = new Set([
   'GET /api/media/{hash}', 'PUT /api/media/{hash}', 'POST /api/media/missing',
   'POST /api/logout', 'POST /api/activity',
   'GET /api/gymv2/status', 'POST /api/gymv2/act', 'POST /api/gymv2/act/end',
+  // Habcore Gym (kl16): planning the led client's sessions, and the trainer's own schedule beside it.
+  'GET /api/gymv2/client/sessions', 'POST /api/gymv2/client/session', 'GET /api/gymv2/schedule',
   // Live joint training (patch 0006): the client's running workout, shared with the trainer.
   'GET /api/live', 'GET /api/live/stream', 'POST /api/live/ops', 'POST /api/live/end'
 ]);
@@ -1039,10 +1043,97 @@ export function gymV2({
     };
   }
 
+  // Habcore Gym (kl16, sessions-core.js): every session of the gym's clients a trainer leads (`all`:
+  // every trainer's), each with its client. Read from the clients' documents.
+  function trainerSessions(trainer, { all = false, from = '', to = '' } = {}) {
+    if (!on || !trainer) return [];
+    const out = [];
+    for (const x of store.get().members) {
+      const u = userById(x.userId);
+      if (!u || u.disabled || !canLead(trainer, u)) continue;
+      for (const s of sessionsOf(readStateCached(u.id))) {
+        if (!all && s.tr?.id !== trainer.id) continue;
+        if ((from && s.d < from) || (to && s.d > to)) continue;
+        out.push({ ...s, client: who(u) });
+      }
+    }
+    return out.sort((a, b) => (a.d + a.t < b.d + b.t ? -1 : 1));
+  }
+  if (on) {
+    // The client a planning request names: a client of the gym the trainer may lead; while leading
+    // someone, only that one.
+    const sessClient = (req, res, id) => {
+      const m = staffOnly(req, res); if (!m) return null;
+      const c = userById(str(id));
+      if (m.acting && (!c || c.id !== m.acting.id)) { json(res, 403, { error: 'only the client you are leading', code: 'acting-forbidden' }); return null; }
+      if (!c || !canLead(m.self, c)) { json(res, 403, { error: 'you cannot lead this account', code: 'not-allowed' }); return null; }
+      return { m, c };
+    };
+    const trainersOfGym = () => users().filter(u => isStaff(u)).map(who);
+    routes['GET /api/gymv2/client/sessions'] = async (req, res) => {
+      const p = new URL(req.url, 'http://x').searchParams;
+      const x = sessClient(req, res, p.get('id')); if (!x) return;
+      const S = readStateCached(x.c.id) || {};
+      json(res, 200, {
+        client: who(x.c), sessions: sessionsOf(S), trainers: trainersOfGym(),
+        routines: (Array.isArray(S.routines) ? S.routines : []).filter(r => r && r.id).map(r => ({ id: r.id, name: str(r.name).slice(0, 80), emoji: r.emoji })),
+      });
+    };
+    routes['POST /api/gymv2/client/session'] = async (req, res) => {
+      const body = await readBody(req);
+      const x = sessClient(req, res, body.id); if (!x) return;
+      const by = { id: x.m.self.id, name: String(x.m.self.name || '').slice(0, 60), role: 'trainer' };
+      const op = { ...body, id: str(body.sess) };
+      if (op.op === 'add' && !op.tr) op.tr = who(x.m.self);
+      if (op.tr) {
+        const t = userById(str(op.tr.id));
+        if (!t || !isStaff(t)) return json(res, 400, { error: 'not a trainer of the gym', code: 'bad-trainer' });
+        op.tr = who(t);
+      }
+      if (op.op === 'add' && op.rep && !(validDay(op.rep.until) || Number(op.rep.weeks) > 0)) return json(res, 400, { error: 'weeks or an end date', code: 'bad-repeat' });
+      let out;
+      try {
+        out = writeStateAs(x.c.id, (next, t) => {
+          const r = applySessionOp(next.sessions, op, by, t);
+          if (r.error) return r.error;
+          const before = Array.isArray(next.sessions) ? next.sessions : [];
+          next.sessions = r.list;
+          return { changes: sessionChanges(before, r.list), changed: r.changed, list: r.list };
+        }, { skipIf: r => typeof r === 'string', create: true });
+      } catch (e) { return json(res, e.status || 500, { error: e.message, code: e.code || 'error' }); }
+      if (typeof out === 'string') return json(res, out === 'no-session' ? 404 : 400, { error: out, code: out });
+      log(x.c.id, { ev: 'session', by: who(x.m.self), op: op.op, scope: op.scope === 'series' ? 'series' : 'one', n: out.changed.length, d: out.changed[0]?.d, t: out.changed[0]?.t });
+      audit(req, 'gymv2.session', { user: x.m.self, target: x.c, msg: `${op.op} ${out.changed.length}` });
+      if (sendPush && out.changes.length) {
+        for (const p of changePushes(langOf(x.c.id), by.name, out.changes)) { try { sendPush(x.c.id, p); } catch (e) { console.error('gymv2 session push', e.message); } }
+      }
+      // Overlaps are a warning only: a trainer may lead several people at once.
+      const mine = trainerSessions(x.m.self);
+      const overlaps = [];
+      for (const s of out.changed) {
+        if (s.cx) continue;
+        for (const o of overlapping(mine.filter(y => !(y.client?.id === x.c.id && out.changed.some(z => z.id === y.id))), s)) {
+          if (!overlaps.some(z => z.id === o.id)) overlaps.push({ id: o.id, d: o.d, t: o.t, dur: o.dur, client: o.client, rname: o.rname || '' });
+        }
+      }
+      json(res, 200, { ok: true, sessions: out.list, changed: out.changed.map(s => s.id), overlaps: overlaps.slice(0, 20) });
+    };
+    // "Mój grafik": the trainer's sessions (with `all=1`, every trainer's) between two days.
+    routes['GET /api/gymv2/schedule'] = async (req, res) => {
+      const m = staffOnly(req, res); if (!m) return;
+      const p = new URL(req.url, 'http://x').searchParams;
+      const from = validDay(p.get('from')) ? p.get('from') : '';
+      const to = validDay(p.get('to')) ? p.get('to') : '';
+      const list = trainerSessions(m.self, { all: p.get('all') === '1', from, to });
+      json(res, 200, { sessions: list.slice(0, 2000), trainers: trainersOfGym(), me: who(m.self) });
+    };
+  }
+
   return {
     on: !!on,
     live,
     routes,
+    trainerSessions: (u, o) => trainerSessions(u, o),
     actOf,
     actAllowed,
     clearActCookie,

@@ -4999,3 +4999,42 @@ button.wl-summary{width:100%;padding:0 0 10px;text-align:start;border-radius:var
 .ri-guide{border-top:1px solid var(--sep);padding-top:4px;margin-top:4px}
 .ri-toggle{display:flex;justify-content:space-between;align-items:center;width:100%;background:none;border:0;padding:10px 0;font:inherit;font-weight:600;color:inherit;cursor:pointer;text-align:start}
 .ri-guide .ih-steps{margin-bottom:8px}
+
+/* Habcore Gym (kl16): sessions a trainer planned at a time of day (components/Sessions.jsx, views/TrainerSchedule.jsx). */
+.sess-rows{display:flex;flex-direction:column;gap:6px;margin:6px 0}
+.sess-row{display:flex;align-items:center;gap:12px;width:100%;text-align:start;padding:10px 12px;border-radius:12px;background:var(--surface-2);border:0;color:inherit;font:inherit;cursor:pointer;min-width:0}
+.sess-row.now{box-shadow:inset 0 0 0 2px var(--acc)}
+.sess-row.cx .sess-main,.sess-row.cx .sess-time{text-decoration:line-through;opacity:.6}
+.sess-time{display:flex;flex-direction:column;align-items:flex-start;min-width:46px;font-variant-numeric:tabular-nums;line-height:1.2}
+.sess-time b{color:var(--acc);font-size:var(--fs-body)}
+.sess-time span{font-size:var(--fs-caption1);color:var(--label-3)}
+.sess-main{display:flex;flex-direction:column;flex:1;min-width:0}
+.sess-ttl{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sess-sub{font-size:var(--fs-footnote);color:var(--label-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sess-tag{display:inline-flex;align-items:center;gap:4px;font-size:var(--fs-caption1);font-weight:600;padding:3px 8px;border-radius:999px;background:var(--surface-3);color:var(--label-2);white-space:nowrap;margin:0}
+.sess-tag.cx{color:var(--red);background:rgba(255,59,48,.14);background:color-mix(in srgb,var(--red) 14%,transparent)}
+.sess-tag.done{color:var(--green);background:rgba(52,199,89,.16);background:color-mix(in srgb,var(--green) 16%,transparent)}
+.sess-tag.now,.sess-tag.ch{color:var(--acc);background:rgba(186,26,24,.14);background:color-mix(in srgb,var(--acc) 14%,transparent)}
+.sess-tag.warn{color:var(--orange-ink);background:rgba(255,149,0,.18);background:color-mix(in srgb,var(--orange) 18%,transparent)}
+p.sess-tag{margin:4px 0 8px}
+.sess-when{display:flex;align-items:center;gap:6px;margin:-4px 0 6px;color:var(--label-2)}
+.sess-note{white-space:pre-wrap;margin:8px 0 12px}
+.sess-acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.sess-acts .danger{color:var(--red)}
+.sess-card h2{font-size:var(--fs-title3)}
+.sess-card .btn{margin-top:6px}
+.sess-day-lbl{margin-top:8px}
+.sess-day-lbl::first-letter,.sched-lbl::first-letter,.sched-day-h b::first-letter{text-transform:uppercase}
+.sess-days{display:flex;gap:6px;flex-wrap:wrap;padding:10px 16px}
+.sess-days .chip{min-width:40px;justify-content:center}
+.sess-days .chip.on{background:var(--acc);color:var(--on-acc)}
+.sess-until{padding:4px 16px 12px}
+.sess-form textarea{margin:0 0 14px;width:100%;box-sizing:border-box}
+.sess-form select.timef{max-width:52vw}
+.sess-warn{display:flex;gap:6px;align-items:flex-start;color:var(--orange-ink);background:rgba(255,149,0,.12);background:color-mix(in srgb,var(--orange) 12%,transparent);padding:8px 10px;border-radius:10px}
+.sched-nav{margin:10px 0 4px}
+.sched-lbl{display:inline-block;background:none;border:0;color:inherit;font:inherit;font-weight:600;cursor:pointer}
+.sched-day{margin:0 0 12px;padding:10px 12px;border-radius:14px;background:var(--surface)}
+.sched-day.today{box-shadow:inset 0 0 0 1.5px var(--acc)}
+.sched-day-h b{display:inline-block}
+.sched-none{padding:4px 0}

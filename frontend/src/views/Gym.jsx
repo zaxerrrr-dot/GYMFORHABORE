@@ -13,6 +13,8 @@ import { Section, Row, Button, TextField, Switch, Check, SearchField } from '../
 import { GymGroups, openPicker, filterClients } from '../components/GymPicker.jsx'
 import Icon from '../components/Icon.jsx'
 import { ClientFeedSheet } from '../components/GymClientFeed.jsx'
+import { ClientSessionsSheet, planFor } from '../components/Sessions.jsx'
+import { t as tr } from '../lib/i18n.js'
 import { pathBefore } from '../lib/nav.js'
 import {
   g, gErr, fmtDay, fmtWhen, gymStatus, gymClients, createClient, makeInvite, gymCode, newGymCode, joinGym, leaveGym,
@@ -98,6 +100,9 @@ function ClientRow({ c, onInvite, onLog, onMerges }) {
       <Button variant={live ? undefined : 'primary'} size="sm" icon="play" disabled={busy || !c.canLead} onClick={() => lead()}>{busy ? g('switching') : g('lead')}</Button>
       {c.virtual && <Button size="sm" icon="envelope" onClick={() => onInvite(c)}>{g('invite')}</Button>}
       <Button size="sm" icon="list" onClick={() => openSheet(close => <ClientFeedSheet c={c} close={close} />)} data-testid="gym-feed">{g('feed')}</Button>
+      {/* Habcore Gym (kl16): plan a session at a time of day, and this client's planned ones. */}
+      <Button size="sm" icon="clock" disabled={!c.canLead} onClick={() => planFor(c)} data-testid="gym-plan">{tr('Plan a session')}</Button>
+      <Button size="sm" icon="calendar" onClick={() => openSheet(close => <ClientSessionsSheet c={c} close={close} />)} data-testid="gym-sessions">{tr('Planned sessions')}</Button>
       <Button size="sm" icon="history" onClick={() => onLog(c)}>{g('history')}</Button>
       {c.merges?.length > 0 && <Button size="sm" icon="reset" data-testid="gym-merges" onClick={() => onMerges(c)}>{g('undoMerge')}</Button>}
     </div>
@@ -105,6 +110,7 @@ function ClientRow({ c, onInvite, onLog, onMerges }) {
 }
 
 function StaffView({ st, reload }) {
+  const nav = useNavigate()
   const [clients, setClients] = useState(null)
   const [name, setName] = useState('')
   const [busy, setBusy] = useState(false)
@@ -150,6 +156,7 @@ function StaffView({ st, reload }) {
   })
   const shown = clients ? filterClients(clients, q) : null
   return <>
+    <div className="gv-top"><Button variant="tinted" icon="calendar" onClick={() => nav('/grafik')} data-testid="gym-schedule">{tr('My schedule')}</Button></div>
     {st.live && clients && clients.some(c => c.canLead) && <div className="gv-top">
       <Button variant="primary" icon="play" disabled={clients.filter(c => c.canLead).length < 2} onClick={() => openPicker('group')} data-testid="gym-all-group">{g('trainGroupBtn')}</Button>
     </div>}

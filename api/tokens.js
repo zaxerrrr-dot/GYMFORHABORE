@@ -95,7 +95,8 @@ function prune(db, now) {
 // `kind: 'calendar'` (integrations/calendar.js): a token for one calendar feed address. It is
 // listed with the others and revoked like them, but no token route takes it (tokenAuth), and the
 // feed route takes nothing else.
-export const TOKEN_KINDS = ['calendar'];
+// `calendar-trainer` (Habcore Gym kl16): a trainer's schedule feed, every client they lead.
+export const TOKEN_KINDS = ['calendar', 'calendar-trainer'];
 // `evict(row)`: rows that may make room when the profile is at TOKENS_MAX, the least recently
 // used first. The connector sign-in (oauth.js) passes its own earlier connections: Claude
 // registers a new client on every fresh connection, so "remove and add the connector again" ten

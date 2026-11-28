@@ -124,6 +124,7 @@ import { legalUrl } from '../lib/legal.jsx'
 import { AI_BUILT, WEBDAV_BUILT } from '../lib/habcore-off.js'
 import ReminderSounds from '../components/ReminderSounds.jsx'
 import DisplayRows from '../components/DisplayRows.jsx'
+import { remindBefore, REMIND_CHOICES } from '../lib/sessions-core.js'
 
 /* Settings (v1.3.11). The root is one screen: an account card, a row per page under four headings
    (/settings/<page>), and a search over every row. Rare things live one level further down
@@ -1694,10 +1695,22 @@ function MobileReminderCard({ S, update, toast }) {
         </Row>
       )}
       {S.reminder?.on && <NudgeRows S={S} setReminder={setReminder} />}
+      <SessionReminderRow S={S} update={update} />
       <CheckinReminderRow />
       <WrappedNotifyRow S={S} update={update} />
     </Section>
   )
+}
+
+// Habcore Gym (kl16, lib/sessions-core.js): a reminder before a session the trainer planned at a
+// time of day, an hour before unless changed here. Its own setting: it works with the workout-day
+// reminder off. The server sends it as a web push; the phone app plans it itself (lib/mobile.js).
+const beforeLabel = m => (m === 0 ? t('Off') : m === 1440 ? t('A day before') : m >= 60 ? tn('{0} hour before', '{0} hours before', m / 60) : t('{0} min before', m))
+function SessionReminderRow({ S, update }) {
+  const v = remindBefore(S)
+  return <SelectRow icon="clock" iconTint="var(--blue)" title={t('Before a session with your trainer')} value={v}
+    onChange={m => update(s => { s.reminder = { ...(s.reminder || DEF.reminder), sessBefore: Number(m), tz: localTZ() } })}
+    options={REMIND_CHOICES.map(m => ({ value: m, label: beforeLabel(m) }))} />
 }
 
 // Your year in Habcore Gym (lib/wrapped.js): one notification on Dec 1, on unless switched off here.
@@ -1798,6 +1811,7 @@ function PushCard({ S, update, toast }) {
       {on && S.reminder?.on && (
         <NudgeRows S={S} setReminder={patch => update(s => { s.reminder = { ...(s.reminder || DEF.reminder), ...patch, tz: localTZ() } })} />
       )}
+      {on && <SessionReminderRow S={S} update={update} />}
       {on && <CheckinReminderRow />}
       {on && <WrappedNotifyRow S={S} update={update} />}
     </Section>

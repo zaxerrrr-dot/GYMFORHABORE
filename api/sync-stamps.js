@@ -40,6 +40,8 @@
 //      restored) bringing an entry back, and that cannot be told apart from a deliberate re-add:
 //      a deleted entry that comes back is one tap to remove again, a wanted one dropped is lost.
 
+import { mergeSessions, pruneSessions } from './sessions-core.js';
+
 const isMap = v => !!v && typeof v === 'object' && !Array.isArray(v);
 const list = v => (Array.isArray(v) ? v : []);
 const same = (x, y) => JSON.stringify(x) === JSON.stringify(y);
@@ -66,7 +68,7 @@ const capStamps = m => {
 };
 const OWN_MERGE = new Set([
   '_ts', '_rev', '_wid', '_wids', '_unstamped', '_prior', 'active', 'unit', 'unitSet', 'resetAt', 'resetIds', 'deleted', 'edited', 'undone', 'routineOrder',
-  'workouts', 'routines', 'customEx', 'equipProfiles', 'gymCards', 'bodyweight', 'measurements', 'favEx',
+  'workouts', 'routines', 'customEx', 'equipProfiles', 'gymCards', 'bodyweight', 'measurements', 'favEx', 'sessions',
   'exWeights', 'balanceOverrides', 'loadKind', 'plates', 'dbLoad', 'dumbbells', 'stackWeights', 'exUnit', 'dayNotes', 'dayPhotos', 'exMerged', 'exGym', 'sessionTargets', 'exMedia', 'recoverySessions', 'gymNotes', 'journalFolders', 'dayForm', 'activities',
 ]);
 // `modules` (frontend lib/modules.js) per module, as the app stamps it.
@@ -620,6 +622,16 @@ export function stampPut(cur, next, { overRead = false, stamped = false, now = D
     }
     if (!stamped && isMap(next.coach) && isMap(cur.coach)) next.coach = mergeCoach(next.coach, cur.coach);
     if (isMap(next.challenges) && isMap(cur.challenges)) next.challenges = mergeChallenges(next.challenges, cur.challenges);
+    // Habcore Gym (kl16, sessions-core.js): the sessions a trainer planned are joined per occurrence
+    // with the stored ones for every writer, so a phone that had not heard of a new one yet (or an
+    // app from before kl16, which knows no `sessions`) never drops it.
+    if (Array.isArray(cur.sessions) || Array.isArray(next.sessions)) {
+      const sig = l => (Array.isArray(l) ? l : []).map(x => x && `${x.id}:${x.mod}:${x.seq}`).sort().join();
+      const sentSig = sig(next.sessions);
+      const merged = pruneSessions(mergeSessions(cur.sessions, next.sessions), new Date(t).toISOString().slice(0, 10), t);
+      if (merged.length || Array.isArray(next.sessions)) next.sessions = merged; else delete next.sessions;
+      if (report && sig(merged) !== sentSig) report.changed = true;
+    }
     if (before != null && content(next) !== before) report.changed = true;
   }
   keepHeld(next, t);

@@ -76,6 +76,7 @@
  * exercise, weigh-in or favourite the other device had removed meanwhile.
  */
 import { mergeWorkoutNotes } from './workout-notes.js'
+import { mergeSessions } from './sessions-core.js'
 import { beatsWeight } from './exercises.js'
 import { bestWeightForEntry } from './history.js'
 import { convertStateUnit, convertBodyWeight } from './units.js'
@@ -719,7 +720,7 @@ function applyDeletions(S, deleted) {
 // merge of their own are not stamped here; a field nobody stamped follows the newer copy, as before.
 const OWN_MERGE = new Set([
   '_ts', '_rev', '_wid', '_wids', '_unstamped', '_prior', 'active', 'unit', 'unitSet', 'resetAt', 'resetIds', 'deleted', 'edited', 'undone', 'routineOrder',
-  'workouts', 'routines', 'customEx', 'equipProfiles', 'gymCards', 'bodyweight', 'measurements', 'favEx',
+  'workouts', 'routines', 'customEx', 'equipProfiles', 'gymCards', 'bodyweight', 'measurements', 'favEx', 'sessions',
   'exWeights', 'balanceOverrides', 'loadKind', 'plates', 'dbLoad', 'dumbbells', 'stackWeights', 'exUnit', 'dayNotes', 'dayPhotos', 'exMerged', 'exGym', 'sessionTargets', 'exMedia', 'recoverySessions', 'gymNotes', 'journalFolders', 'dayForm', 'activities',
 ])
 // Stamped per key instead of whole: one day of the plan, one exercise's note or bar, one programme
@@ -932,6 +933,9 @@ export function mergeStates(a0, b0, { prefer } = {}) {
   out.bodyweight = mergeBodyweight(n.bodyweight, o.bodyweight, dailyModeOf(out)).map(clone)
   // A day's body measurements are one check-in, kept and merged the way a weigh-in is.
   if (list(n.measurements).length || list(o.measurements).length) out.measurements = mergeBodyweight(n.measurements, o.measurements).map(clone)
+  // Habcore Gym (kl16, lib/sessions-core.js): sessions a trainer planned, per occurrence, the one
+  // changed last; a cancelled one stays as a tombstone so every copy learns of it.
+  if (list(n.sessions).length || list(o.sessions).length) out.sessions = mergeSessions(n.sessions, o.sessions)
   if (list(n.favEx).length || list(o.favEx).length) out.favEx = [...new Set([...list(n.favEx), ...list(o.favEx)])]
   // What either device removed stays removed (the `deleted` section above). A workout taken out
   // this way leaves its exercises' kept loads to be read again, as an edit of it would: from the

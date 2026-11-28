@@ -44,3 +44,33 @@ logs are shared with someone, leave them out for `/api/calendar/` or turn the fe
 
 Each fetch counts against the token's per-minute budget (`TOKEN_READS_PER_MIN`), and the answer
 may be cached by the client for 15 minutes.
+
+## Sessions at a set time (Habcore Gym kl16)
+
+A trainer can plan a session for a client at a time of day (gym panel → client → "Zaplanuj trening",
+"Mój grafik", or while leading the client: Home / the day sheet). Those sessions are in the feed as
+**timed events**, next to the all-day plan days, which stay as they were.
+
+- Times are written in **UTC** (`DTSTART:20261201T170000Z`). Each occurrence of a weekly series is
+  its own event (no `RRULE`), worked out from the wall time in Poraj (Europe/Warsaw) with that day's
+  offset, so 18:00 stays 18:00 on both sides of the summer/winter time change. Google Calendar, Apple
+  Calendar and Outlook all read a UTC time the same way; a `TZID` with our own `VTIMEZONE` is what
+  Outlook subscriptions have misread before. `X-WR-TIMEZONE:Europe/Warsaw` names the calendar's zone.
+- Every occurrence has its own `UID` (`sess-<id>-c-<user>@habcore-gym`) that never changes;
+  `SEQUENCE` counts its changes and `LAST-MODIFIED` says when it last changed.
+- Title: "Trening z trenerem {trener} – Habcore Gym" (English: "Workout with {trainer} – Habcore Gym"); the
+  description has the plan, the trainer and the trainer's note; `LOCATION` is
+  "Habcore, ul. Mickiewicza 25J, 42-360 Poraj".
+- A cancelled session stays for two days as `STATUS:CANCELLED` ("Odwołany: …"), then leaves the feed.
+- `REFRESH-INTERVAL` and `X-PUBLISHED-TTL` ask for an hourly refresh; the answer carries an `ETag`
+  (an unchanged feed answers `304`) and `Cache-Control: private, max-age=900`. How often a calendar
+  really asks is its own choice: Apple usually within an hour, Outlook every few hours, Google up to
+  several hours. The app (and its notifications) is where a change shows at once.
+
+### The trainer's feed
+
+A trainer (or an admin) has a second address: "Mój grafik" → the calendar button. It holds every
+session that trainer leads, of every client of the gym, titled with the client's **first name** and
+the plan only ("Trening: Ania · Upper – Habcore Gym"), with no note and nothing about health. It is a
+token of its own kind (`calendar-trainer`), made, shown again, renewed and turned off like the
+client's, and it stops answering once the person is no longer a trainer of the gym.

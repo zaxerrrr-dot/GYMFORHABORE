@@ -9,6 +9,7 @@ import { useStore } from '../store/useStore.js'
 import { useUI } from '../store/useUI.js'
 import { nav } from '../lib/nav.js'
 import { g, gErr, gymClients, fmtDay } from '../lib/gymv2.js'
+import { t } from '../lib/i18n.js'
 import Icon from './Icon.jsx'
 import { savedGroup } from '../lib/gym-group.js'
 import { readRecent, trainAsClient, openPicker, GymGroups, START_AFTER_KEY } from './GymPicker.jsx'
@@ -71,6 +72,7 @@ export default function GymHomeCard() {
     <div className="gh-foot">
       <button type="button" className="btn sm" onClick={() => nav('/silownia?nowy=1')} data-testid="gym-home-new"><Icon name="plusCircle" /> {g('newClient')}</button>
       <button type="button" className="btn sm ghost" onClick={() => nav('/silownia')}>{g('allClients')}</button>
+      <button type="button" className="btn sm tinted" onClick={() => nav('/grafik')} data-testid="gym-home-schedule"><Icon name="calendar" /> {t('My schedule')}</button>
     </div>
   </div>
 }

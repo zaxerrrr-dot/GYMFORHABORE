@@ -236,6 +236,7 @@ export const SEARCH = [
   { page: 'reminders', title: 'Reminder time', icon: 'clock', tint: 'var(--purple)', kw: 'reminder time clock hour when', when: c => remind(c) && c.reminderOn, via: PUSH },
   { page: 'reminders', title: 'Nudge me when I skip a planned workout', icon: 'bell', tint: 'var(--red)', kw: 'nudge skip missed motivation', when: c => remind(c) && c.reminderOn, via: PUSH },
   { page: 'reminders', title: 'Nudge tone', icon: 'chat', tint: 'var(--blue)', kw: 'nudge tone friendly guilt drill sergeant', opts: ['Friendly', 'Guilt trip', 'Drill sergeant'], when: c => remind(c) && c.reminderOn && c.nudge, via: PUSH },
+  { page: 'reminders', title: 'Before a session with your trainer', icon: 'clock', tint: 'var(--blue)', kw: 'trainer session planned time hour before reminder appointment termin', opts: ['Off', 'A day before'], when: remind, via: PUSH },
   { page: 'reminders', title: 'Check-in reminders', icon: 'ruler', tint: 'var(--teal)', kw: 'measurement measure tape photo progress picture weigh weight blood pressure remind every two weeks', when: remind, via: PUSH },
   { page: 'reminders', title: 'Your year in Habcore Gym', icon: 'sparkles', tint: 'var(--acc)', mod: 'motivation', kw: 'year recap wrapped review december notification', when: remind, via: PUSH },
   { page: 'reminders', title: 'Gym reminder', icon: 'mapPin', tint: 'var(--green)', kw: 'gym location arrive arrival geofence place map nearby', when: c => !!c.mobile && c.gymReminder !== false },

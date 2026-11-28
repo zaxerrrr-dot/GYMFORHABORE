@@ -116,6 +116,8 @@ const Trainer = lazyView(() => import('./views/Trainer.jsx'))
 // Gym mode v2 (local patch 0003): the gym screen and the invite page a client takes an account over on.
 const Gym = lazyView(() => import('./views/Gym.jsx'))
 const GymClaim = lazyView(() => import('./views/GymClaim.jsx'))
+// Habcore Gym (kl16): a trainer's schedule, "Mój grafik".
+const TrainerSchedule = lazyView(() => import('./views/TrainerSchedule.jsx'))
 // Group training (local patch 0006): one trainer, several clients' workouts at once.
 const GroupWorkout = lazyView(() => import('./views/GroupWorkout.jsx'))
 // The tabs and screens past Home (Stats, History, the Library, Settings, ...) as well: a start
@@ -472,6 +474,7 @@ function Shell() {
       {user && <Route path="/trainer" element={<Trainer />} />}
       {user && <Route path="/trainer/m/:id" element={<Trainer />} />}
       {user && <Route path="/silownia" element={<Gym />} />}
+      {user && <Route path="/grafik" element={<TrainerSchedule />} />}
       {user && <Route path="/grupa" element={<GroupWorkout />} />}
       <Route path="*" element={<Navigate to="/home" replace />} />
     </Routes>
