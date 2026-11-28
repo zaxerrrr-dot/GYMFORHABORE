@@ -193,7 +193,7 @@ describe('Gym reminder page', () => {
     await render(<GymReminderPage />)
     await click(switchIn('Only between certain hours'))
     expect(mocks.saved.at(-1).window).toEqual({ from: '06:00', to: '22:00' })
-    expect(host.querySelectorAll('input[type="time"]')).toHaveLength(2)
+    expect(host.querySelectorAll('[data-timefield]')).toHaveLength(2)
   })
 
   it('background location refused: the row says so and leads to the settings', async () => {

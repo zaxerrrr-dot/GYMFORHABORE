@@ -1,4 +1,5 @@
 import { useStore } from '../store/useStore.js'
+import TimeField from './TimeField.jsx'
 import { useUI } from '../store/useUI.js'
 import { t } from '../lib/i18n.js'
 import { todayISO } from '../lib/format.js'
@@ -56,7 +57,7 @@ function CheckinReminder({ close }) {
         <Switch checked={r.on} onChange={on => save({ on, ...(on && !anySet ? { items: { photos: { every: 28, since: todayISO() }, ...(isOn(S, 'body') ? { weight: { every: 7, since: todayISO() } } : {}) } } : {}) })} aria-label={t('Remind me')} />
       </Row>
       {r.on && <Row icon="clock" iconTint="var(--purple)" title={t('Time')} subtitle={t('Mornings work best: same time, before breakfast.')}>
-        <input type="time" className="timef" value={r.time} aria-label={t('Time')} onChange={e => e.target.value && save({ time: e.target.value })} />
+        <TimeField value={r.time} aria-label={t('Time')} onChange={v => v && save({ time: v })} />
       </Row>}
     </div>
     {r.on && <Section title={t('What and how often')}>

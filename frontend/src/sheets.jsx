@@ -1,4 +1,5 @@
 import { liveFinishGate } from './lib/gym-live-app.js'
+import TimeField from './components/TimeField.jsx'
 import { addNote, editNote, deleteNote, notesText } from './lib/workout-notes.js'
 import { ledOf, previousSame, compareWorkouts } from './lib/workout-feed.js'
 import { NotesThread, CompareBlock, ledLabel } from './components/WorkoutFeed.jsx'
@@ -144,6 +145,7 @@ import { checkinMode, withForm, readForm, goLighter, canGoLighter, LIGHTER_KINDS
 import { sleepHoursOn } from './lib/vitals.js'
 import DailyCheckin from './components/DailyCheckin.jsx'
 import { DaySessions } from './components/Sessions.jsx'
+import { plannedSessionDays } from './lib/sessions-core.js'
 
 const S = () => useStore.getState().S
 const update = (...a) => useStore.getState().update(...a)
@@ -454,8 +456,8 @@ function BwSheet({ required, onDone, close, initial, edit }) {
           </label>
           <label className="measure-date bw-time">
             <span>{t('Time')}</span>
-            <input type="time" className="timef" value={time} aria-label={t('Time')}
-              onChange={e => { setTime(e.target.value); setTimeSet(true) }} />
+            <TimeField value={time} aria-label={t('Time')}
+              onChange={v => { setTime(v); setTimeSet(true) }} />
           </label>
         </div>}
     <WeightInput value={v} setValue={setV} unit={unit} />
@@ -3427,7 +3429,7 @@ function DayOverride({ iso, close }) {
     {effIds.includes(r.id) && <Icon name="check" className="accent" />}</div>
   return <>
     <h3>{fmtDate(iso, true)}</h3>
-    <div className="muted small" style={{ marginBottom: 12 }}>{t('Weekly plan:')} {weeklyNames.length ? deriveSessionName(weeklyNames) : t('Rest')}{changed && <span style={{ color: 'var(--orange-ink)' }}> · {t('changed for this day')}</span>}<br />{t('Sick, missed a day or want a different session? Pick what to train instead.')}</div>
+    <div className="muted small" style={{ marginBottom: 12 }}>{t('Weekly plan:')} {weeklyNames.length ? deriveSessionName(weeklyNames) : plannedSessionDays(st).has(iso) ? t('Planned with your trainer') : t('Rest')}{changed && <span style={{ color: 'var(--orange-ink)' }}> · {t('changed for this day')}</span>}<br />{t('Sick, missed a day or want a different session? Pick what to train instead.')}</div>
     {done.length > 0 && <div data-testid="day-workouts" style={{ marginBottom: 14 }}>
       <h4 className="sec" style={{ marginTop: 0 }}>{t('Workouts this day')}</h4>
       <div className="list">{done.map(w => <WorkoutRow key={w.id} w={w} onClick={() => { close(); workoutDetailSheet(w) }} />)}</div>
@@ -3591,7 +3593,7 @@ function WorkoutDateEdit({ w, onDone, close }) {
     <Row icon="calendar" title={t('Date')}>
       <DateField compact value={date} max={today} onChange={setDate} label={t('Date')} /></Row>
     <Row icon="clock" title={t('Start time')}>
-      <input type="time" className="timef" value={time} onChange={e => setTime(e.target.value)} /></Row>
+      <TimeField value={time} aria-label={t('Time')} onChange={setTime} /></Row>
     <div style={{ height: 18 }} />
     <Button variant="primary" onClick={save}>{t('Save')}</Button>
   </>
@@ -3817,7 +3819,7 @@ function WorkoutDetail({ w, close }) {
   const prNames = (rec0.prs || []).map(id => (EXIDX[id] ? exerciseNameFor(EXIDX[id]) : id))
   return <>
     <h3>{w.name}</h3>
-    <div className="muted small" style={{ marginBottom: led ? 4 : 12 }}>{[fmtDate(w.d, true) + (w.start ? ' ' + new Date(w.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''), ...durPart(w.end - w.start), fmtVol(sessionVolume(w, st), st.unit), tn('{0} set', '{0} sets', setsDone(rec0)), ...(w.bw ? [fmtWeight(w.bw, st.unit)] : []), ...(rec0.hr?.avg ? [Math.round(rec0.hr.avg) + ' bpm'] : [])].join(' · ')}</div>
+    <div className="muted small" style={{ marginBottom: led ? 4 : 12 }}>{[fmtDate(w.d, true) + (w.start ? ' ' + new Date(w.start).toLocaleTimeString(dateLocale(), { hour: '2-digit', minute: '2-digit' }) : ''), ...durPart(w.end - w.start), fmtVol(sessionVolume(w, st), st.unit), tn('{0} set', '{0} sets', setsDone(rec0)), ...(w.bw ? [fmtWeight(w.bw, st.unit)] : []), ...(rec0.hr?.avg ? [Math.round(rec0.hr.avg) + ' bpm'] : [])].join(' · ')}</div>
     {led && <div className="wf-led small" style={{ marginBottom: 12 }} data-testid="wd-led"><Icon name="person" />{ledLabel(led)}</div>}
     {(Object.values(wLoad).some(v => v > 0) || prNames.length > 0) && <div className="row" style={{ gap: 12, alignItems: 'center', marginBottom: 12 }}>
       {Object.values(wLoad).some(v => v > 0) && <span className="wf-map" aria-hidden="true"><BodyMap className="bm-mini" load={wLoad} body={st.body} /></span>}
@@ -3919,6 +3921,7 @@ function Calendar({ start, close, help = false }) {
   // weekly run in America/Los_Angeles, .github/workflows/audit.yml).
   const [cur, setCur] = useState(() => { const d = start ? new Date(/^\d{4}-\d{2}-\d{2}$/.test(start) ? start + 'T12:00:00' : start) : new Date(); d.setDate(1); return d })
   const y = cur.getFullYear(), mo = cur.getMonth()
+  const sessDays = plannedSessionDays(st)
   const byDay = {}
   st.workouts.forEach(w => {
     const day = workoutDay(w)
@@ -3947,7 +3950,7 @@ function Calendar({ start, close, help = false }) {
     const moved = !!ws && ovr && st.dayPlan[iso] !== 'rest'
     const rec = !ws && recDays.has(iso)
     const act = !ws && actDays.has(iso)
-    const dotCls = ws ? (moved ? 'done moved' : 'done') : note ? 'noted' : act ? 'sport' : rec ? 'recov' : missed ? 'miss' : ovr && planned ? 'ovr' : planned ? 'plan' : ''
+    const dotCls = ws ? (moved ? 'done moved' : 'done') : note ? 'noted' : sessDays.has(iso) ? 'sess' : act ? 'sport' : rec ? 'recov' : missed ? 'miss' : ovr && planned ? 'ovr' : planned ? 'plan' : ''
     const wkOf = weeks ? weekKey(iso, weekStartOf(st)) : null
     const frozenDay = !!wkOf && weeks.log.get(wkOf)?.s === 'frozen'
     const excusedDay = !!wkOf && weeks.log.get(wkOf)?.s === 'excused'
@@ -3979,6 +3982,8 @@ function Calendar({ start, close, help = false }) {
       <span><i style={{ background: 'var(--label-3)' }} />{t('Planned')}</span>
       <span><i style={{ background: 'var(--orange)' }} />{t('Rescheduled')}</span>
       <span><i className="miss" />{t('Missed plan')}</span>
+      {[...sessDays.keys()].some(k => k.startsWith(y + '-' + String(mo + 1).padStart(2, '0'))) &&
+        <span><i className="sess" />{t('Planned with your trainer')}</span>}
       {Object.keys(st.dayNotes || {}).some(k => k.startsWith(y + '-' + String(mo + 1).padStart(2, '0')) && dayNoteOf(st, k)) &&
         <span><i style={{ background: 'var(--indigo)' }} />{t('Day note')}</span>}
       {[...recDays].some(k => k.startsWith(y + '-' + String(mo + 1).padStart(2, '0'))) &&
@@ -4188,7 +4193,7 @@ function LogPastWorkout({ initial, close }) {
     <Row icon="calendar" title={t('Date')}>
       <DateField compact value={date} max={today} onChange={setDate} label={t('Date')} /></Row>
     <Row icon="clock" title={t('Start time')}>
-      <input type="time" className="timef" value={time} onChange={e => setTime(e.target.value)} /></Row>
+      <TimeField value={time} aria-label={t('Time')} onChange={setTime} /></Row>
     <Stepper label={t('Duration')} unit={t('min')} value={dur} step={5} min={0} decimal={false} invalid={!(dur >= 1) || dur > MAX_DURATION_MIN} onChange={v => setDur(Math.round(v))} />
     {!(dur >= 1) && <div className="small" style={{ color: 'var(--red)', marginTop: 6 }}>{t('Enter how long it took (at least 1 minute).')}</div>}
     {dur > MAX_DURATION_MIN && <div className="small" style={{ color: 'var(--red)', marginTop: 6 }}>{t('That’s more than a day. Keep it to 24 hours or less.')}</div>}

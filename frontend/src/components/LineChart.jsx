@@ -1,6 +1,8 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import { fmtNum, fmtDate, MONTHS, isoOf } from '../lib/format.js'
-import { t } from '../lib/i18n.js'
+import { t, dateLocale } from '../lib/i18n.js'
+// "5 lis", "Nov 5": the day and month as the app's language writes them (kl17), not "5 Lis".
+const dayMonth = d => { try { return new Intl.DateTimeFormat(dateLocale(), { day: 'numeric', month: 'short' }).format(d).replace(/\.$/, '') } catch { return d.getDate() + ' ' + t(MONTHS[d.getMonth()]) } }
 
 const W = 340   // viewBox width; the svg stretches to its container, height comes from `h`
 
@@ -93,7 +95,7 @@ export default function LineChart({ points, h = 150, unit = '', color = 'var(--a
       // and a span inside one day gets one date, in the middle.
       for (let i = 0; i <= 2; i++) {
         const tv = t0 + (t1 - t0) * i / 2, dd = new Date(tv)
-        const tk = { t: tv, txt: dd.getDate() + ' ' + t(MONTHS[dd.getMonth()]), anchor: i === 0 ? 'start' : i === 2 ? 'end' : 'middle' }
+        const tk = { t: tv, txt: dayMonth(dd), anchor: i === 0 ? 'start' : i === 2 ? 'end' : 'middle' }
         if (ticks.length && ticks[ticks.length - 1].txt === tk.txt) { if (i === 2) ticks[ticks.length - 1] = tk; continue }
         ticks.push(tk)
       }

@@ -1,5 +1,6 @@
 // @vitest-environment happy-dom
 /* Habcore Gym (kl13): the body module page (views/Body.jsx) on the real store. */
+import { pickDate } from '../components/DateField.test-util.js'
 import React, { act } from 'react'
 import { createRoot } from 'react-dom/client'
 import { MemoryRouter } from 'react-router-dom'
@@ -22,7 +23,7 @@ describe('Body (kl13)', () => {
     const f = mount(<BodyProfileForm close={() => {}} />)
     act(() => [...f.querySelectorAll('button')].find(b => b.textContent === 'Female').click())
     const birth = f.querySelector('[data-testid=body-birth]')
-    act(() => { const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; set.call(birth, '1990-05-04'); birth.dispatchEvent(new Event('input', { bubbles: true })) })
+    pickDate(birth, '1990-05-04')
     const h = f.querySelector('[data-testid=body-height] input, input[data-testid=body-height]')
     act(() => { const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; set.call(h, '168'); h.dispatchEvent(new Event('input', { bubbles: true })) })
     act(() => f.querySelector('[data-testid=body-profile-save]').click())
@@ -37,6 +38,15 @@ describe('Body (kl13)', () => {
     expect(latest.querySelector('.body-cat.is-over')).toBeTruthy()
     expect(latest.querySelector('[data-k=w]').textContent).toMatch(/−2 kg/)
     expect(page.querySelector('[data-body-row="2026-11-20"]').textContent).toMatch(/Tomek/)
+    // kl17 (owner): the change since the previous weigh-in, coloured, and the actions in their own column
+    const row = page.querySelector('[data-body-row="2026-11-20"]')
+    expect(row.querySelector('[data-body-delta]').textContent).toBe('−2 kg')
+    expect(row.querySelector('[data-body-delta]').classList.contains('down')).toBe(true)
+    expect(row.querySelectorAll('.body-row-acts .iconbtn')).toHaveLength(2)
+    expect(page.querySelector('[data-body-row="2026-11-01"] [data-body-delta]')).toBeNull()
+    // the chart switch is a segmented control, not loose chips
+    expect(page.querySelector('.body-seg-wrap .seg')).toBeTruthy()
+    expect(page.querySelector('.body-chips')).toBeNull()
   })
 
   it('under 18 says the adult ranges do not apply', () => {

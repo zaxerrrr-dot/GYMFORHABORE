@@ -1,5 +1,6 @@
 // @vitest-environment happy-dom
 // Discord 'Weight': "click on the body weight log to see the weight history and weekly average".
+import { pickTime } from './components/TimeField.test-util.js'
 import React, { act } from 'react'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { createRoot } from 'react-dom/client'
@@ -145,7 +146,7 @@ describe('log sheet date', () => {
     bwSheet()
     const log = mountTopSheet()
     setDate(log, '2026-09-03')
-    expect(log.querySelector('input[type="time"]').value).toBe('08:00')
+    expect(log.querySelector('[data-timefield]').value).toBe('08:00')
     act(() => { button(log, 'Save').click() })
     const day = useStore.getState().S.bodyweight.find(b => b.d === '2026-09-03')
     expect(day.ins.map(r => [r.at, r.w])).toEqual([[null, 80], ['08:00', 79]])

@@ -1,4 +1,6 @@
 import { useMemo, useState } from 'react'
+import DateField from '../components/DateField.jsx'
+import TimeField from '../components/TimeField.jsx'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../store/useStore.js'
 import { useUI } from '../store/useUI.js'
@@ -69,7 +71,7 @@ export function BodyProfileForm({ close }) {
     <Segmented className={sex ? '' : 'seg-none'} value={sex || ''} onChange={setSex} options={[{ value: 'female', label: t('Female') }, { value: 'male', label: t('Male') }]} />
     <div style={{ height: 12 }} />
     <label className="small" style={{ fontWeight: 600, display: 'block', marginBottom: 6 }}>{t('Date of birth')}
-      <input className="input" type="date" value={birth} max={todayISO()} min="1900-01-01" onChange={e => setBirth(e.target.value)} data-testid="body-birth" style={{ marginTop: 6 }} />
+      <DateField value={birth} max={todayISO()} min="1900-01-01" onChange={setBirth} data-testid="body-birth" clearable className="body-birth-f" />
     </label>
     <label className="small" style={{ fontWeight: 600, display: 'block', marginTop: 12, marginBottom: 6 }}>{t('Height (cm)')}</label>
     <NumberField className="input" value={height} nullable onChange={setHeight} data-testid="body-height" />
@@ -131,8 +133,8 @@ export function BodyMeasurementForm({ d0 = null, close }) {
   return <div data-body-form>
     <h3>{d0 ? t('Edit measurement') : t('Weigh-in')}</h3>
     <div className="body-grid2">
-      <label className="body-f"><span className="small">{t('Date')}</span><input className="input" type="date" value={d} max={todayISO()} onChange={e => setD(e.target.value)} /></label>
-      <label className="body-f"><span className="small">{t('Time')}</span><input className="input" type="time" value={at} onChange={e => setAt(e.target.value)} /></label>
+      <label className="body-f"><span className="small">{t('Date')}</span><DateField value={d} max={todayISO()} label={t('Date')} onChange={setD} /></label>
+      <label className="body-f"><span className="small">{t('Time')}</span><TimeField compact={false} value={at} aria-label={t('Time')} onChange={setAt} /></label>
     </div>
     <div className="small" style={{ fontWeight: 600, margin: '10px 0 6px' }}>{t('Source')}</div>
     <Segmented value={src} onChange={setSrc} options={SOURCES()} />
@@ -212,20 +214,26 @@ export default function Body() {
     </div> : <div className="card muted">{t('No measurements yet. Add your first weigh-in.')}</div>}
 
     {metrics.length > 0 && <Section title={t('Chart')}>
-      <div className="body-chips">{metrics.map(k => <button key={k} type="button" className={'chip' + (k === metric ? ' on' : '')} onClick={() => setMetric(k)}>{metricLabel(k)}</button>)}</div>
+      {/* kl17 (owner): a segmented control inside the card, like the app's other switches; it scrolls
+          sideways when more charts are offered than fit. */}
+      <div className="body-seg-wrap"><Segmented className="body-seg" value={metric} onChange={setMetric} options={metrics.map(k => ({ value: k, label: metricLabel(k) }))} /></div>
       <div className="chart" style={{ marginTop: 8 }}><LineChart points={pts} h={160} unit={metric === 'bmi' ? '' : pts.length ? '' : ''} /></div>
     </Section>}
 
     <Section title={t('History')}>
-      {rows.map(r => <div key={r.d} className="body-row" data-body-row={r.d}>
-        <div className="grow">
-          <div style={{ fontWeight: 600 }}>{fmtDate(r.d, true)}{r.at ? ' · ' + r.at : ''}</div>
+      {rows.map((r, i) => { const prev = rows.slice(i + 1).find(x => x.w != null); const dw = r.w != null && prev ? Math.round((r.w - prev.w) * 10) / 10 : null
+        return <div key={r.d} className="body-row" data-body-row={r.d}>
+        <div className="grow body-row-main">
+          <div className="body-row-top"><span style={{ fontWeight: 600 }}>{fmtDate(r.d, true)}{r.at ? ' · ' + r.at : ''}</span>
+            {dw != null && dw !== 0 && <span className={'body-delta ' + (dw < 0 ? 'down' : 'up')} data-body-delta>{signed('w', dw, unit)}</span>}</div>
           <div className="small muted">{[r.w != null && shown('w', r.w, unit), r.bmi != null && 'BMI ' + fmtNum(r.bmi), r.fat != null && t('Body fat') + ' ' + fmtNum(r.fat) + ' %'].filter(Boolean).join(' · ') || t('Measurements')}</div>
           <div className="small dim">{[r.src !== 'manual' && SOURCES().find(x => x.value === r.src)?.label, r.by && t('Added by {0} (trainer)', r.by.name || '?'), r.note].filter(Boolean).join(' · ')}</div>
         </div>
-        <button type="button" className="iconbtn" aria-label={t('Edit')} onClick={() => bodyMeasurementSheet(r.d)}><Icon name="pencil" /></button>
-        <button type="button" className="iconbtn" style={{ color: 'var(--red)' }} aria-label={t('Delete')} onClick={() => remove(r)}><Icon name="trash" /></button>
-      </div>)}
+        <div className="body-row-acts">
+          <button type="button" className="iconbtn" aria-label={t('Edit')} onClick={() => bodyMeasurementSheet(r.d)}><Icon name="pencil" /></button>
+          <button type="button" className="iconbtn" style={{ color: 'var(--red)' }} aria-label={t('Delete')} onClick={() => remove(r)}><Icon name="trash" /></button>
+        </div>
+      </div> })}
     </Section>
 
     <Section>

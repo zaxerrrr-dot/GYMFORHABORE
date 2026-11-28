@@ -2,6 +2,7 @@
 // Editing when a saved workout happened (#218). The sets are the record and are never touched;
 // what moves is where the session sits in history — which is also what the PR badges and the
 // legacy sync key depend on, so both are checked from the sheet, not just from the helper.
+import { pickTime } from './components/TimeField.test-util.js'
 import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest'
 import React, { act } from 'react'
 import { createRoot } from 'react-dom/client'
@@ -58,13 +59,13 @@ describe('changing the date of a saved workout', () => {
     const edit = render(() => open.click())
     expect(edit.querySelector('h3').textContent).toBe('Change date & time')
     expect(edit.querySelector('[data-datefield]').value).toBe('2026-08-25')
-    expect(edit.querySelector('input[type=time]').value).toBe('07:30')
+    expect(edit.querySelector('[data-timefield]').value).toBe('07:30')
   })
 
   it('moves the session, keeps the length it had and re-files it in date order', () => {
     const host = render(() => workoutDateSheet(history()[1]))
     pickDate(host.querySelector('[data-datefield]'), '2026-08-18')
-    act(() => { type(host.querySelector('input[type=time]'), '06:15') })
+    pickTime(host.querySelector('[data-timefield]'), '06:15')
     act(() => { button(host, 'Save').click() })
 
     expect(history().map(w => w.id)).toEqual(['late', 'early'])
@@ -104,12 +105,12 @@ describe('changing the date of a saved workout', () => {
       const host = render(() => workoutDateSheet(before[1]))   // 47 minutes long
       pickDate(host.querySelector('[data-datefield]'), '2026-08-26')
       for (const time of ['23:30', '01:00']) {
-        act(() => { type(host.querySelector('input[type=time]'), time) })
+        pickTime(host.querySelector('[data-timefield]'), time)
         act(() => { button(host, 'Save').click() })
         expect(history(), time).toEqual(before)
         expect(useUI.getState().toast).toHaveBeenLastCalledWith('That’s still in the future. Try an earlier start.')
       }
-      act(() => { type(host.querySelector('input[type=time]'), '00:50') })
+      pickTime(host.querySelector('[data-timefield]'), '00:50')
       act(() => { button(host, 'Save').click() })
       expect(history().find(w => w.id === 'late').d).toBe('2026-08-26')
     } finally { vi.useRealTimers() }
@@ -127,7 +128,7 @@ describe('changing the date of a saved workout', () => {
   it('leaves a second workout on the same day in start-time order', () => {
     const host = render(() => workoutDateSheet(history()[1]))
     pickDate(host.querySelector('[data-datefield]'), '2026-08-20')
-    act(() => { type(host.querySelector('input[type=time]'), '21:00') })
+    pickTime(host.querySelector('[data-timefield]'), '21:00')
     act(() => { button(host, 'Save').click() })
     expect(history().map(w => w.id)).toEqual(['early', 'late'])
     expect(history()).toHaveLength(2)

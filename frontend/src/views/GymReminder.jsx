@@ -6,6 +6,7 @@
 // plain Settings rows. On the iPhone the search is Apple's (lib/gym-places.js findPlaces), on
 // Android OpenStreetMap's; the map is OpenStreetMap on both (components/GymMap.jsx).
 // What is kept and how the phone watches it: lib/gym-reminder.js.
+import TimeField from '../components/TimeField.jsx'
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { t } from '../lib/i18n.js'
@@ -145,10 +146,10 @@ export default function GymReminderPage() {
         <Switch checked={!!win} onChange={v => save({ ...config, window: v ? { ...DEFAULT_WINDOW } : null })} aria-label={t('Only between certain hours')} />
       </Row>
       {win && <Row icon="sunrise" iconTint="var(--orange)" title={t('From')}>
-        <input type="time" className="timef" value={win.from} aria-label={t('From')} onChange={e => e.target.value && setWin({ from: e.target.value })} />
+        <TimeField value={win.from} aria-label={t('From')} onChange={v => v && setWin({ from: v })} />
       </Row>}
       {win && <Row icon="moon" iconTint="var(--indigo)" title={t('Until')}>
-        <input type="time" className="timef" value={win.to} aria-label={t('Until')} onChange={e => e.target.value && setWin({ to: e.target.value })} />
+        <TimeField value={win.to} aria-label={t('Until')} onChange={v => v && setWin({ to: v })} />
       </Row>}
     </Section>
     {perm && <Section footer={perm.background === 'granted' ? null : perm.precise === false

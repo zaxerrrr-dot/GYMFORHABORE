@@ -7,6 +7,8 @@
 //   DaySessions      the day sheet's block (kl14): that day's sessions and, leading a client, "Zaplanuj".
 // The server writes the client's document (api/gymv2/index.js) and tells the client (push); the
 // rules are lib/sessions-core.js.
+import DateField from './DateField.jsx'
+import TimeField from './TimeField.jsx'
 import { useEffect, useMemo, useState } from 'react'
 import { useStore } from '../store/useStore.js'
 import { useUI } from '../store/useUI.js'
@@ -52,7 +54,10 @@ export function SessionForm({ client, routines, trainers, d0 = '', s0 = null, sc
   const [dur, setDur] = useState(s0?.dur || SESS_DUR)
   const [rid, setRid] = useState(s0?.rid || '')
   const [note, setNote] = useState(s0?.note || '')
-  const [tr, setTr] = useState(s0?.tr?.id || myId || '')
+  // The trainer is the one planning (the trainer signed in, also while leading a client); an edit
+  // keeps the session's own. An admin who is not on the list gets the first trainer (kl17, owner).
+  const [tr, setTr] = useState(s0?.tr?.id || (trainers.some(x => x.id === myId) ? myId : trainers[0]?.id || myId || ''))
+  const [trOpen, setTrOpen] = useState(false)
   const [rep, setRep] = useState(false)
   const wd0 = new Date((d || todayISO()) + 'T12:00:00').getDay()
   const [days, setDays] = useState(() => new Set([wd0]))
@@ -92,10 +97,10 @@ export function SessionForm({ client, routines, trainers, d0 = '', s0 = null, sc
     {series && <p className="muted small">{t('Changes this session and the ones after it. The day stays; to move one day, change only that session.')}</p>}
     <Section>
       {!series && <Row icon="calendar" iconTint="var(--orange)" title={t('Day')}>
-        <input type="date" className="timef" value={d} onChange={e => setD(e.target.value)} data-testid="sess-day" aria-label={t('Day')} />
+        <DateField compact value={d} onChange={v => v && setD(v)} data-testid="sess-day" label={t('Day')} />
       </Row>}
       <Row icon="clock" iconTint="var(--purple)" title={t('Start time')}>
-        <input type="time" className="timef" value={tm} onChange={e => setT(e.target.value)} data-testid="sess-time" aria-label={t('Start time')} />
+        <TimeField value={tm} onChange={setT} data-testid="sess-time" aria-label={t('Start time')} />
       </Row>
       <Row icon="timer" iconTint="var(--blue)" title={t('Length')}>
         <select className="timef" value={DURS.includes(Number(dur)) ? String(dur) : 'x'} onChange={e => setDur(e.target.value === 'x' ? dur : Number(e.target.value))} aria-label={t('Length')} data-testid="sess-dur">
@@ -109,10 +114,15 @@ export function SessionForm({ client, routines, trainers, d0 = '', s0 = null, sc
           {routines.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
         </select>
       </Row>
-      {trainers.length > 1 && <Row icon="person" iconTint="var(--orange)" title={t('Trainer')}>
-        <select className="timef" value={tr} onChange={e => setTr(e.target.value)} aria-label={t('Trainer')} data-testid="sess-trainer">
-          {trainers.map(x => <option key={x.id} value={x.id}>{x.name}</option>)}
-        </select>
+      {trainers.length > 0 && <Row icon="person" iconTint="var(--orange)" title={t('Trainer')}>
+        {trOpen || !trainers.some(x => x.id === tr)
+          ? <select className="timef" value={tr} onChange={e => setTr(e.target.value)} aria-label={t('Trainer')} data-testid="sess-trainer">
+            {trainers.map(x => <option key={x.id} value={x.id}>{x.name}</option>)}
+          </select>
+          : <span className="row" style={{ gap: 10, alignItems: 'baseline' }}>
+            <b data-testid="sess-trainer-name">{trainers.find(x => x.id === tr)?.name}</b>
+            {trainers.length > 1 && <button type="button" className="wf-link small" onClick={() => setTrOpen(true)} data-testid="sess-trainer-change">{t('Change')}</button>}
+          </span>}
       </Row>}
     </Section>
     <TextArea placeholder={t('Note for the client (optional)')} value={note} maxLength={1000} rows={2} onChange={e => setNote(e.target.value)} data-testid="sess-note" />
@@ -126,7 +136,7 @@ export function SessionForm({ client, routines, trainers, d0 = '', s0 = null, sc
         <Segmented value={mode} onChange={setMode} options={[{ value: 'weeks', label: t('For weeks') }, { value: 'until', label: t('Until a day') }]} />
         {mode === 'weeks'
           ? <label className="row" style={{ gap: 8, marginTop: 8 }}><span>{t('Weeks')}</span><input type="number" min="1" max={SERIES_MAX_WEEKS} className="timef" style={{ width: 80 }} value={weeks} onChange={e => setWeeks(Math.max(1, Math.min(SERIES_MAX_WEEKS, Number(e.target.value) || 1)))} data-testid="sess-weeks" /></label>
-          : <label className="row" style={{ gap: 8, marginTop: 8 }}><span>{t('Last day')}</span><input type="date" className="timef" min={d} value={until} onChange={e => setUntil(e.target.value)} data-testid="sess-until" /></label>}
+          : <label className="row" style={{ gap: 8, marginTop: 8 }}><span>{t('Last day')}</span><DateField compact min={d} value={until} onChange={v => v && setUntil(v)} data-testid="sess-until" label={t('Last day')} /></label>}
       </div>}
     </Section>}
     <Button variant="primary" icon="checkCircle" disabled={!ok || busy} onClick={save} data-testid="sess-save">{s0 ? t('Save') : t('Plan')}</Button>
@@ -223,12 +233,31 @@ export function SessionRows({ list, onOpen, S = null, showClient = false, overla
   })}</div>
 }
 
+// Habcore Gym (kl17, owner): the next 3 sessions show, the rest open with "Pokaż więcej (N)" and
+// fold back with "Zwiń", sliding open (grid rows 0fr -> 1fr). Three or fewer: no button.
+export const SHOWN_SESSIONS = 3
+export function MoreList({ items, render, testid, shown = SHOWN_SESSIONS }) {
+  const [open, setOpen] = useState(false)
+  const head = items.slice(0, shown), rest = items.slice(shown)
+  return <>
+    {head.map(render)}
+    {rest.length > 0 && <>
+      <div className={'sess-more' + (open ? ' open' : '')} aria-hidden={!open} inert={!open} data-testid={testid + '-list'}>
+        <div className="sess-more-in">{rest.map(render)}</div>
+      </div>
+      <button type="button" className="wf-link small sess-more-btn" aria-expanded={open} onClick={() => setOpen(o => !o)} data-testid={testid}>
+        {open ? t('Fold away') : t('Show more') + ' (' + rest.length + ')'}
+      </button>
+    </>}
+  </>
+}
+
 /** Home: today's and the next sessions. Leading a client, "Zaplanuj" too. */
 export function UpcomingSessions({ S }) {
   const lead = useLeading()
   const [now, setNow] = useState(() => Date.now())
   useEffect(() => { const i = setInterval(() => setNow(Date.now()), 60000); return () => clearInterval(i) }, [])
-  const list = useMemo(() => upcoming(sessionsOf(S), now, 3), [S.sessions, now]) // eslint-disable-line react-hooks/exhaustive-deps
+  const list = useMemo(() => upcoming(sessionsOf(S), now, 60), [S.sessions, now]) // eslint-disable-line react-hooks/exhaustive-deps
   // A push about a session (#/home?sess=<id>) opens it.
   useEffect(() => {
     const m = /[?&]sess=([^&]+)/.exec(location.hash || '')
@@ -246,7 +275,7 @@ export function UpcomingSessions({ S }) {
       {lead && <button type="button" className="wf-link small" onClick={() => planFor(lead)} data-testid="sess-plan-lead">{t('Plan a session')}</button>}
     </div>
     {!list.length ? <p className="muted small">{t('Nothing planned at a set time.')}</p> : <>
-      {list.map(s => <div key={s.id} className="sess-day-lbl small dim">{s.d === today ? t('Today') : s.d === addDays(today, 1) ? t('Tomorrow') : dayShort(s.d)}<SessionRows list={[s]} S={S} onOpen={open} /></div>)}
+      <MoreList items={list} testid="home-sessions-more" render={s => <div key={s.id} className="sess-day-lbl small dim">{s.d === today ? t('Today') : s.d === addDays(today, 1) ? t('Tomorrow') : dayShort(s.d)}<SessionRows list={[s]} S={S} onOpen={open} /></div>} />
     </>}
     {list.length > 0 && !lead && list[0].d === today && !S.active && !doneFor(S, list[0]) && <Button variant="primary" size="sm" icon="play" onClick={() => startSession(S, list[0])} data-testid="sess-start-home">{t('Start this workout')}</Button>}
   </div>
@@ -288,7 +317,7 @@ export function ClientSessionsSheet({ c, close }) {
   return <div data-testid="client-sessions">
     <h3>{t('Planned sessions')}: {c.name}</h3>
     {!data ? <p className="muted">{t('Loading…')}</p> : !list.length ? <p className="muted">{t('Nothing planned at a set time.')}</p>
-      : <SessionRows list={list} onOpen={s => sessionSheet(s, { staff: { client: c }, onChanged: load })} />}
+      : <MoreList items={list} testid="client-sessions-more" render={s => <SessionRows key={s.id} list={[s]} onOpen={x => sessionSheet(x, { staff: { client: c }, onChanged: load })} />} />}
     <Button variant="primary" icon="plus" disabled={!c.canLead} onClick={() => planFor(c, { onSaved: load })} data-testid="client-sess-plan">{t('Plan a session')}</Button>
     <div style={{ height: 8 }} />
     <Button variant="ghost" className="dim" onClick={close}>OK</Button>

@@ -50,8 +50,8 @@ describe('DateField', () => {
     expect(field.tagName).toBe('BUTTON')
     expect(field.value).toBe('2026-08-25')
     expect(field.querySelector('time').getAttribute('datetime')).toBe('2026-08-25')
-    expect(field.textContent).toMatch(/25 Aug 2026/)
-    expect(field.getAttribute('aria-label')).toMatch(/^Date: .*25 Aug 2026/)
+    expect(field.textContent).toBe('25/08/2026') // numbers in the app's language (kl17), not the browser's
+    expect(field.getAttribute('aria-label')).toBe('Date: 25/08/2026')
     expect(host.querySelector('input')).toBeNull()
   })
 
@@ -147,7 +147,7 @@ describe('DateField', () => {
   it('speaks the UI language', async () => {
     await setLang('de')
     const host = mount(<Harness initial="2026-08-25" />)
-    expect(host.querySelector('[data-datefield]').textContent).toMatch(/25\. Aug\. 2026|25\. Aug 2026/)
+    expect(host.querySelector('[data-datefield]').textContent).toBe('25.08.2026')
     const p = openPicker(host)
     expect(title(p)).toBe('August 2026')
     expect(p.querySelector('[aria-label="Vorheriger Monat"]')).toBeTruthy()

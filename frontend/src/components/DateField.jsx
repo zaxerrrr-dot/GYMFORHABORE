@@ -12,7 +12,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useStore } from '../store/useStore.js'
 import { useUI } from '../store/useUI.js'
-import { t } from '../lib/i18n.js'
+import { t, dateLocale } from '../lib/i18n.js'
 import { fmtDate, todayISO, DAYS, MONTHS, MONTHS_LONG, weekOrder, weekStartOf, weekDayOffset } from '../lib/format.js'
 import Icon from './Icon.jsx'
 import { Button } from './ui.jsx'
@@ -35,7 +35,7 @@ const addMonths = (iso, n) => {
 }
 const clamp = (iso, min, max) => (min && iso < min ? min : max && iso > max ? max : iso)
 
-export function DatePicker({ value, min, max, label, onPick, close }) {
+export function DatePicker({ value, min, max, label, onPick, close, clearable = false }) {
   const ws = weekStartOf(useStore(s => s.S))
   const today = todayISO()
   const start = clamp(ISO.test(value || '') ? value : today, min, max)
@@ -130,7 +130,10 @@ export function DatePicker({ value, min, max, label, onPick, close }) {
   return <div className="datep" data-datepicker>
     {label && <div className="small muted datep-label">{label}</div>}
     {body}
-    {!outD(today) && <Button variant="ghost" className="datep-today" onClick={() => pick(today)}>{t('Today')}</Button>}
+    <div className="row datep-acts">
+      {clearable && <Button variant="ghost" onClick={() => { close(); onPick('') }} data-datep-clear>{t('Clear')}</Button>}
+      {!outD(today) && <Button variant="ghost" className="datep-today" onClick={() => pick(today)}>{t('Today')}</Button>}
+    </div>
   </div>
 }
 
@@ -138,14 +141,20 @@ export function datePickerSheet(opts) {
   return useUI.getState().openSheet(close => <DatePicker {...opts} close={close} />)
 }
 
-export default function DateField({ value, min, max, onChange, label, compact = false, className = '' }) {
+// The field shows the day as numbers in the app's language (Polish: 03.12.2026), never in the
+// browser's: the native input's "03/12/2026" read as March to a Polish reader.
+const numericDate = iso => {
+  try { return new Intl.DateTimeFormat(dateLocale(), { day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date(iso + 'T12:00:00')) } catch { return iso }
+}
+
+export default function DateField({ value, min, max, onChange, label, compact = false, className = '', clearable = false, ...rest }) {
   useStore(s => s.S.weekStart) // re-render with the profile, like every other date on screen
-  const text = ISO.test(value || '') ? fmtDate(value, !compact, true) : t('Pick a day')
+  const text = ISO.test(value || '') ? numericDate(value) : t('Pick a day')
   return (
     <button type="button" value={value || ''} data-datefield
       className={(compact ? 'timef' : 'field') + ' datef ' + className}
-      aria-haspopup="dialog" aria-label={label ? label + ': ' + text : text}
-      onClick={() => datePickerSheet({ value, min, max, label, onPick: onChange })}>
+      aria-haspopup="dialog" aria-label={label ? label + ': ' + text : text} {...rest}
+      onClick={() => datePickerSheet({ value, min, max, label, clearable, onPick: onChange })}>
       {ISO.test(value || '') ? <time dateTime={value}>{text}</time> : <span className="datef-ph">{text}</span>}
       {!compact && <Icon name="calendar" />}
     </button>

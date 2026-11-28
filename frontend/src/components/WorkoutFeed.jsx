@@ -6,14 +6,14 @@ import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import Icon from './Icon.jsx'
 import BodyMap from './BodyMap.jsx'
 import { Button, SearchField, MenuButton, Segmented } from './ui.jsx'
-import { t, tn } from '../lib/i18n.js'
+import { t, tn, dateLocale } from '../lib/i18n.js'
 import { fmtDate, fmtDur, fmtVol, fmtNum, exerciseNameText } from '../lib/format.js'
 import { EXIDX } from '../lib/exercises.js'
 import { loadOfWorkouts } from '../lib/muscles.js'
 import { feedFilter, feedGroups, cardFacts, topExercises, filterChoices, FEED_PAGE, PERIODS } from '../lib/workout-feed.js'
 import { notesOf, mayChange, WORKOUT_NOTE_MAX } from '../lib/workout-notes.js'
 
-const timeOf = ms => { try { return ms ? new Date(ms).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '' } catch { return '' } }
+const timeOf = ms => { try { return ms ? new Date(ms).toLocaleTimeString(dateLocale(), { hour: '2-digit', minute: '2-digit' }) : '' } catch { return '' } }
 const whenOf = ms => { try { return new Date(ms).toLocaleString([], { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) } catch { return '' } }
 
 export const feedNameOf = id => (EXIDX[id] ? exerciseNameText(EXIDX[id]) : String(id || ''))
@@ -114,7 +114,7 @@ export function WorkoutFeedList({ workouts, S, nameOf, planName = id => id, onOp
     </>}
   </div>
 }
-const fmtMonth = iso => { try { const s = new Date(iso + 'T12:00:00').toLocaleDateString([], { month: 'long', year: 'numeric' }); return s.charAt(0).toUpperCase() + s.slice(1) } catch { return iso.slice(0, 7) } }
+const fmtMonth = iso => { try { const s = new Date(iso + 'T12:00:00').toLocaleDateString(dateLocale(), { month: 'long', year: 'numeric' }); return s.charAt(0).toUpperCase() + s.slice(1) } catch { return iso.slice(0, 7) } }
 
 /**
  * A workout's notes as a thread: each note with its author ("Trainer" for a trainer), when, and Edit /

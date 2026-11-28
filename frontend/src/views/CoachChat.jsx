@@ -12,6 +12,7 @@
 // proposal — every change, accepted or not, the notes, the evidence — is kept, so saying yes
 // or no never makes it disappear. Turning the Coach off is the admin's decision, not a control
 // on this screen.
+import TimeField from '../components/TimeField.jsx'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { closeThenNav } from '../lib/nav.js'
@@ -854,8 +855,8 @@ function CadenceSheet({ update }) {
           onChange={v => patch(c => { c.cadence = { weekly: { ...c.cadence.weekly, day: v } } })}
           options={['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map((d, i) => ({ value: i, label: t(d) }))} />
         <Row icon="clock" iconTint="var(--purple)" title={t('Time')}>
-          <input type="time" className="timef" value={cadence.weekly.time || '18:00'}
-            onChange={e => patch(c => { c.cadence = { weekly: { ...c.cadence.weekly, time: e.target.value } } })} />
+          <TimeField value={cadence.weekly.time || '18:00'} aria-label={t('Time')}
+            onChange={v => patch(c => { c.cadence = { weekly: { ...c.cadence.weekly, time: v } } })} />
         </Row>
       </>}
       {mode === 'every' && <SelectRow icon="dumbbell" iconTint="var(--teal)" title={t('After how many workouts')}

@@ -14,6 +14,7 @@ import { EXIDX } from '../lib/exercises.js'
 import { exerciseNameText } from '../lib/format.js'
 import { previousSame, compareWorkouts, cardFacts } from '../lib/workout-feed.js'
 import { startLeading } from '../lib/gymv2.js'
+import { clientSessions } from '../lib/sessions.js'
 import { Button } from './ui.jsx'
 import Icon from './Icon.jsx'
 import { WorkoutFeedList, WorkoutCard, NotesThread, CompareBlock, ledLabel } from './WorkoutFeed.jsx'
@@ -57,11 +58,14 @@ export function ClientFeedSheet({ c, close, openWid = null }) {
     if (w) open(w)
   }, [data]) // eslint-disable-line react-hooks/exhaustive-deps
   const days = useMemo(() => new Set(data?.days || []), [data])
+  // The client's sessions planned by a trainer (kl17): a hollow ring on days not trained yet.
+  const [planned, setPlanned] = useState(() => new Set())
+  useEffect(() => { clientSessions(c.id).then(r => setPlanned(new Set((r?.sessions || []).filter(s => !s.cx).map(s => s.d)))).catch(() => {}) }, [c.id])
   const onDay = iso => openSheet(cl => <ClientDaySheet c={c} iso={iso} S={S} nameOf={nameOf} close={cl} onOpen={w => { cl(); open(w) }} />)
   return <>
     <h3>{t('Workouts')}: {c.name}</h3>
     {!data ? <p className="muted">{t('Loading…')}</p> : <>
-      <MonthDays days={days} S={S} onDay={onDay} />
+      <MonthDays days={days} planned={planned} S={S} onDay={onDay} />
       <WorkoutFeedList workouts={data.workouts} S={S} nameOf={nameOf} planName={planName} onOpen={open}
         total={data.total} onMore={() => { if (!busy) load(data.workouts.length) }}
         empty={<p className="muted">{t('No workouts yet.')}</p>} />
@@ -72,7 +76,7 @@ export function ClientFeedSheet({ c, close, openWid = null }) {
 }
 
 /** A small month calendar: a dot on every trained day; any day opens that day. */
-export function MonthDays({ days, S, onDay }) {
+export function MonthDays({ days, S, onDay, planned = null }) {
   const [cur, setCur] = useState(() => { const d = new Date(); d.setDate(1); return d })
   const y = cur.getFullYear(), mo = cur.getMonth()
   const ws = weekStartOf(S)
@@ -84,7 +88,7 @@ export function MonthDays({ days, S, onDay }) {
   for (let i = 0; i < lead; i++) cells.push(<span key={'b' + i} />)
   for (let d = 1; d <= n; d++) {
     const iso = isoOf(new Date(y, mo, d))
-    cells.push(<button key={iso} type="button" className={(days.has(iso) ? 'has' : '') + (iso === today ? ' today' : '')} onClick={() => onDay(iso)} aria-label={fmtDate(iso, true)} data-testid="wf-cal-day">{d}</button>)
+    cells.push(<button key={iso} type="button" className={(days.has(iso) ? 'has' : planned?.has(iso) ? 'sess' : '') + (iso === today ? ' today' : '')} onClick={() => onDay(iso)} aria-label={fmtDate(iso, true)} data-testid="wf-cal-day">{d}</button>)
   }
   return <div data-testid="wf-cal">
     <div className="row between" style={{ alignItems: 'center' }}>

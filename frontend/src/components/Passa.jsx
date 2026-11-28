@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { t, tn } from '../lib/i18n.js'
-import { fmtNum, fmtDur, fmtDate, todayISO, isoOf, weekKey, weekStartOf } from '../lib/format.js'
+import { fmtNum, fmtDur, fmtDate, todayISO, isoOf, weekKey, weekStartOf, DAYS } from '../lib/format.js'
 import { streakInfo } from '../lib/streak.js'
 import { workoutDay, workoutDuration, sessionVolume } from '../lib/history.js'
 import { useUI } from '../store/useUI.js'
@@ -49,7 +49,9 @@ export function passaData (S, today = todayISO(), count = WEEKS_SHOWN) {
   return { info, weeks, days, week: { count: inWeek.length, ms, vol }, total: list.length, thisWk }
 }
 
-const DAY_FMT = d => new Date(d + 'T12:00:00').toLocaleDateString(undefined, { weekday: 'narrow' })
+// The week row's day names in the app's language, the same short names as Home's week ("Pn Wt Śr"),
+// never the browser's: toLocaleDateString(undefined) drew "M T W T F S S" in a Polish app.
+const DAY_FMT = d => t(DAYS[new Date(d + 'T12:00:00').getDay()])
 
 /** "2 workouts · 1h 35m · 12 400 kg": only what there is. */
 export function weekLine (week, unit = 'kg') {

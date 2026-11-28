@@ -2,6 +2,7 @@
 // #859 (Borgna02): several weigh-ins a day, each with its time. The log sheet has a time field,
 // the list shows every weigh-in of a day with its time under the day's value, and each one can
 // be edited or deleted (with Undo) on its own.
+import { pickTime } from './components/TimeField.test-util.js'
 import React, { act } from 'react'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { createRoot } from 'react-dom/client'
@@ -49,13 +50,13 @@ describe('the log sheet', () => {
   it('starts on now, and a second weigh-in today joins the first', () => {
     bwSheet()
     const log = mountTopSheet()
-    const time = log.querySelector('input[type="time"]')
+    const time = log.querySelector('[data-timefield]')
     expect(time.value).toBe(timeOf(Date.now()))
-    setValue(time, '06:30')
+    pickTime(time, '06:30')
     act(() => { button(log, 'Save').click() })
     bwSheet()
     const again = mountTopSheet()
-    setValue(again.querySelector('input[type="time"]'), '22:00')
+    pickTime(again.querySelector('[data-timefield]'), '22:00')
     act(() => { button(again, 'Save').click() })
     expect(readingsOf(dayOf(todayISO())).map(r => r.at)).toEqual(['06:30', '22:00'])
   })
@@ -63,7 +64,7 @@ describe('the log sheet', () => {
   it('the check-in before a workout saves at now, with no time to pick', () => {
     bwSheet({ required: true })
     const log = mountTopSheet()
-    expect(log.querySelector('input[type="time"]')).toBeNull()
+    expect(log.querySelector('[data-timefield]')).toBeNull()
     act(() => { button(log, 'Save & start workout').click() })
     expect(readingsOf(dayOf(todayISO()))[0].at).toBe(timeOf(Date.now()))
   })
@@ -112,8 +113,8 @@ describe('the weigh-ins list', () => {
     act(() => { host.querySelector('[data-reading="pm"] .bw-when-btn').click() })
     const edit = mountTopSheet()
     expect(edit.querySelector('h3').textContent).toBe('Edit weigh-in')
-    expect(edit.querySelector('input[type="time"]').value).toBe('21:30')
-    setValue(edit.querySelector('input[type="time"]'), '20:45')
+    expect(edit.querySelector('[data-timefield]').value).toBe('21:30')
+    pickTime(edit.querySelector('[data-timefield]'), '20:45')
     act(() => { button(edit, '+1').click() })
     act(() => { button(edit, 'Save').click() })
     expect(readingsOf(dayOf(D)).map(r => [r.id, r.at, r.w])).toEqual([['am', '07:10', 79.5], ['pm', '20:45', 81.6]])

@@ -1,4 +1,5 @@
 // @vitest-environment happy-dom
+import { pickTime } from './components/TimeField.test-util.js'
 import React, { act } from 'react'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
@@ -85,8 +86,8 @@ describe('log a past workout', () => {
     logPastWorkoutSheet()
     const host = mountTopSheet()
     const fields = [...host.querySelectorAll('.lrow .timef')]
-    // the date is Habcore Gym's own field now (#809), the time is still the system one
-    expect(fields.map(i => i.tagName + (i.type ? ':' + i.type : ''))).toEqual(['BUTTON:button', 'INPUT:time'])
+    // the date and the time are Habcore Gym's own fields now (#809, kl17): no system picker
+    expect(fields.map(i => i.tagName + (i.type ? ':' + i.type : ''))).toEqual(['BUTTON:button', 'BUTTON:button'])
     for (const field of fields) expect(field.closest('.lrow').querySelectorAll('.lrow-v')).toHaveLength(0)
     const rule = cssSource.match(/^\.lrow-m\{([^}]*)\}/m)
     expect(rule?.[1]).toContain('min-width:auto')
@@ -143,7 +144,7 @@ describe('log a past workout', () => {
       logPastWorkoutSheet()
       const host = mountTopSheet()
       pickDate(host.querySelector('[data-datefield]'), '2026-08-26')
-      act(() => { type(host.querySelector('input[type=time]'), '23:30') })
+      pickTime(host.querySelector('[data-timefield]'), '23:30')
       act(() => { button(host, 'Continue').click() })
       expect(useStore.getState().S.active).toBeFalsy()
       expect(useUI.getState().toast).toHaveBeenLastCalledWith('That’s still in the future. Try an earlier start.')

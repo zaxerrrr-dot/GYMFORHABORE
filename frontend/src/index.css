@@ -1012,7 +1012,8 @@ h4.sec{
    rows before that). So a strip never scrolls vertically (overflow-y:hidden), keeps its sideways
    overscroll to itself, and leaves both pan axes to the browser: a sideways swipe scrolls the
    strip, a vertical one that starts on it scrolls the page (pan-x alone used to swallow that). */
-.chips,.seg.seg-scroll,.fv-strip,.pc-picks,.sharew-pick,.ci-rail,.tr-controls .tr-chips,.hm-wrap,.pcard-tabs,.chips-row,.gg-tabs{
+.chips,.seg.seg-scroll,.fv-strip,.pc-picks,.sharew-pick,.ci-rail,.tr-controls .tr-chips,.hm-wrap,.pcard-tabs,.chips-row,.gg-tabs,
+.body-seg-wrap{
   overflow-y:hidden;overscroll-behavior-x:contain;overscroll-behavior-y:auto;touch-action:pan-x pan-y}
 :is(.chips,.seg.seg-scroll,.fv-strip,.pc-picks,.sharew-pick,.ci-rail,.tr-chips,.pcard-tabs,.chips-row) :is(.chip,button)::before{top:0;bottom:0}
 /* The chip hit-area (.chip::before, inset:-6px) must not poke out of the strip vertically:
@@ -5045,3 +5046,41 @@ p.sess-tag{margin:4px 0 8px}
 html:lang(pl) .capitalize, html:lang(pl) .tag, html:lang(pl) .chip, html:lang(pl) .pcard-ex-n,
 html:lang(pl) .ins-row-n, html:lang(pl) .cmp-h, html:lang(pl) .com-kit .tag,
 html:lang(pl) .com-main .ss.capitalize { text-transform: none; }
+
+/* Habcore Gym (kl17): own time picker, 24 h, in the date picker's style (components/TimeField.jsx). */
+.timep-now{text-align:center;font-size:var(--fs-title1,1.75rem);font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em;margin:4px 0 10px}
+.timep-grid{display:grid;gap:4px}
+.timep-h{grid-template-columns:repeat(6,1fr)}
+.timep-m{grid-template-columns:repeat(6,1fr);margin-top:12px;padding-top:12px;border-top:1px solid var(--sep,rgba(127,127,127,.2))}
+.timep .cal-d{aspect-ratio:auto;min-height:44px;font-variant-numeric:tabular-nums}
+.timep-acts{gap:8px;margin-top:12px}
+.timep-acts>*{flex:1}
+.datep-acts{gap:8px;margin-top:12px}
+.datep-acts>*{flex:1}
+.datep-acts .datep-today{margin-top:0}
+.timefield{justify-content:center;font-variant-numeric:tabular-nums}
+/* Habcore Gym (kl17): "Pokaż więcej (N)" under the planned sessions slides the rest open. */
+.sess-more{display:grid;grid-template-rows:0fr;transition:grid-template-rows .28s ease}
+.sess-more.open{grid-template-rows:1fr}
+.sess-more-in{overflow:hidden;min-height:0}
+.sess-more-btn{display:block;margin:6px 0 2px}
+@media (prefers-reduced-motion: reduce){.sess-more{transition:none}}
+/* Habcore Gym (kl17): a session a trainer planned is a hollow ring until it is done (then the full dot). */
+.wday .dot.sess,.cal-d i.sess,.cal-legend i.sess,.mday i.sess{background:transparent;box-shadow:inset 0 0 0 1.5px var(--acc);width:6px;height:6px}
+.wf-day-cal button.sess::after{content:'';position:absolute;left:50%;bottom:5px;width:6px;height:6px;margin-left:-3px;border-radius:50%;box-shadow:inset 0 0 0 1.5px #ba1a18}
+/* Habcore Gym (kl17, owner): the Body history rows padded like the app's other lists, the actions in a
+   fixed column at the right edge, 44 px targets, the change since the previous weigh-in coloured. */
+.body-row{padding:12px 16px;gap:10px;align-items:center}
+.body-row:last-child{border-bottom:0}
+.body-row-main{min-width:0}
+.body-row-top{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.body-delta{font-size:var(--fs-footnote);font-weight:600;font-variant-numeric:tabular-nums}
+.body-delta.down{color:var(--green)}
+.body-delta.up{color:var(--red)}
+.body-row-acts{flex:none;display:flex;gap:2px;margin-inline-start:auto}
+.body-row-acts .iconbtn{min-width:44px;min-height:44px}
+/* The chart switch: a segmented control inside the card with its own margin; sideways scroll when wide. */
+.body-seg-wrap{padding:10px 12px 0;overflow-x:auto;scrollbar-width:none}
+.body-seg-wrap::-webkit-scrollbar{display:none}
+.body-seg{min-width:max-content;width:100%}
+.body-seg>button{padding-inline:14px;white-space:nowrap}

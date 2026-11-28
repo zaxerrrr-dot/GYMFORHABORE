@@ -11,8 +11,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { DEF, useStore } from '../store/useStore.js'
 import { useUI } from '../store/useUI.js'
 import { dayOverrideSheet } from '../sheets.jsx'
-import { UpcomingSessions, PlanSessions, SessionSheet } from './Sessions.jsx'
-import { applySessionOp, sessionStart } from '../lib/sessions-core.js'
+import { UpcomingSessions, PlanSessions, SessionSheet, SessionForm } from './Sessions.jsx'
+import { applySessionOp, sessionStart, plannedSessionDays } from '../lib/sessions-core.js'
+import { MonthDays } from './GymClientFeed.jsx'
 import { mergeStates } from '../lib/sync-merge.js'
 import { buildSessionNotifications, sessionChangeNotifications } from '../lib/mobile.js'
 import { CalendarSheet } from './CalendarFeed.jsx'
@@ -53,6 +54,73 @@ describe('sessions on the client side (kl16)', () => {
     expect(!!st.active || useUI.getState().sheets.length > 0).toBe(true)
   })
 
+  it('Home shows the 3 next sessions; "Show more (N)" opens the rest and "Fold away" closes them (kl17)', () => {
+    let list = []
+    for (let i = 1; i <= 5; i++) list = applySessionOp(list, { op: 'add', d: plus(i), t: '18:00', rid: 'r1', rname: 'Upper', tr: TR }, TR, Date.now() - 1000).list
+    setS({ routines: [routine], sessions: list })
+    const page = mount(<UpcomingSessions S={useStore.getState().S} />)
+    const card = page.querySelector('[data-testid=home-sessions]')
+    const more = card.querySelector('[data-testid=home-sessions-more]')
+    const hidden = card.querySelector('[data-testid=home-sessions-more-list]')
+    expect(more.textContent).toBe('Show more (2)')
+    expect(more.getAttribute('aria-expanded')).toBe('false')
+    expect(hidden.classList.contains('open')).toBe(false)
+    expect(hidden.querySelectorAll('[data-testid=sess-row]')).toHaveLength(2)
+    expect(card.querySelectorAll('[data-testid=sess-row]').length - hidden.querySelectorAll('[data-testid=sess-row]').length).toBe(3)
+    act(() => more.click())
+    expect(hidden.classList.contains('open')).toBe(true)
+    expect(more.textContent).toBe('Fold away')
+    act(() => more.click())
+    expect(hidden.classList.contains('open')).toBe(false)
+  })
+
+  it('calendars mark a planned session day with a ring, a trained one with the full dot (kl17)', () => {
+    let list = applySessionOp([], { op: 'add', d: plus(2), t: '18:00', rid: 'r1', rname: 'Upper', tr: TR }, TR, Date.now() - 1000).list
+    list = applySessionOp(list, { op: 'add', d: plus(3), t: '18:00', rid: 'r1', rname: 'Upper', tr: TR }, TR, Date.now() - 1000).list
+    list = applySessionOp(list, { op: 'cancel', id: list[1].id }, TR).list
+    setS({ routines: [routine], sessions: list })
+    const days = plannedSessionDays(useStore.getState().S)
+    expect([...days.keys()]).toEqual([plus(2)])   // the cancelled one is no planned day
+    const page = mount(<MonthDays days={new Set([plus(1)])} planned={new Set([plus(1), plus(2)])} S={useStore.getState().S} onDay={() => {}} />)
+    const cls = [...page.querySelectorAll('.wf-day-cal button')].map(b => b.className.trim())
+    // a trained day stays the full dot even when a session was planned on it; the planned one gets the ring
+    expect(cls.filter(c => c.startsWith('has')).length).toBeGreaterThanOrEqual(plus(1).slice(0, 7) === todayISO().slice(0, 7) ? 1 : 0)
+    if (plus(2).slice(0, 7) === todayISO().slice(0, 7)) expect(cls.filter(c => c.startsWith('sess'))).toHaveLength(1)
+  })
+
+  it('"Plan a session": the trainer is the one signed in, another only after "Change"; an edit keeps its own (kl17)', () => {
+    const trainers = [{ id: 'T1', name: 'Anna' }, { id: 'T2', name: 'Tomasz' }]
+    setS({ routines: [routine] })
+    useStore.setState({ user: { id: 'T2', name: 'Tomasz' } })
+    let page = mount(<SessionForm client={{ id: 'C', name: 'Ania' }} routines={[routine]} trainers={trainers} close={() => {}} />)
+    expect(page.querySelector('[data-testid=sess-trainer-name]').textContent).toBe('Tomasz')
+    expect(page.querySelector('[data-testid=sess-trainer]')).toBeNull()
+    act(() => page.querySelector('[data-testid=sess-trainer-change]').click())
+    expect(page.querySelector('[data-testid=sess-trainer]').value).toBe('T2')
+    // leading a client: the trainer behind the client's account
+    useStore.setState({ user: { id: 'C', name: 'Ania', acting: { by: { id: 'T1', name: 'Anna' } } } })
+    page = mount(<SessionForm client={{ id: 'C', name: 'Ania' }} routines={[routine]} trainers={trainers} close={() => {}} />)
+    expect(page.querySelector('[data-testid=sess-trainer-name]').textContent).toBe('Anna')
+    // an admin who is not a trainer: the first trainer
+    useStore.setState({ user: { id: 'ADM', name: 'admin' } })
+    page = mount(<SessionForm client={{ id: 'C', name: 'Ania' }} routines={[routine]} trainers={trainers} close={() => {}} />)
+    expect(page.querySelector('[data-testid=sess-trainer-name]').textContent).toBe('Anna')
+    // an edit keeps the session's trainer
+    useStore.setState({ user: { id: 'T1', name: 'Anna' } })
+    const s0 = applySessionOp([], { op: 'add', d: plus(2), t: '18:00', rid: 'r1', rname: 'Upper', tr: { id: 'T2', name: 'Tomasz' } }, TR, Date.now() - 1000).list[0]
+    page = mount(<SessionForm client={{ id: 'C', name: 'Ania' }} routines={[routine]} trainers={trainers} s0={s0} close={() => {}} />)
+    expect(page.querySelector('[data-testid=sess-trainer-name]').textContent).toBe('Tomasz')
+  })
+
+  it('three sessions or fewer: no "Show more" (kl17)', () => {
+    let list = []
+    for (let i = 1; i <= 3; i++) list = applySessionOp(list, { op: 'add', d: plus(i), t: '18:00', rid: 'r1', rname: 'Upper', tr: TR }, TR, Date.now() - 1000).list
+    setS({ routines: [routine], sessions: list })
+    const page = mount(<UpcomingSessions S={useStore.getState().S} />)
+    expect(page.querySelectorAll('[data-testid=sess-row]')).toHaveLength(3)
+    expect(page.querySelector('[data-testid=home-sessions-more]')).toBeNull()
+  })
+
   it('nothing planned and not leading: no card; a cancelled one is not "next"', () => {
     const list = planned()
     setS({ routines: [routine], sessions: applySessionOp(list, { op: 'cancel', id: list[0].id }, TR).list })
@@ -87,7 +155,7 @@ describe('sessions on the client side (kl16)', () => {
     act(() => day.querySelector('[data-testid=day-sess-plan]').click())
     await flush()
     const form = top()
-    expect(form.querySelector('[data-testid=sess-trainer]')).not.toBeNull()   // two trainers: pick who leads
+    expect(form.querySelector('[data-testid=sess-trainer-change]')).not.toBeNull()   // two trainers: the one planning, another after "Change" (kl17)
     act(() => form.querySelector('[data-testid=sess-repeat] input, [data-testid=sess-repeat]').click())
     await flush()
     act(() => form.querySelector('[data-testid=sess-save]').click())

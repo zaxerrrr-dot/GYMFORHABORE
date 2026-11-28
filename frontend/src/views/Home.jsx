@@ -43,6 +43,7 @@ import { FastingLine } from '../components/SisterApps.jsx'
 import { ChallengesCard } from '../components/Challenges.jsx'
 import { isOn } from '../lib/modules.js'
 import { UpcomingSessions } from '../components/Sessions.jsx'
+import { plannedSessionDays } from '../lib/sessions-core.js'
 
 // Home = what to do now + a quick glance. Deep charts & history live in Stats.
 export default function Home() {
@@ -84,6 +85,7 @@ export default function Home() {
   const wkStart = new Date(today)
   wkStart.setDate(today.getDate() - weekDayOffset(today.getDay(), ws) + weekOffset * 7)
   const doneDays = new Set(S.workouts.map(w => w.d))
+  const sessDays = plannedSessionDays(S)
   // The last session logged for today, if any — what the row below reports instead of asking
   // you to start the one you already did. Last wins, so a second session names itself. Only once
   // today's plan is covered, though: a freestyle session on a planned day, or the rotation's
@@ -100,7 +102,8 @@ export default function Home() {
     const iso = isoOf(d)
     const eff = effectiveRoutineIds(S, iso).length > 0, ovr = S.dayPlan[iso] !== undefined, done = doneDays.has(iso)
     // A day off with a note (#261) reads as excused, not as a plan that went by.
-    const dot = done ? ' done' : dayNoteOf(S, iso) ? ' noted' : ovr && eff ? ' ovr' : eff ? ' plan' : ''
+    // A session a trainer planned shows as a hollow ring until it is done (kl17); done is the full dot.
+    const dot = done ? ' done' : dayNoteOf(S, iso) ? ' noted' : sessDays.has(iso) ? ' sess' : ovr && eff ? ' ovr' : eff ? ' plan' : ''
     strip.push(<div key={i} className={'wday' + (iso === todayISO() ? ' today' : '')} {...tappable(() => dayOverrideSheet(iso))}>
       <div className="lbl">{t(DAYS[d.getDay()])}</div><div className="num">{d.getDate()}</div><div className={'dot' + dot} /></div>)
   }

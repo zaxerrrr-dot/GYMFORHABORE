@@ -1,4 +1,5 @@
 import { showsDashboard } from '../lib/trainer-api.js'
+import TimeField from '../components/TimeField.jsx'
 import ReminderInstall from '../components/ReminderInstall.jsx'
 import { g, stopLeading } from '../lib/gymv2.js'
 import { recordHintsOn } from '../lib/set-records.js'
@@ -1690,8 +1691,8 @@ function MobileReminderCard({ S, update, toast }) {
       </Row>
       {S.reminder?.on && (
         <Row icon="clock" iconTint="var(--purple)" title={t('Reminder time')}>
-          <input type="time" className="timef" value={S.reminder?.time || DEF.reminder.time}
-            onChange={e => setReminder({ time: e.target.value })} />
+          <TimeField value={S.reminder?.time || DEF.reminder.time} aria-label={t('Time')}
+            onChange={v => setReminder({ time: v })} />
         </Row>
       )}
       {S.reminder?.on && <NudgeRows S={S} setReminder={setReminder} />}
@@ -1804,8 +1805,8 @@ function PushCard({ S, update, toast }) {
       )}
       {on && S.reminder?.on && (
         <Row icon="clock" iconTint="var(--purple)" title={t('Reminder time')}>
-          <input type="time" className="timef" value={S.reminder?.time || DEF.reminder.time}
-            onChange={e => update(s => { s.reminder = { ...(s.reminder || DEF.reminder), time: e.target.value, tz: localTZ() } })} />
+          <TimeField value={S.reminder?.time || DEF.reminder.time} aria-label={t('Time')}
+            onChange={v => update(s => { s.reminder = { ...(s.reminder || DEF.reminder), time: v, tz: localTZ() } })} />
         </Row>
       )}
       {on && S.reminder?.on && (
