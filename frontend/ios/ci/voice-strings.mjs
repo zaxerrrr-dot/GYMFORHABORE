@@ -214,7 +214,7 @@ export const STRINGS = {
     de: 'Noch keine Serie. Ein Training diese Woche startet eine.', fr: 'Pas encore de série. Une séance cette semaine en lance une.',
     es: 'Aún no tienes racha. Un entreno esta semana la empieza.', it: 'Ancora nessuna serie. Un allenamento questa settimana la fa partire.',
     'pt-PT': 'Ainda sem sequência. Um treino esta semana começa uma.', 'pt-BR': 'Ainda sem sequência. Um treino nesta semana começa uma.',
-    pl: 'Nie masz jeszcze Passy. Jeden trening w tym tygodniu ją rozpocznie.', hu: 'Még nincs sorozatod. Egy edzés ezen a héten elindítja.',
+    pl: 'Nie masz jeszcze passy. Zacznie ją jeden trening w tym tygodniu.', hu: 'Még nincs sorozatod. Egy edzés ezen a héten elindítja.',
     tr: 'Henüz serin yok. Bu hafta bir antrenman yeni bir seri başlatır.', ru: 'Серии пока нет. Одна тренировка на этой неделе её начнёт.',
     uk: 'Серії ще немає. Одне тренування цього тижня її почне.', ar: 'لا توجد سلسلة بعد. تمرين واحد هذا الأسبوع يبدأ واحدة.',
     hi: 'अभी कोई स्ट्रीक नहीं। इस हफ़्ते एक वर्कआउट से शुरू हो जाएगी।', bn: 'এখনও কোনো স্ট্রিক নেই। এই সপ্তাহে একটা ওয়ার্কআউটেই শুরু হবে।',

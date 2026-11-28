@@ -117,7 +117,7 @@ const OWN = {
   },
   ended_on_phone: {
     en: 'Ended on your phone', de: 'Am Handy beendet', fr: 'Terminée sur ton téléphone', es: 'Terminado en tu móvil',
-    it: 'Terminato sul telefono', pt: 'Terminado no telemóvel', 'pt-BR': 'Encerrado no celular', pl: 'Zakończono na telefonie',
+    it: 'Terminato sul telefono', pt: 'Terminado no telemóvel', 'pt-BR': 'Encerrado no celular', pl: 'Zakończony na telefonie',
     hu: 'A telefonon befejezve', tr: 'Telefonda bitirildi', ru: 'Завершено на телефоне', uk: 'Завершено на телефоні',
     ar: 'انتهى على الهاتف', hi: 'फ़ोन पर खत्म हुआ', bn: 'ফোনে শেষ হয়েছে', th: 'จบบนโทรศัพท์แล้ว', ko: '휴대폰에서 끝났어요',
     sv: 'Avslutat på telefonen', zh: '已在手机上结束', 'zh-TW': '已在手機上結束',
@@ -146,7 +146,7 @@ const OWN = {
   rest_day: {
     en: 'Nothing planned. Your call.', de: 'Nichts geplant. Deine Entscheidung.', fr: 'Rien de prévu. À toi de voir.',
     es: 'Nada planeado. Tú decides.', it: 'Niente in programma. Decidi tu.', pt: 'Nada planeado. Tu decides.',
-    'pt-BR': 'Nada planejado. Você decide.', pl: 'Nic nie zaplanowano. Twój wybór.', hu: 'Nincs terv. Rajtad áll.',
+    'pt-BR': 'Nada planejado. Você decide.', pl: 'Dziś nic w planie. Ty wybierasz.', hu: 'Nincs terv. Rajtad áll.',
     tr: 'Plan yok. Karar senin.', ru: 'Ничего не запланировано. Решать вам.', uk: 'Нічого не заплановано. Тобі вирішувати.',
     ar: 'لا شيء مخطط. القرار لك.', hi: 'कुछ तय नहीं। आपकी मर्ज़ी।', bn: 'কিছু পরিকল্পনা নেই। আপনার সিদ্ধান্ত।',
     th: 'ไม่มีแผน คุณเลือกเอง', ko: '계획 없음. 마음대로 하세요.', sv: 'Inget planerat. Ditt val.', zh: '今天没计划。你说了算。',
@@ -155,7 +155,7 @@ const OWN = {
   tile_desc: {
     en: 'Your streak and today’s plan.', de: 'Deine Serie und der Plan für heute.', fr: 'Ta régularité et le programme du jour.',
     es: 'Tu racha y el plan de hoy.', it: 'La tua costanza e il piano di oggi.', pt: 'A tua sequência e o plano de hoje.',
-    'pt-BR': 'Sua sequência e o plano de hoje.', pl: 'Twoja seria tygodni i plan na dziś.', hu: 'A heti sorozatod és a mai terv.',
+    'pt-BR': 'Sua sequência e o plano de hoje.', pl: 'Twoja passa i plan na dziś.', hu: 'A heti sorozatod és a mai terv.',
     tr: 'Serin ve bugünün planı.', ru: 'Ваша серия недель и план на сегодня.', uk: 'Твоя серія тижнів і план на сьогодні.',
     ar: 'سلسلتك وخطة اليوم.', hi: 'आपकी स्ट्रीक और आज का प्लान।', bn: 'আপনার স্ট্রিক আর আজকের পরিকল্পনা।',
     th: 'สถิติต่อเนื่องและแผนของวันนี้', ko: '연속 기록과 오늘의 계획.', sv: 'Din svit och dagens plan.',
@@ -164,7 +164,7 @@ const OWN = {
   complication_desc: {
     en: 'Your sets so far, or your streak.', de: 'Deine Sätze bisher oder deine Serie.', fr: 'Tes séries faites, ou ta régularité.',
     es: 'Tus series hasta ahora, o tu racha.', it: 'Le serie fatte finora, o la tua costanza.', pt: 'As séries feitas até agora, ou a tua sequência.',
-    'pt-BR': 'Suas séries até agora, ou sua sequência.', pl: 'Twoje dotychczasowe serie albo seria tygodni.',
+    'pt-BR': 'Suas séries até agora, ou sua sequência.', pl: 'Twoje dotychczasowe serie albo passa.',
     hu: 'Az eddigi sorozataid vagy a heti sorozatod.', tr: 'Şimdiye kadarki setlerin ya da serin.',
     ru: 'Подходы на сейчас или ваша серия недель.', uk: 'Твої підходи досі або серія тижнів.', ar: 'مجموعاتك حتى الآن، أو سلسلتك.',
     hi: 'अब तक के सेट, या आपकी स्ट्रीक।', bn: 'এখন পর্যন্ত আপনার সেট, বা আপনার স্ট্রিক।', th: 'เซ็ตที่ทำแล้ว หรือสถิติต่อเนื่องของคุณ',
@@ -174,7 +174,7 @@ const OWN = {
   notif_running: {
     en: 'Workout running. Tap to jump back in.', de: 'Training läuft. Tippen und weiter geht’s.', fr: 'Séance en cours. Touche pour y revenir.',
     es: 'Entreno en curso. Toca para volver.', it: 'Allenamento in corso. Tocca per tornarci.', pt: 'Treino a decorrer. Toca para voltar.',
-    'pt-BR': 'Treino em andamento. Toque para voltar.', pl: 'Trening trwa. Stuknij, by wrócić.', hu: 'Edzés folyamatban. Koppints a visszatéréshez.',
+    'pt-BR': 'Treino em andamento. Toque para voltar.', pl: 'Trening trwa. Dotknij, by wrócić.', hu: 'Edzés folyamatban. Koppints a visszatéréshez.',
     tr: 'Antrenman sürüyor. Geri dönmek için dokun.', ru: 'Тренировка идёт. Нажмите, чтобы вернуться.', uk: 'Тренування триває. Торкнись, щоб повернутися.',
     ar: 'التمرين جارٍ. اضغط للعودة.', hi: 'वर्कआउट चल रहा है। वापस जाने के लिए टैप करें।', bn: 'ওয়ার্কআউট চলছে। ফিরে যেতে ট্যাপ করুন।',
     th: 'กำลังฝึกอยู่ แตะเพื่อกลับไป', ko: '운동 중이에요. 탭해서 돌아가요.', sv: 'Passet pågår. Tryck för att hoppa in igen.',
@@ -184,7 +184,7 @@ const OWN = {
     en: 'Allow heart rate to see your pulse on every set.', de: 'Erlaube den Puls, dann siehst du ihn bei jedem Satz.',
     fr: 'Autorise la fréquence cardiaque pour voir ton pouls à chaque série.', es: 'Permite el pulso para verlo en cada serie.',
     it: 'Consenti il battito per vederlo a ogni serie.', pt: 'Permite a frequência cardíaca para veres o pulso em cada série.',
-    'pt-BR': 'Permita a frequência cardíaca para ver seu pulso em cada série.', pl: 'Zezwól na tętno, by widzieć je przy każdej serii.',
+    'pt-BR': 'Permita a frequência cardíaca para ver seu pulso em cada série.', pl: 'Zezwól na pomiar tętna, by widzieć je przy każdej serii.',
     hu: 'Engedélyezd a pulzust, hogy minden sorozatnál lásd.', tr: 'Her sette nabzını görmek için kalp atış hızına izin ver.',
     ru: 'Разрешите пульс, чтобы видеть его в каждом подходе.', uk: 'Дозволь пульс, щоб бачити його в кожному підході.',
     ar: 'اسمح بقراءة النبض لتراه في كل مجموعة.', hi: 'हर सेट पर अपनी धड़कन देखने के लिए हार्ट रेट की अनुमति दें।',

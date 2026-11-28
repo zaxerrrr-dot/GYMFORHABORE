@@ -173,7 +173,7 @@ test('calendar feed: timed events in UTC, stable UID, SEQUENCE and LAST-MODIFIED
   const tics = unfold(ticsRaw);
   assert.match(tics, /SUMMARY:Trening: Sylwester · Upper\\; full\\, body – Habcore Gym/);
   assert.doesNotMatch(tics, /kofeiny|Kowalski/);
-  assert.match(tics, /X-WR-CALNAME:Habcore Gym · grafik Tomasz/);
+  assert.match(tics, /X-WR-CALNAME:Habcore Gym · grafik: Tomasz/);
   // Every line is folded at 75 octets.
   for (const l of ticsRaw.split('\r\n')) assert.ok(Buffer.byteLength(l) <= 75, l);
 });

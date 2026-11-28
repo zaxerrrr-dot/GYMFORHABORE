@@ -41,7 +41,7 @@ test('the feed: all-day plan events with stable ids, escaped, folded', () => {
   // eight weeks of Wednesdays and Fridays ahead; nothing before today (kl18)
   assert.ok(ev.some(e => e['DTSTART;VALUE=DATE'] === '20261230'));
   assert.ok(!ev.some(e => (e['DTSTART;VALUE=DATE'] || '9') < '20261104'), 'no plan day gone by');
-  assert.match(wed[0].DESCRIPTION, /^Plan na ten dzień · ćwiczeń: 1$/);
+  assert.match(wed[0].DESCRIPTION, /^Plan na ten dzień · ćwiczenia: 1$/);
   assert.ok(!ev.some(e => e['DTSTART;VALUE=DATE'] === '20270107'));
 });
 

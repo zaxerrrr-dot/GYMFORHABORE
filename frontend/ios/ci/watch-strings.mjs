@@ -141,7 +141,7 @@ const OWN = {
     cs: 'Všechny série hotové', fa: 'همه ست‌ها انجام شد', id: 'Semua set selesai', lt: 'Visos serijos atliktos', sv: 'Alla set klara', vi: 'Đã xong tất cả hiệp',
   },
   'measuring': {
-    de: 'misst …', fr: 'mesure …', es: 'midiendo …', it: 'misuro …', 'pt-PT': 'a medir …', 'pt-BR': 'medindo …', pl: 'pomiar …',
+    de: 'misst …', fr: 'mesure …', es: 'midiendo …', it: 'misuro …', 'pt-PT': 'a medir …', 'pt-BR': 'medindo …', pl: 'pomiar…',
     hu: 'mérés …', tr: 'ölçülüyor …', ru: 'измеряю …', uk: 'вимірюю …', ar: 'جارٍ القياس …', hi: 'माप रहा है …', bn: 'মাপা হচ্ছে …',
     th: 'กำลังวัด …', ko: '측정 중 …', 'zh-Hans': '测量中 …', 'zh-Hant': '測量中 …',
     cs: 'měřím …', fa: 'در حال اندازه‌گیری …', id: 'mengukur …', lt: 'matuojama …', sv: 'mäter …', vi: 'đang đo …',

@@ -85,7 +85,7 @@ export function dayRoutines(S, iso, today) {
 
 /* Habcore Gym (kl18): the feed's own words in the profile's language (Polish unless English). */
 const FEED_COPY = {
-  pl: { workout: 'Trening', planDesc: 'Plan na ten dzień · ćwiczeń: {0}', time: 'Czas: {0}', vol: 'Objętość: {0}', sets: 'Serie: {0}', ex: 'Ćwiczenia: {0}', noTime: 'bez zapisanego czasu' },
+  pl: { workout: 'Trening', planDesc: 'Plan na ten dzień · ćwiczenia: {0}', time: 'Czas: {0}', vol: 'Objętość: {0}', sets: 'Serie: {0}', ex: 'Ćwiczenia: {0}', noTime: 'bez zapisanego czasu' },
   en: { workout: 'Workout', planDesc: 'Plan for the day · exercises: {0}', time: 'Time: {0}', vol: 'Volume: {0}', sets: 'Sets: {0}', ex: 'Exercises: {0}', noTime: 'no time logged' },
 };
 export const feedCopy = lang => (String(lang || 'pl').toLowerCase().startsWith('en') ? FEED_COPY.en : FEED_COPY.pl);
@@ -198,7 +198,7 @@ export const SESS_AHEAD_DAYS = 180;
 export const CANCEL_SHOWN_MS = 2 * 86400000;
 const SESS_COPY = {
   pl: { with: 'Trening z trenerem {0} – Habcore Gym', alone: 'Trening – Habcore Gym', cancelled: 'Odwołany: ', plan: 'Plan: {0}', note: 'Notatka: {0}', trainer: 'Prowadzi: {0}',
-    client: 'Trening: {0} – Habcore Gym', clientPlan: 'Trening: {0} · {1} – Habcore Gym', cal: 'Habcore Gym · grafik {0}' },
+    client: 'Trening: {0} – Habcore Gym', clientPlan: 'Trening: {0} · {1} – Habcore Gym', cal: 'Habcore Gym · grafik: {0}' },
   en: { with: 'Workout with {0} – Habcore Gym', alone: 'Workout – Habcore Gym', cancelled: 'Cancelled: ', plan: 'Plan: {0}', note: 'Note: {0}', trainer: 'Trainer: {0}',
     client: 'Session: {0} – Habcore Gym', clientPlan: 'Session: {0} · {1} – Habcore Gym', cal: 'Habcore Gym · {0}’s schedule' },
 };

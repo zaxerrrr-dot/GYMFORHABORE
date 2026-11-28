@@ -24,7 +24,7 @@ export const STRINGS = {
     de: 'Dein Plan für heute, die Woche und deine Serie.', fr: 'Ton programme du jour, la semaine à venir et ta série.',
     es: 'Tu plan de hoy, la semana que viene y tu racha.', it: 'Il tuo piano di oggi, la settimana e la tua serie.',
     'pt-PT': 'O teu plano de hoje, a semana e a tua sequência.', 'pt-BR': 'Seu plano de hoje, a semana e sua sequência.',
-    pl: 'Twój plan na dziś, najbliższy tydzień i Passa.', hu: 'A mai terved, a hét és a sorozatod.',
+    pl: 'Twój plan na dziś, najbliższy tydzień i passa.', hu: 'A mai terved, a hét és a sorozatod.',
     tr: 'Bugünkü planın, önündeki hafta ve serin.', ru: 'Ваш план на сегодня, неделю вперёд и ваша серия.',
     uk: 'Твій план на сьогодні, тиждень наперед і твоя серія.', ar: 'خطتك لليوم والأسبوع القادم وسلسلتك.',
     hi: 'आज का प्लान, आने वाला हफ़्ता और आपकी स्ट्रीक।', bn: 'আজকের প্ল্যান, সামনের সপ্তাহ আর আপনার স্ট্রিক।',

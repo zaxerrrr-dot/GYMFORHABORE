@@ -5,7 +5,7 @@ msgid "code"
 msgstr "Kod parowania"
 
 msgid "how"
-msgstr "W Habcore Gym otwórz Ustawienia, Zegarek Zepp OS, Sparuj zegarek, i wpisz tutaj adres i kod."
+msgstr "W Habcore Gym otwórz Ustawienia → Zegarek Zepp OS → Sparuj zegarek i wpisz tutaj adres oraz kod."
 
 msgid "pair"
 msgstr "Sparuj"
@@ -14,13 +14,13 @@ msgid "pairing"
 msgstr "Paruję…"
 
 msgid "paired"
-msgstr "Sparowano z {0}. Otwórz Habcore Gym na zegarku."
+msgstr "Zegarek sparowany z kontem {0}. Otwórz Habcore Gym na zegarku."
 
 msgid "failed"
-msgstr "Nie wyszło. Sprawdź adres i kod, kod działa dziesięć minut."
+msgstr "Nie udało się. Sprawdź adres i kod – kod działa 10 minut."
 
 msgid "unpair"
 msgstr "Rozłącz"
 
 msgid "not_paired_yet"
-msgstr "Jeszcze nie sparowano."
+msgstr "Zegarek nie jest jeszcze sparowany."

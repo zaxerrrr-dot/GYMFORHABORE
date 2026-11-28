@@ -440,7 +440,7 @@ export const NUDGE_COPY = {
     "friendly": {
       "title": "Wszystko w porządku?",
       "lines": [
-        "Trening „{0}” wciąż czeka. Co się dzieje?",
+        "Trening „{0}” wciąż czeka. Co u ciebie?",
         "Dziś bez treningu „{0}”? Jutro nawet krótki trening się liczy.",
         "Ciężki dzień? Trening „{0}” poczeka. Jutro nowy start.",
         "Hej, trening „{0}” dziś nie wyszedł. Wszystko dobrze?"
@@ -451,7 +451,7 @@ export const NUDGE_COPY = {
       "lines": [
         "Trening „{0}” cały wieczór czekał przy drzwiach. Na ciebie.",
         "Sztanga pytała dziś o ciebie. Nie wiedziałem, co powiedzieć.",
-        "Czy to przez coś, co powiedziałem? Trening „{0}” za tobą tęskni.",
+        "Powiedziałem coś nie tak? Trening „{0}” za tobą tęskni.",
         "Zająłem ci miejsce na ławce. Wciąż jest puste."
       ]
     },

@@ -465,7 +465,7 @@ export const TRAINER_COPY = {
       "body": "Kierownik twojej siłowni widzi tylko to, co zaznaczysz."
     },
     "change": {
-      "title": "{0} zaktualizował(a) twój trening",
+      "title": "{0}: aktualizacja twojego treningu",
       "body": "Zajrzyj. Jeśli ci nie pasuje, cofniesz to jednym dotknięciem w „Trener i siłownia”."
     },
     "suggest": {
@@ -473,11 +473,11 @@ export const TRAINER_COPY = {
       "body": "Przyjmij albo odrzuć w „Trener i siłownia”."
     },
     "comment": {
-      "title": "{0} zostawił(a) ci notatkę",
+      "title": "{0} ma dla ciebie notatkę",
       "body": ""
     },
     "offer": {
-      "title": "{0} opuścił(a): {1}",
+      "title": "{0} odchodzi z {1}",
       "body": "Trenować dalej razem, prywatnie? Masz 30 dni na decyzję."
     }
   },
