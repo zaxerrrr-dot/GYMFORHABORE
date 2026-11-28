@@ -280,7 +280,10 @@ export const exerciseNameParts = ex => {
 // after it in the catalogue's Title Case: "Wyciskanie sztangi na ławce płaskiej (Barbell Bench
 // Press)". The name carries no capitalize class, so the English part is cased here.
 const EN_TITLE_LANGS = ['pl']
+// Gym abbreviations stay upper-case: "Single Leg RDL", "EZ Barbell Curl", not "Rdl", "Ez".
+const EN_ACRONYMS = new Set(['rdl', 'sldl', 'ez', 'trx', 'jm', 'ghd', 'ohp', 'hiit', 'bosu', 'kb', 'db', 'bb'])
 const titleWords = s => String(s || '').replace(/(^|[\s(\-\/])(\p{Ll})/gu, (m, pre, ch) => pre + ch.toUpperCase())
+  .replace(/\p{L}+/gu, w => (EN_ACRONYMS.has(w.toLowerCase()) ? w.toUpperCase() : w))
 const englishInParens = n => {
   const en = EN_TITLE_LANGS.includes(baseLang(lang)) ? titleWords(n) : n
   return RTL_LANGS.has(baseLang(lang)) ? `\u2068(${en})\u2069` : `(${en})`

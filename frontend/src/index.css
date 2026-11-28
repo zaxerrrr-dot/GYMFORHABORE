@@ -5038,3 +5038,10 @@ p.sess-tag{margin:4px 0 8px}
 .sched-day.today{box-shadow:inset 0 0 0 1.5px var(--acc)}
 .sched-day-h b{display:inline-block}
 .sched-none{padding:4px 0}
+
+/* Habcore Gym (kl-pl): Polish writes labels in sentence case, never Every Word Capitalised. The pack
+   carries its own casing (exercise names, muscle, body-part and equipment labels start upper-case),
+   so the title-casing classes stand down for Polish. */
+html:lang(pl) .capitalize, html:lang(pl) .tag, html:lang(pl) .chip, html:lang(pl) .pcard-ex-n,
+html:lang(pl) .ins-row-n, html:lang(pl) .cmp-h, html:lang(pl) .com-kit .tag,
+html:lang(pl) .com-main .ss.capitalize { text-transform: none; }
