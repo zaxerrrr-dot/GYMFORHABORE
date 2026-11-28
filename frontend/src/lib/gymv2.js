@@ -99,9 +99,9 @@ const W = {
   // Joint training (patch 0004)
   mergeHint: ['Gdy klient ma włączony trening na zegarku lub w aplikacji, wpisuj ćwiczenia przez „Prowadź jako klient” – po zakończeniu obu treningów zapisy połączą się w jeden.', 'When the client has a workout running on the watch/in the app, log the exercises through Lead as client — once both workouts are finished, they are joined into one.'],
   // Habcore Gym (kl16): sessions planned at a time of day.
-  'ev_session-add': ['{0} zaplanował(a) trening{1}', '{0} planned a session{1}'],
-  'ev_session-edit': ['{0} zmienił(a) termin treningu{1}', '{0} moved a session{1}'],
-  'ev_session-cancel': ['{0} odwołał(a) trening{1}', '{0} cancelled a session{1}'],
+  'ev_session-add': ['{0}: zaplanowany trening{1}', '{0} planned a session{1}'],
+  'ev_session-edit': ['{0}: zmiana terminu treningu{1}', '{0} moved a session{1}'],
+  'ev_session-cancel': ['{0}: odwołany trening{1}', '{0} cancelled a session{1}'],
   ev_merge: ['scalono trening trenera {0} z treningiem z zegarka{1}', 'joined trainer {0}\'s workout with the watch workout{1}'],
   'ev_merge-again': ['ponownie scalono trening trenera {0} (urządzenie przysłało starszą wersję)', 'joined trainer {0}\'s workout again (a device sent an older copy)'],
   'ev_merge-skip': ['nie scalono treningu trenera {0}: w tym czasie pasuje kilka treningów, scal je ręcznie', 'trainer {0}\'s workout not joined: more than one workout fits the time'],

@@ -181,7 +181,7 @@ test('calendar feed: timed events in UTC, stable UID, SEQUENCE and LAST-MODIFIED
 test('pushes: a series is one message; the reminder an hour before, once', () => {
   const list = core.applySessionOp([], { op: 'add', d: '2026-12-01', t: '18:00', rname: 'Upper', tr: TR, rep: { days: [2, 4], weeks: 2 } }, TR, 1).list;
   const p = changePushes('pl', 'Tomasz', core.sessionChanges([], list));
-  assert.equal(p.length, 1); assert.equal(p[0].title, 'Tomasz zaplanował(a) 4 treningów'); assert.match(p[0].body, /18:00 · Upper/); assert.match(p[0].url, /^#\/home\?sess=/);
+  assert.equal(p.length, 1); assert.equal(p[0].title, 'Tomasz: zaplanowane treningi (4)'); assert.match(p[0].body, /18:00 · Upper/); assert.match(p[0].url, /^#\/home\?sess=/);
   const start = core.sessionStart(list[0]);
   const S = { sessions: list, reminder: {} };
   assert.equal(remindersDue(S, start - 61 * 60000, new Set()).length, 0);

@@ -5,8 +5,8 @@ import { sessionStart, remindBefore, upcoming } from '../sessions-core.js';
 
 const COPY = {
   pl: {
-    added: '{0} zaplanował(a) trening', addedN: '{0} zaplanował(a) {1} treningów',
-    changed: '{0} zmienił(a) termin treningu', cancelled: '{0} odwołał(a) trening',
+    added: '{0}: nowy zaplanowany trening', addedN: '{0}: zaplanowane treningi ({1})',
+    changed: '{0}: zmiana terminu treningu', cancelled: '{0}: odwołany trening',
     remind: 'Trening o {0}', remindWith: 'Trening z trenerem {1} o {0}', remindBody: 'Habcore, ul. Mickiewicza 25J, Poraj',
   },
   en: {
