@@ -1,9 +1,9 @@
 /* Written by ios/ci/widget-strings.mjs: change it there. */
 "Today’s workout" = "Dzisiejszy trening";
-"Your plan for today, the week ahead and your streak." = "Twój plan na dziś, nadchodzący tydzień i twoja passa.";
+"Your plan for today, the week ahead and your streak." = "Twój plan na dziś, najbliższy tydzień i Passa.";
 "Streak" = "Passa";
-"Weeks in a row with a workout." = "Tygodnie z rzędu z treningiem.";
-"Open Habcore Gym once to see your plan here." = "Otwórz Habcore Gym raz, a zobaczysz tu swój plan.";
+"Weeks in a row with a workout." = "Ile tygodni z rzędu trenujesz.";
+"Open Habcore Gym once to see your plan here." = "Otwórz raz Habcore Gym, żeby zobaczyć tu swój plan.";
 "What to show" = "Co pokazać";
 "And beside it" = "A obok";
 "Week streak" = "Passa";

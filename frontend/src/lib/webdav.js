@@ -147,7 +147,7 @@ export function errorText(e) {
     case 'full': return 'The server is out of space for this account.'
     case 'network': return 'Could not reach the server. In a browser it also has to allow this site (CORS), see the guide.'
     case 'no-password': return 'Type the password again: this device does not have it.'
-    case 'not-backup': return 'That file is not an Habcore Gym backup.'
+    case 'not-backup': return 'That file is not a Habcore Gym backup.'
     case 'empty': return 'Nothing to back up yet: log a workout first.'
     case 'foreign': return 'This backup belongs to another account'
     default: return 'The server answered with an error.'

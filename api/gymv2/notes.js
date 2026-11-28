@@ -7,7 +7,7 @@ export const NOTE_MAX = 2000;
 
 const COPY = {
   pl: {
-    toClient: '{0} dodał(a) notatkę do Twojego treningu',
+    toClient: '{0}: nowa notatka do twojego treningu',
     toTrainer: '{0}: nowa notatka do treningu',
   },
   en: {

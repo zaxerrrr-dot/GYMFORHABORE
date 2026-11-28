@@ -145,7 +145,7 @@ export default function Assistants() {
 function Unavailable({ user, config, nav }) {
   const why = !user
     ? (MOBILE
-      ? t('Claude, ChatGPT and Gemini reach Habcore Gym over the internet, so they need an Habcore Gym server to talk to. This phone keeps your data to itself, so there is nothing for them to connect to yet.')
+      ? t('Claude, ChatGPT and Gemini reach Habcore Gym over the internet, so they need a Habcore Gym server to talk to. This phone keeps your data to itself, so there is nothing for them to connect to yet.')
       : t('Sign in first: the assistant connects to your profile on this server.'))
     : config == null ? t('Loading…')
       : t('Connectors are switched off on this server. Its admin adds COMPOSE_PROFILES=mcp and MCP=on to the .env and restarts it.')

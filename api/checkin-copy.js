@@ -93,9 +93,9 @@ export const CHECKIN_COPY = {
   },
   "pl": {
     "title": "Czas na pomiar",
-    "measure": "Czas na pomiar. Kilka liczb, dwie minuty i wracasz do dnia.",
+    "measure": "Czas na pomiar. Kilka liczb, dwie minuty i wracasz do swoich spraw.",
     "photos": "Dzień zdjęcia postępu. To samo miejsce, to samo światło, ta sama dumna mina.",
-    "both": "Czas na pomiar i zdjęcie postępu. Pięć minut, góra."
+    "both": "Czas na pomiar i zdjęcie postępów. Najwyżej pięć minut."
   },
   "pt": {
     "title": "Hora do registo",

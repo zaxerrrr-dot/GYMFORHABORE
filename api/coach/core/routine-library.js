@@ -73,7 +73,7 @@ export function cleanEntry(raw) {
 
 /** A whole index, normalised: { entries } with the broken ones left out, or { entries: [], error }. */
 export function normalizeIndex(raw) {
-  if (!isMap(raw) || raw.format !== FORMAT) return { entries: [], error: 'not an Habcore Gym routines index' };
+  if (!isMap(raw) || raw.format !== FORMAT) return { entries: [], error: 'not a Habcore Gym routines index' };
   if (raw.version !== FORMAT_VERSION) return { entries: [], error: `index version ${raw.version} is not ${FORMAT_VERSION}` };
   const seen = new Set();
   const entries = [];

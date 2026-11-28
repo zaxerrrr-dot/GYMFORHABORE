@@ -89,7 +89,7 @@ test('notes helpers: new notes of a write, the trainers of a thread, edit rules,
   assert.ok(w.notes.find(n => n.id === r.added.id).del, 'a deleted note stays as a tombstone');
   assert.equal(applyNote(w, by, { text: '   ' }), 'empty');
   const p = notePush('pl', 'toClient', 'Tomasz', w, 'Brawo');
-  assert.match(p.title, /Tomasz dodał\(a\) notatkę/);
+  assert.match(p.title, /Tomasz: nowa notatka do twojego treningu/);
   assert.equal(p.url, '#/treningi?w=d');
 });
 

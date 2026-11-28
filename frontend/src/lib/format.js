@@ -1,5 +1,5 @@
 // Formatting + date helpers (ported from the vanilla app, unit taken from the store where needed).
-import { dateLocale, t, tn, exerciseNameFor, exerciseNameClass } from './i18n-core.js'
+import { dateLocale, t, tn, exerciseNameFor, exerciseNameClass, exerciseNameParts, getLang, baseLang } from './i18n-core.js'
 import { isoRun } from './bidi.js'
 export const todayISO = () => {
   const d = new Date()
@@ -65,6 +65,15 @@ export const capWords = s => String(s || '').replace(/(^|[\s(\-\/])(\p{Ll})/gu, 
 // (exerciseNameClass): for a toast, a dialog title or a picker label, which have no element of
 // their own to put the class on.
 export const exerciseNameText = ex => (exerciseNameClass(ex) ? capWords(exerciseNameFor(ex)) : exerciseNameFor(ex))
+// The same for a small screen: the watch, a widget, the Live Activity. Polish names carry the
+// English original in brackets on the phone ("Wiosłowanie hantlem w opadzie (Dumbbell Bent Over
+// Row)"), which a watch row cannot hold; there the Polish name stands alone. Other languages
+// keep exerciseNameText.
+export const exerciseShortNameText = ex => {
+  if (baseLang(getLang()) !== 'pl') return exerciseNameText(ex)
+  const main = exerciseNameParts(ex)[0]
+  return exerciseNameClass(ex) ? capWords(main) : main
+}
 /* How many decimals a weight is shown with. One is enough for plate-loadable numbers, but a
  * per-side figure from kg plates lands on .25 and .75 and reading those as .3 and .8 is the
  * complaint in issue #139 — as is microplate work. The setting is read here rather than passed

@@ -97,14 +97,14 @@ export const PHRASES = {
 export const STRINGS = {
   'Start workout': {
     de: 'Training starten', fr: 'Lancer la séance', es: 'Empezar entreno', it: 'Inizia allenamento', 'pt-PT': 'Iniciar treino', 'pt-BR': 'Iniciar treino',
-    pl: 'Rozpocznij trening', hu: 'Edzés indítása', tr: 'Antrenmanı başlat', ru: 'Начать тренировку', uk: 'Почати тренування', ar: 'ابدأ التمرين',
+    pl: 'Zacznij trening', hu: 'Edzés indítása', tr: 'Antrenmanı başlat', ru: 'Начать тренировку', uk: 'Почати тренування', ar: 'ابدأ التمرين',
     hi: 'वर्कआउट शुरू करें', bn: 'ওয়ার্কআউট শুরু করুন', th: 'เริ่มการฝึก', ko: '운동 시작', 'zh-Hans': '开始训练', 'zh-Hant': '開始訓練', sv: 'Starta passet',
   },
   'Starts today’s planned workout, or opens the one already running.': {
     de: 'Startet das heute geplante Training oder öffnet das laufende.', fr: 'Lance la séance prévue aujourd’hui, ou ouvre celle en cours.',
     es: 'Empieza el entreno previsto para hoy o abre el que ya está en marcha.', it: 'Avvia l’allenamento di oggi, o apre quello già in corso.',
     'pt-PT': 'Inicia o treino planeado para hoje, ou abre o que já está a decorrer.', 'pt-BR': 'Inicia o treino planejado para hoje, ou abre o que já está em andamento.',
-    pl: 'Rozpoczyna dzisiejszy trening z planu albo otwiera ten, który już trwa.', hu: 'Elindítja a mai tervezett edzést, vagy megnyitja a már futót.',
+    pl: 'Zaczyna dzisiejszy trening z planu albo otwiera ten, który już trwa.', hu: 'Elindítja a mai tervezett edzést, vagy megnyitja a már futót.',
     tr: 'Bugün planlanan antrenmanı başlatır ya da süren antrenmanı açar.', ru: 'Начинает тренировку на сегодня или открывает уже идущую.',
     uk: 'Починає тренування на сьогодні або відкриває те, що вже триває.', ar: 'يبدأ تمرين اليوم المخطط، أو يفتح التمرين الجاري.',
     hi: 'आज का प्लान किया वर्कआउट शुरू करता है, या चल रहा वर्कआउट खोलता है।', bn: 'আজকের প্ল্যান করা ওয়ার্কআউট শুরু করে, বা চলতি ওয়ার্কআউট খোলে।',
@@ -149,7 +149,7 @@ export const STRINGS = {
   },
   'Week streak': {
     de: 'Wochen-Serie', fr: 'Série de semaines', es: 'Racha semanal', it: 'Serie settimanale', 'pt-PT': 'Sequência semanal', 'pt-BR': 'Sequência semanal',
-    pl: 'Seria tygodni', hu: 'Heti sorozat', tr: 'Haftalık seri', ru: 'Серия недель', uk: 'Серія тижнів', ar: 'سلسلة الأسابيع',
+    pl: 'Passa', hu: 'Heti sorozat', tr: 'Haftalık seri', ru: 'Серия недель', uk: 'Серія тижнів', ar: 'سلسلة الأسابيع',
     hi: 'हफ़्तों की स्ट्रीक', bn: 'সপ্তাহের স্ট্রিক', th: 'สัปดาห์ต่อเนื่อง', ko: '주간 연속 기록', 'zh-Hans': '每周连续纪录', 'zh-Hant': '每週連續紀錄', sv: 'Veckosvit',
   },
   'Tells you how many weeks in a row you trained.': {
@@ -164,7 +164,7 @@ export const STRINGS = {
   'Open Habcore Gym once, then ask me again.': {
     de: 'Öffne Habcore Gym einmal, dann frag mich noch mal.', fr: 'Ouvre Habcore Gym une fois, puis redemande-moi.', es: 'Abre Habcore Gym una vez y vuelve a preguntarme.',
     it: 'Apri Habcore Gym una volta, poi chiedimelo di nuovo.', 'pt-PT': 'Abre o Habcore Gym uma vez e pergunta-me outra vez.', 'pt-BR': 'Abra o Habcore Gym uma vez e me pergunte de novo.',
-    pl: 'Otwórz Habcore Gym raz, a potem zapytaj mnie jeszcze raz.', hu: 'Nyisd meg egyszer az Habcore Gymet, aztán kérdezz újra.', tr: 'Habcore Gym’i bir kez aç, sonra bana yine sor.',
+    pl: 'Otwórz raz Habcore Gym i zapytaj mnie ponownie.', hu: 'Nyisd meg egyszer az Habcore Gymet, aztán kérdezz újra.', tr: 'Habcore Gym’i bir kez aç, sonra bana yine sor.',
     ru: 'Откройте Habcore Gym один раз, а потом спросите снова.', uk: 'Відкрий Habcore Gym один раз, а тоді спитай знову.', ar: 'افتح Habcore Gym مرة واحدة، ثم اسألني من جديد.',
     hi: 'Habcore Gym एक बार खोलें, फिर मुझसे दोबारा पूछें।', bn: 'Habcore Gym একবার খুলুন, তারপর আবার জিজ্ঞেস করুন।', th: 'เปิด Habcore Gym สักครั้ง แล้วถามฉันอีกครั้ง',
     ko: 'Habcore Gym을 한 번 연 다음 다시 물어봐 주세요.', 'zh-Hans': '先打开一次 Habcore Gym，再来问我。', 'zh-Hant': '先打開一次 Habcore Gym，再來問我。', sv: 'Öppna Habcore Gym en gång och fråga mig sedan igen.',
@@ -188,7 +188,7 @@ export const STRINGS = {
   '%@ is done for today. Nice work.': {
     de: '%@ ist für heute erledigt. Stark.', fr: '%@ est fait pour aujourd’hui. Bien joué.', es: '%@ ya está hecho por hoy. Buen trabajo.',
     it: '%@ è fatto per oggi. Ottimo lavoro.', 'pt-PT': '%@ está feito por hoje. Bom trabalho.', 'pt-BR': '%@ está feito por hoje. Mandou bem.',
-    pl: '%@ na dziś zrobione. Dobra robota.', hu: '%@ mára kész. Szép munka.', tr: '%@ bugünlük tamam. Eline sağlık.', ru: '%@ на сегодня готово. Отличная работа.',
+    pl: 'Na dziś zrobione: %@. Dobra robota.', hu: '%@ mára kész. Szép munka.', tr: '%@ bugünlük tamam. Eline sağlık.', ru: '%@ на сегодня готово. Отличная работа.',
     uk: '%@ на сьогодні готово. Чудова робота.', ar: 'انتهى %@ لليوم. أحسنت.', hi: 'आज का %@ हो गया। बढ़िया।', bn: 'আজকের %@ শেষ। দারুণ।',
     th: '%@ ของวันนี้เสร็จแล้ว เยี่ยมมาก', ko: '오늘 %@ 끝! 수고했어요.', 'zh-Hans': '今天的 %@ 完成了，干得好。', 'zh-Hant': '今天的 %@ 完成了，做得好。', sv: '%@ är klart för i dag. Snyggt jobbat.',
   },
@@ -199,14 +199,14 @@ export const STRINGS = {
   'Rest day today. Next up: %@ on %@.': {
     de: 'Heute ist Ruhetag. Als Nächstes: %@ am %@.', fr: 'Repos aujourd’hui. Ensuite : %@, %@.', es: 'Hoy toca descanso. Lo siguiente: %@ el %@.',
     it: 'Oggi riposo. Prossimo: %@, %@.', 'pt-PT': 'Hoje é dia de descanso. A seguir: %@, %@.', 'pt-BR': 'Hoje é dia de descanso. Próximo: %@, %@.',
-    pl: 'Dziś dzień odpoczynku. Następny: %@, %@.', hu: 'Ma pihenőnap. A következő: %@, %@.', tr: 'Bugün dinlenme günü. Sıradaki: %@, %@.',
+    pl: 'Dziś masz dzień wolny. Następny trening: %@, %@.', hu: 'Ma pihenőnap. A következő: %@, %@.', tr: 'Bugün dinlenme günü. Sıradaki: %@, %@.',
     ru: 'Сегодня отдых. Дальше: %@, %@.', uk: 'Сьогодні відпочинок. Далі: %@, %@.', ar: 'اليوم يوم راحة. التالي: %@ يوم %@.',
     hi: 'आज आराम का दिन है। अगला: %@, %@।', bn: 'আজ বিশ্রামের দিন। এরপর: %@, %@।', th: 'วันนี้วันพัก ถัดไป: %@ วัน%@',
     ko: '오늘은 쉬는 날이에요. 다음: %@, %@.', 'zh-Hans': '今天休息。下一次：%@，%@。', 'zh-Hant': '今天休息。下一次：%@，%@。', sv: 'Vilodag i dag. Nästa: %@ på %@.',
   },
   'Nothing planned today.': {
     de: 'Heute ist nichts geplant.', fr: 'Rien de prévu aujourd’hui.', es: 'Hoy no hay nada previsto.', it: 'Niente in programma oggi.', 'pt-PT': 'Nada planeado para hoje.',
-    'pt-BR': 'Nada planejado para hoje.', pl: 'Na dziś nic nie zaplanowano.', hu: 'Mára nincs semmi tervezve.', tr: 'Bugün planlı bir şey yok.', ru: 'На сегодня ничего не запланировано.',
+    'pt-BR': 'Nada planejado para hoje.', pl: 'Nie masz nic zaplanowanego na dziś.', hu: 'Mára nincs semmi tervezve.', tr: 'Bugün planlı bir şey yok.', ru: 'На сегодня ничего не запланировано.',
     uk: 'На сьогодні нічого не заплановано.', ar: 'لا شيء مخطط لليوم.', hi: 'आज कुछ प्लान नहीं है।', bn: 'আজ কিছু প্ল্যান নেই।', th: 'วันนี้ไม่มีแผน',
     ko: '오늘은 계획된 운동이 없어요.', 'zh-Hans': '今天没有计划。', 'zh-Hant': '今天沒有計畫。', sv: 'Inget planerat i dag.',
   },
@@ -214,7 +214,7 @@ export const STRINGS = {
     de: 'Noch keine Serie. Ein Training diese Woche startet eine.', fr: 'Pas encore de série. Une séance cette semaine en lance une.',
     es: 'Aún no tienes racha. Un entreno esta semana la empieza.', it: 'Ancora nessuna serie. Un allenamento questa settimana la fa partire.',
     'pt-PT': 'Ainda sem sequência. Um treino esta semana começa uma.', 'pt-BR': 'Ainda sem sequência. Um treino nesta semana começa uma.',
-    pl: 'Jeszcze bez serii. Jeden trening w tym tygodniu ją zaczyna.', hu: 'Még nincs sorozatod. Egy edzés ezen a héten elindítja.',
+    pl: 'Nie masz jeszcze Passy. Jeden trening w tym tygodniu ją rozpocznie.', hu: 'Még nincs sorozatod. Egy edzés ezen a héten elindítja.',
     tr: 'Henüz serin yok. Bu hafta bir antrenman yeni bir seri başlatır.', ru: 'Серии пока нет. Одна тренировка на этой неделе её начнёт.',
     uk: 'Серії ще немає. Одне тренування цього тижня її почне.', ar: 'لا توجد سلسلة بعد. تمرين واحد هذا الأسبوع يبدأ واحدة.',
     hi: 'अभी कोई स्ट्रीक नहीं। इस हफ़्ते एक वर्कआउट से शुरू हो जाएगी।', bn: 'এখনও কোনো স্ট্রিক নেই। এই সপ্তাহে একটা ওয়ার্কআউটেই শুরু হবে।',
@@ -224,7 +224,7 @@ export const STRINGS = {
   'Week streak: %d. This week already counts.': {
     de: 'Wochen-Serie: %d. Diese Woche zählt schon.', fr: 'Série : %d semaines. Cette semaine compte déjà.', es: 'Racha: %d semanas. Esta semana ya cuenta.',
     it: 'Serie: %d settimane. Questa settimana conta già.', 'pt-PT': 'Sequência: %d semanas. Esta semana já conta.', 'pt-BR': 'Sequência: %d semanas. Esta semana já conta.',
-    pl: 'Seria tygodni: %d. Ten tydzień już się liczy.', hu: 'Heti sorozat: %d. Ez a hét már megvan.', tr: 'Haftalık seri: %d. Bu hafta zaten sayılıyor.',
+    pl: 'Passa w tygodniach: %d. Ten tydzień już się liczy.', hu: 'Heti sorozat: %d. Ez a hét már megvan.', tr: 'Haftalık seri: %d. Bu hafta zaten sayılıyor.',
     ru: 'Серия недель: %d. Эта неделя уже засчитана.', uk: 'Серія тижнів: %d. Цей тиждень уже зараховано.', ar: 'سلسلة الأسابيع: %d. هذا الأسبوع محسوب بالفعل.',
     hi: 'हफ़्तों की स्ट्रीक: %d। यह हफ़्ता पहले ही गिना जा चुका है।', bn: 'সপ্তাহের স্ট্রিক: %d। এই সপ্তাহ আগেই গোনা হয়ে গেছে।',
     th: 'สัปดาห์ต่อเนื่อง: %d สัปดาห์นี้นับแล้ว', ko: '주간 연속 기록: %d. 이번 주는 이미 채웠어요.', 'zh-Hans': '每周连续纪录：%d。本周已经算上了。',
@@ -234,7 +234,7 @@ export const STRINGS = {
     de: 'Wochen-Serie: %d. Ein Training diese Woche hält sie am Laufen.', fr: 'Série : %d semaines. Une séance cette semaine la prolonge.',
     es: 'Racha: %d semanas. Un entreno esta semana la mantiene.', it: 'Serie: %d settimane. Un allenamento questa settimana la tiene viva.',
     'pt-PT': 'Sequência: %d semanas. Um treino esta semana mantém-na.', 'pt-BR': 'Sequência: %d semanas. Um treino nesta semana mantém ela viva.',
-    pl: 'Seria tygodni: %d. Jeden trening w tym tygodniu ją utrzyma.', hu: 'Heti sorozat: %d. Egy edzés ezen a héten életben tartja.',
+    pl: 'Passa w tygodniach: %d. Jeden trening w tym tygodniu ją podtrzyma.', hu: 'Heti sorozat: %d. Egy edzés ezen a héten életben tartja.',
     tr: 'Haftalık seri: %d. Bu hafta bir antrenman seriyi sürdürür.', ru: 'Серия недель: %d. Одна тренировка на этой неделе её продлит.',
     uk: 'Серія тижнів: %d. Одне тренування цього тижня її продовжить.', ar: 'سلسلة الأسابيع: %d. تمرين واحد هذا الأسبوع يحافظ عليها.',
     hi: 'हफ़्तों की स्ट्रीक: %d। इस हफ़्ते एक वर्कआउट इसे जारी रखेगा।', bn: 'সপ্তাহের স্ট্রিক: %d। এই সপ্তাহে একটা ওয়ার্কআউটে এটা চালু থাকবে।',
@@ -244,14 +244,14 @@ export const STRINGS = {
   'That doesn’t sound like a weight. Try again?': {
     de: 'Das klingt nicht nach einem Gewicht. Noch mal?', fr: 'Ça ne ressemble pas à un poids. On réessaie ?', es: 'Eso no suena a un peso. ¿Lo intentamos otra vez?',
     it: 'Non sembra un peso. Riproviamo?', 'pt-PT': 'Isso não parece um peso. Tentamos outra vez?', 'pt-BR': 'Isso não parece um peso. Vamos tentar de novo?',
-    pl: 'To nie brzmi jak waga. Spróbujemy jeszcze raz?', hu: 'Ez nem hangzik súlynak. Újra?', tr: 'Bu bir kilo gibi durmuyor. Tekrar dener misin?',
+    pl: 'To nie brzmi jak waga. Spróbujesz jeszcze raz?', hu: 'Ez nem hangzik súlynak. Újra?', tr: 'Bu bir kilo gibi durmuyor. Tekrar dener misin?',
     ru: 'Это не похоже на вес. Попробуем ещё раз?', uk: 'Це не схоже на вагу. Спробуємо ще раз?', ar: 'هذا لا يبدو وزنًا. نحاول مرة أخرى؟',
     hi: 'यह वज़न जैसा नहीं लगता। फिर से कोशिश करें?', bn: 'এটা ওজনের মতো শোনাচ্ছে না। আবার চেষ্টা করবেন?', th: 'ฟังดูไม่เหมือนน้ำหนัก ลองอีกครั้งไหม',
     ko: '체중 같지 않아요. 다시 해 볼까요?', 'zh-Hans': '这听起来不像体重。再试一次？', 'zh-Hant': '這聽起來不像體重。再試一次？', sv: 'Det låter inte som en vikt. Försöka igen?',
   },
   'Logged %@.': {
     de: '%@ eingetragen.', fr: '%@ noté.', es: '%@ registrado.', it: '%@ registrato.', 'pt-PT': '%@ registado.', 'pt-BR': '%@ registrado.',
-    pl: 'Zapisano %@.', hu: '%@ rögzítve.', tr: '%@ kaydedildi.', ru: 'Записано: %@.', uk: 'Записано: %@.', ar: 'تم تسجيل %@.',
+    pl: 'Zapisane: %@.', hu: '%@ rögzítve.', tr: '%@ kaydedildi.', ru: 'Записано: %@.', uk: 'Записано: %@.', ar: 'تم تسجيل %@.',
     hi: '%@ दर्ज हो गया।', bn: '%@ লেখা হয়েছে।', th: 'บันทึก %@ แล้ว', ko: '%@ 기록했어요.', 'zh-Hans': '已记录 %@。', 'zh-Hant': '已記錄 %@。', sv: '%@ loggat.',
   },
 }

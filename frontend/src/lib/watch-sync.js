@@ -46,7 +46,7 @@ import { bestSetFor } from './exercise-history.js'
 import { weightIncrement } from './progression.js'
 import { sessionHistory } from './backfill.js'
 import { buildCombinedEntries, deriveSessionName } from './session-merge.js'
-import { todayISO, exerciseNameText } from './format.js'
+import { todayISO, exerciseShortNameText } from './format.js'
 import { sanitizeHr } from './heart-rate.js'
 import { readWatchPrefs, settingsForWatch, writeWatchStatus, readWatchStatus, onWatchPrefs, writeGarminLink, noteWatchHeard } from './watch-settings.js'
 import { forgottenForWatch, readForgottenPrefs, readForgottenState, onForgottenChange, gymReminderOn } from './forgotten-workout.js'
@@ -354,7 +354,7 @@ function watchEntry (stored, H, S) {
     // one id that came in as a number (an import) would leave it with nothing at all.
     id: String(e.id),
     // Title-cased as on the phone; the watch has no CSS to do it (lib/format.js exerciseNameText).
-    name: ex ? exerciseNameText(ex) : String(target.name || e.name || e.id),
+    name: ex ? exerciseShortNameText(ex) : String(target.name || e.name || e.id),
     // A carry or a sled in metres (Reddit, #1011) goes to the watches as one logged on the phone,
     // the way cardio does: no watch app knows metres yet, and none may log it as reps.
     mode: mode === 'distance' ? 'cardio' : mode,

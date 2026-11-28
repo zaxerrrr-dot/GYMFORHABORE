@@ -1,6 +1,6 @@
 // openNutrition → Habcore Gym (v1.4.5, gm-hooks): what you ate, read-only, opt-in, on this device.
 //
-// The mirror of the pairing openNutrition already does the other way (it redeems an Habcore Gym pairing
+// The mirror of the pairing openNutrition already does the other way (it redeems a Habcore Gym pairing
 // code at POST /api/pair/redeem and reads /api/data). Here Habcore Gym is the one that links:
 //
 //   1. In openNutrition: Settings → Connected apps → "Link Habcore Gym" shows a short code (or, on an

@@ -214,7 +214,9 @@ describe('English-name switches with every exercise-name pack', () => {
       // German keeps its own casing; a lower-case pack is title-cased like English.
       const translatedClass = CASED_NAME_LANGS.includes(lang) ? '' : 'capitalize'
       // A right-to-left language isolates the English part, brackets included (exerciseNameFor).
-      const english = RTL_LANGS.has(lang) ? `\u2068(${ex.n})\u2069` : `(${ex.n})`
+      // Polish shows the English title in the catalogue's Title Case (EN_TITLE_LANGS).
+      const en = lang === 'pl' ? ex.n.replace(/(^|[\s(\-\/])(\p{Ll})/gu, (m, pre, ch) => pre + ch.toUpperCase()) : ex.n
+      const english = RTL_LANGS.has(lang) ? `\u2068(${en})\u2069` : `(${en})`
       expect(exerciseNameFor(ex)).toBe(`${names[ex.id]} ${english}`)
       expect(exerciseNameClass(ex)).toBe(translatedClass)
       _setLangState(lang, {}, null, names, false)

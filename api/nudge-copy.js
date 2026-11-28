@@ -441,7 +441,7 @@ export const NUDGE_COPY = {
       "title": "Wszystko w porządku?",
       "lines": [
         "Trening „{0}” wciąż czeka. Co się dzieje?",
-        "Dziś bez treningu „{0}”? Jutro nawet krótka sesja się liczy.",
+        "Dziś bez treningu „{0}”? Jutro nawet krótki trening się liczy.",
         "Ciężki dzień? Trening „{0}” poczeka. Jutro nowy start.",
         "Hej, trening „{0}” dziś nie wyszedł. Wszystko dobrze?"
       ]
@@ -449,9 +449,9 @@ export const NUDGE_COPY = {
     "guilt": {
       "title": "Tęsknię za tobą",
       "lines": [
-        "Trening „{0}” czekał na ciebie przy drzwiach cały wieczór. Właśnie na ciebie.",
+        "Trening „{0}” cały wieczór czekał przy drzwiach. Na ciebie.",
         "Sztanga pytała dziś o ciebie. Nie wiedziałem, co powiedzieć.",
-        "Czy to przez coś, co powiedziałem? Trening „{0}” tęskni za tobą.",
+        "Czy to przez coś, co powiedziałem? Trening „{0}” za tobą tęskni.",
         "Zająłem ci miejsce na ławce. Wciąż jest puste."
       ]
     },
@@ -461,7 +461,7 @@ export const NUDGE_COPY = {
         "Twoje postępy pakują walizki. Jutro „{0}”, bez wymówek!",
         "Trening „{0}” sam się nie zrobi, rekrucie. Ruszaj się!",
         "Wymówki nie podnoszą ciężarów. Jutro meldujesz się na „{0}”!",
-        "Twoje mięśnie zgłosiły twoje zaginięcie. Stawić się na „{0}”!"
+        "Twoje mięśnie zgłosiły zaginięcie. Masz się stawić na „{0}”!"
       ]
     }
   },

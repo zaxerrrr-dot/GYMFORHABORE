@@ -37,7 +37,7 @@ import { stripBidi } from './bidi.js'
 import { MOBILE, nativePlatform } from './mobile.js'
 import { EXIDX, imgSrc, figureOf } from './exercises.js'
 import { t } from './i18n.js'
-import { exerciseNameText, fmtNum } from './format.js'
+import { exerciseShortNameText, fmtNum } from './format.js'
 import { setLabel, supersetUnits, fmtSec, fmtMetres } from './history.js'
 import { viewRow, exUnitTag, exUnitOf } from './ex-unit.js'
 import { isWarmupRow } from './workout-model.js'
@@ -143,7 +143,7 @@ function setView (S, A, { entryIdx, setIdx, restAfter, unit }, needs = null, wit
     setIdx,
     // Cased as the workout screen shows it: the stored names are lower-case and only CSS title-cases
     // them in the app, which the Lock Screen never sees (Discord).
-    exName: clip(EXIDX[e.id] ? exerciseNameText(EXIDX[e.id]) : String(target.name || e.name || e.id), 60),
+    exName: clip(EXIDX[e.id] ? exerciseShortNameText(EXIDX[e.id]) : String(target.name || e.name || e.id), 60),
     setLine: clip(warmup ? t('Warm-up') + ' ' + n : t('Set {0} of {1}', n, work.length), 40),
     target: clip(label, 60),
     restAfter: Math.max(0, Math.min(3600, Math.round(num(restAfter) || 0))),

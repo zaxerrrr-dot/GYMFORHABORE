@@ -2,7 +2,7 @@
  * (https://openrouter.ai/docs/guides/overview/auth/oauth). The person approves Habcore Gym on
  * openrouter.ai and comes back with a one-time code; that code plus the verifier made here buys an
  * API key of their own, billed to their OpenRouter credits. No client secret exists, nothing goes
- * through an Habcore Gym server, and the code is worthless without the verifier.
+ * through a Habcore Gym server, and the code is worthless without the verifier.
  *
  * Runtime-neutral (web crypto + an injected fetch): the browser's admin card and the phone use it. */
 export const OPENROUTER_AUTH = 'https://openrouter.ai/auth';

@@ -122,7 +122,7 @@ export function createMcpHandler({
     if (!TOKEN_RE.test(token)) {
       const wait = refused.take(who)
       if (wait) return rpcError(res, 429, 'too many refused requests, try again later', { 'Retry-After': String(wait) })
-      return unauthorized(res, token ? 'that is not an Habcore Gym API token (ogt_…); a paired session is not taken here' : 'an Habcore Gym API token is needed (Authorization: Bearer ogt_…)')
+      return unauthorized(res, token ? 'that is not a Habcore Gym API token (ogt_…); a paired session is not taken here' : 'a Habcore Gym API token is needed (Authorization: Bearer ogt_…)')
     }
 
     let body

@@ -1,7 +1,7 @@
 /* A profile picture of one's own (Settings → Account, v1.4.5; asked for on Discord by dreeper999).
  *
  *   S.avatar = { m }            m: a MediaRef of kind 'image', a 256 px square this device encoded
- *   S.avatar = { preset: id }   one of AVATAR_PRESETS, an Habcore Gym icon on the accent's tint
+ *   S.avatar = { preset: id }   one of AVATAR_PRESETS, a Habcore Gym icon on the accent's tint
  *   (absent)                    the first letter of the name, as before
  *
  * The bytes never go into the state: it is one document every device downloads whole, and the

@@ -1,4 +1,4 @@
-// NFC stickers (v1.4.4): what an Habcore Gym sticker says, and what a tap on one does.
+// NFC stickers (v1.4.4): what a Habcore Gym sticker says, and what a tap on one does.
 //
 // The app writes plain NDEF URI records itself (lib/nfc.js, NfcTagsPlugin on the phones, Web NFC
 // in Chrome on Android). Two kinds:

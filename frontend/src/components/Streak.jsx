@@ -95,7 +95,7 @@ export function Burst () {
   </span>
 }
 
-/** A chosen flame or freeze: an Habcore Gym icon in its own colour, or the emoji itself. */
+/** A chosen flame or freeze: a Habcore Gym icon in its own colour, or the emoji itself. */
 function OwnSymbol ({ own, cls, style }) {
   return <span className={cls + ' own-' + own.k} style={style} aria-hidden="true">
     {own.k === 'icon' ? <Icon name={own.v} /> : <span className="own-e">{own.v}</span>}

@@ -454,11 +454,11 @@ export const TRAINER_COPY = {
   "pl": {
     "connected": {
       "title": "{0} jest teraz twoim trenerem",
-      "body": "Widzą to, co udostępniłeś, nic więcej. Zmienisz to w każdej chwili w Trener i siłownia."
+      "body": "Trenerzy widzą tylko to, co udostępniasz. Zmienisz to w każdej chwili w „Trener i siłownia”."
     },
     "scopes": {
       "title": "Twoje udostępnianie się zmieniło",
-      "body": "To, co widzi {0}, właśnie się zmieniło. To nie ty? Sprawdź Trener i siłownia."
+      "body": "To, co widzi {0}, właśnie się zmieniło. To nie ty? Sprawdź „Trener i siłownia”."
     },
     "joined": {
       "title": "Witaj w: {0}",
@@ -466,11 +466,11 @@ export const TRAINER_COPY = {
     },
     "change": {
       "title": "{0} zaktualizował(a) twój trening",
-      "body": "Zerknij. Jeśli to nie dla ciebie, cofnięcie to jedno dotknięcie w Trener i siłownia."
+      "body": "Zajrzyj. Jeśli ci nie pasuje, cofniesz to jednym dotknięciem w „Trener i siłownia”."
     },
     "suggest": {
       "title": "{0} ma dla ciebie pomysł",
-      "body": "Przyjmij albo zostaw w Trener i siłownia."
+      "body": "Przyjmij albo odrzuć w „Trener i siłownia”."
     },
     "comment": {
       "title": "{0} zostawił(a) ci notatkę",

@@ -276,7 +276,15 @@ export const exerciseNameParts = ex => {
 // name broke across two lines, and the second line began with it turned round: "(Lunge". A
 // first-strong isolate (U+2068 … U+2069) lays the brackets out with the words they hold. The marks
 // are invisible and travel with the name to the watch, the widgets and Apple Health.
-const englishInParens = n => (RTL_LANGS.has(baseLang(lang)) ? `\u2068(${n})\u2069` : `(${n})`)
+// Polish (Habcore Gym, 2026-11-28) writes its own name in sentence case and the English original
+// after it in the catalogue's Title Case: "Wyciskanie sztangi na ławce płaskiej (Barbell Bench
+// Press)". The name carries no capitalize class, so the English part is cased here.
+const EN_TITLE_LANGS = ['pl']
+const titleWords = s => String(s || '').replace(/(^|[\s(\-\/])(\p{Ll})/gu, (m, pre, ch) => pre + ch.toUpperCase())
+const englishInParens = n => {
+  const en = EN_TITLE_LANGS.includes(baseLang(lang)) ? titleWords(n) : n
+  return RTL_LANGS.has(baseLang(lang)) ? `\u2068(${en})\u2069` : `(${en})`
+}
 
 // Exercise-name packs written in the language's own casing. German capitalises its nouns and
 // lower-cases the adjectives in front of them ("Assistiertes hängendes Knieheben"), which
@@ -284,7 +292,7 @@ const englishInParens = n => (RTL_LANGS.has(baseLang(lang)) ? `\u2068(${n})\u206
 // the English names ("supino com barra"). Left without the title-casing English gets, those
 // read all lower-case in every list, card and history row. A new pack goes here only when it
 // carries real casing; i18n-core.test.js checks this list against the packs themselves.
-export const CASED_NAME_LANGS = ['de', 'cs']
+export const CASED_NAME_LANGS = ['de', 'cs', 'pl']
 
 // EXDB stores English names lower-case and the UI title-cases them with CSS. A pack in
 // CASED_NAME_LANGS carries its own casing and must not be cased again on top, so the class that

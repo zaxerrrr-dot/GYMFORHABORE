@@ -324,7 +324,7 @@ async function whyUnreachable(base, ms) {
     return failure(t('That address answers, but a login page or proxy rule replied instead of Habcore Gym. Let /api/ through to Habcore Gym unchanged. See “Phone app and CORS” in docs/SELF_HOSTING.md.'), 'proxy-answered')
   }
   if (answer === 'other') {
-    return failure(t('That address answers, but it isn’t an Habcore Gym server. Check the URL.'), 'not-opengym')
+    return failure(t('That address answers, but it isn’t a Habcore Gym server. Check the URL.'), 'not-opengym')
   }
   if (reached) {
     const origin = globalThis.location?.origin || 'https://localhost'

@@ -17,12 +17,12 @@ export const UPSTREAM_URL = 'https://github.com/DuarteSantos8/openGym'
 // Polish for the gym, English for everyone else (the gym patches' pattern, components/InstallHint.jsx).
 const T = {
   row: ['Licencje', 'Licences'],
-  rowSub: ['Open source (AGPL-3.0), kod źródłowy, noty', 'Open source (AGPL-3.0), source code, notices'],
+  rowSub: ['Open source (AGPL-3.0), kod źródłowy, prawa autorskie', 'Open source (AGPL-3.0), source code, notices'],
   based: ['Habcore Gym jest oparty na oprogramowaniu open source na licencji AGPL-3.0.', 'Habcore Gym is based on open-source software licensed under the AGPL-3.0.'],
   source: ['Kod źródłowy tej wersji', 'Source code of this version'],
   license: ['Tekst licencji (GNU AGPL-3.0)', 'Licence text (GNU AGPL-3.0)'],
-  foot: ['Pełny kod źródłowy wersji, której używasz, ze wszystkimi zmianami, jest publiczny na tej samej licencji.', 'The complete source code of the version you are using, with every change, is public under the same licence.'],
-  notices: ['Noty o prawach autorskich', 'Notices'],
+  foot: ['Pełny kod źródłowy wersji, której używasz, ze wszystkimi zmianami, jest publicznie dostępny na tej samej licencji.', 'The complete source code of the version you are using, with every change, is public under the same licence.'],
+  notices: ['Informacje o prawach autorskich', 'Notices'],
 }
 export const licT = k => (String(getLang() || '').toLowerCase().startsWith('pl') ? T[k][0] : T[k][1])
 

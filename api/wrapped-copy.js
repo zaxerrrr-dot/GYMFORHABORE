@@ -63,7 +63,7 @@ export const WRAPPED_COPY = {
   },
   "pl": {
     "title": "Twój rok {0} w Habcore Gym jest gotowy 🎉",
-    "body": "Treningi, rekordy i jeden bardzo szczery test osobowości. Stuknij, żeby zobaczyć swój rok."
+    "body": "Treningi, rekordy i jeden bardzo szczery test osobowości. Dotknij, żeby zobaczyć swój rok."
   },
   "pt": {
     "title": "O teu {0} no Habcore Gym está pronto 🎉",

@@ -34,7 +34,7 @@ import { challengeTitle, challengeCount, doneLine } from './challenge-copy.js'
 import { deriveSessionName } from './session-merge.js'
 import { queueOf, weekTally } from './queue.js'
 import { workoutsLeft } from './week-left.js'
-import { todayISO, isoOf, fmtNum, weekStartOf, startOfWeek, weekKey, exerciseNameText } from './format.js'
+import { todayISO, isoOf, fmtNum, weekStartOf, startOfWeek, weekKey, exerciseShortNameText } from './format.js'
 import { accentPair, accentValue } from './accent.js'
 import { speedUnitOf } from './speed.js'
 import { isOn } from './modules.js'
@@ -53,7 +53,7 @@ export const WIDGET_EXERCISES_MAX = 8
 const WRITE_DEBOUNCE_MS = 1000
 
 // Title-cased as the app shows it; a widget has no CSS to do it (lib/format.js exerciseNameText).
-const nameOfCfg = cfg => (EXIDX[cfg?.id] ? exerciseNameText(EXIDX[cfg.id]) : String(cfg?.name || cfg?.n || cfg?.id || ''))
+const nameOfCfg = cfg => (EXIDX[cfg?.id] ? exerciseShortNameText(EXIDX[cfg.id]) : String(cfg?.name || cfg?.n || cfg?.id || ''))
 const routineIdsOf = w => (Array.isArray(w?.routineIds) ? w.routineIds : w?.routineId ? [w.routineId] : [])
 const shift = (iso, days) => { const d = new Date(iso + 'T12:00:00'); d.setDate(d.getDate() + days); return isoOf(d) }
 
@@ -95,7 +95,7 @@ function lastPrOf (S) {
   const w = ws.reduce((a, b) => ((b.d || '') > (a.d || '') || ((b.d || '') === (a.d || '') && (b.end || 0) > (a.end || 0)) ? b : a))
   const id = w.prs[0]
   const entry = (w.entries || []).find(e => e && e.id === id)
-  const name = EXIDX[id] ? exerciseNameText(EXIDX[id]) : String(entry?.target?.name || entry?.name || id)
+  const name = EXIDX[id] ? exerciseShortNameText(EXIDX[id]) : String(entry?.target?.name || entry?.name || id)
   let best = 0
   try { best = entry ? bestWeightForEntry(entry) : 0 } catch { best = 0 }
   return { name, value: best > 0 ? `${fmtNum(shownWeight(S, id, best))} ${exUnitOf(S, id)}` : '', d: w.d || null }

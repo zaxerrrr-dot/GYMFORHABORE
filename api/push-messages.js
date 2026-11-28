@@ -26,6 +26,14 @@ const COPY = {
     dayRoutineSuffix: 'hari ini',
     dayBody: 'Sudah ada di jadwalmu. Ayo mulai latihan 💪',
   },
+  pl: {
+    restTitle: 'Koniec przerwy 💪',
+    restBody: 'Czas na następną serię.',
+    testBody: 'Powiadomienie testowe ✅ Tak wyglądają powiadomienia.',
+    dayFallbackTitle: 'Masz dziś zaplanowany trening',
+    dayRoutineSuffix: 'dziś',
+    dayBody: 'Jest w twoim planie. Do dzieła 💪',
+  },
   cs: {
     restTitle: 'Pauza skončila 💪',
     restBody: 'Čas na další sérii.',

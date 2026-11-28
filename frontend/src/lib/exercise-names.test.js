@@ -95,7 +95,8 @@ const LANGS = {
   },
   pl: {
     covers: legacy,
-    loanword: true,
+    // Habcore Gym (2026-11-28): every Polish name is descriptive and always followed by the English
+    // title in brackets, a loanword too ("Burpees (Burpee)"), so there is no loanword rule here.
     distinct: true,
     forbid: /(?:^|[^\p{L}])(?:barbell|dumbbell|cable|band|stability ball|exercise ball|medicine ball|assisted|weighted)(?=$|[^\p{L}])/iu,
     keep: [
@@ -103,7 +104,7 @@ const LANGS = {
       [/weighted/iu, /obciąż/iu],
       [MALE, /mężczyzn/iu],
       [FEMALE, /kobiet/iu],
-      [/barbell/iu, /sztang/iu],
+      [/(?<!ez[- ]?)(?<!trap )barbell/iu, /sztang/iu],
       [/dumbbell/iu, /hantl/iu],
       [/kettlebell/iu, /kettlebell/iu],
       [/smith/iu, /smitha/iu],
@@ -113,7 +114,7 @@ const LANGS = {
       [/band/iu, /gum/iu],
       [/ez[- ]bar/iu, /łaman/iu],
       [/bosu/iu, /bosu/iu],
-      [/trap bar/iu, /trap bar/iu],
+      [/trap bar/iu, /trap bar|heksagonaln/iu],
     ],
   },
   'pt-BR': {
@@ -294,7 +295,9 @@ for (const lang of EXERCISE_NAME_LANGS) {
       const name = pack[exercise.id]
       _setLangState(lang, {}, null, pack)
       // A right-to-left language isolates the English part, brackets included (i18n-core exerciseNameFor).
-      const english = RTL_LANGS.has(lang) ? `\u2068(${exercise.n})\u2069` : `(${exercise.n})`
+      // Polish shows the English title in the catalogue's Title Case (i18n-core EN_TITLE_LANGS).
+      const en = lang === 'pl' ? exercise.n.replace(/(^|[\s(\-\/])(\p{Ll})/gu, (m, pre, ch) => pre + ch.toUpperCase()) : exercise.n
+      const english = RTL_LANGS.has(lang) ? `\u2068(${en})\u2069` : `(${en})`
       expect(exerciseNameFor(exercise)).toBe(`${name} ${english}`)
       expect(exerciseNameSearchText(exercise)).toContain(name)
       expect(exerciseNameSearchText(exercise)).toContain(exercise.n)

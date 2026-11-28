@@ -331,6 +331,8 @@ export const normalizeStr = s => (s || '')
   .normalize('NFD')
   .replace(/[\u0300-\u036f]/g, '')
   .toLowerCase()
+  // "ł" has no decomposition: "lydki" should find "łydki" like "posladki" finds "pośladki".
+  .replace(/ł/g, 'l')
 
 // Multi-token, accent-insensitive and multilingual exercise search.
 // Matches when all whitespace-separated words in the query appear anywhere in the exercise's
@@ -441,6 +443,18 @@ const SYNONYMS = {
   delt: ['delts', 'shoulder'], lat: ['lats', 'latissimus', 'pulldown'], trap: ['traps', 'shrug'],
   glute: ['glutes', 'gluteus'], calf: ['calf', 'calves'], hip: ['hip'], rope: ['rope'], trx: ['suspension'],
   ring: ['ring', 'suspension'], rings: ['ring', 'suspension'], kettle: ['kettlebell'], dumbel: ['dumbbell'],
+  // Polish gym talk (Habcore Gym), searched for but never shown. Keys and phrases are normalised
+  // (no diacritics, "ł" as "l"), as normalizeStr leaves query and corpus.
+  klata: ['klatka'], klate: ['klatka'], klaty: ['klatka'], bary: ['barki'], barki: ['bark'],
+  dwojki: ['biceps'], trojki: ['triceps'], brzuszki: ['brzuszki', 'spiecia brzucha'], brzuch: ['brzuch'],
+  mc: ['martwy ciag'], martwy: ['martwy ciag'], francuz: ['wyciskanie francuskie'], francuskie: ['wyciskanie francuskie'],
+  szrugsy: ['wzruszanie ramion', 'shrug'], szrugi: ['wzruszanie ramion', 'shrug'],
+  suwnica: ['suwnica', 'leg press'], suwnicy: ['suwnica', 'leg press'], brama: ['bramie', 'crossover'],
+  hantle: ['hantl', 'dumbbell'], hantel: ['hantl', 'dumbbell'], hantla: ['hantl', 'dumbbell'], hantlami: ['hantl', 'dumbbell'],
+  sztanga: ['sztang', 'barbell'], sztangi: ['sztang', 'barbell'], sztangami: ['sztang', 'barbell'],
+  wyciag: ['wyciag', 'cable'], linki: ['wyciag', 'cable'], kettla: ['kettlebell'],
+  pompki: ['pomp', 'push-up'], podciaganie: ['podciaganie', 'pull-up'], przysiady: ['przysiad'], wykroki: ['wykrok'],
+  rozpietki: ['rozpietki', 'fly'], wznosy: ['unoszenie'], kaptury: ['wzruszanie ramion', 'traps'], nogi: ['nog', 'uda'],
 }
 
 // The forms a token may take: as typed, the shorthand it stands for, and the singular of a plural

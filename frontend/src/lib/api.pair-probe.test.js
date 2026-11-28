@@ -56,11 +56,11 @@ describe('pairRedeem when the request never gets an answer', () => {
     ['another app\'s JSON', () => new Response(JSON.stringify({ status: 'UP' }), { status: 200, headers: { 'content-type': 'application/json' } })],
     ['a plain-text 404 from a proxy with no route', () => new Response('404 page not found\n', { status: 404, headers: { 'content-type': 'text/plain' } })],
     ['JSON that is not Habcore Gym\'s health', () => new Response(JSON.stringify({ ok: false }), { status: 200, headers: { 'content-type': 'application/json' } })],
-  ])('a server that answers with %s: says it is not an Habcore Gym server', async (_, page) => {
+  ])('a server that answers with %s: says it is not a Habcore Gym server', async (_, page) => {
     vi.stubGlobal('fetch', vi.fn((url, init) => (url.endsWith('/api/pair/redeem') ? failed() : init && init.mode === 'no-cors' ? opaque() : Promise.resolve(page()))))
     const e = await pairRedeem('https://gym.example.com', 'ABCD2345').catch(x => x)
     expect(e.code).toBe('not-opengym')
-    expect(e.message).toBe('That address answers, but it isn’t an Habcore Gym server. Check the URL.')
+    expect(e.message).toBe('That address answers, but it isn’t a Habcore Gym server. Check the URL.')
   })
 
   it('in a browser an http:// address is not the phone\'s mixed-content case: still probed', async () => {

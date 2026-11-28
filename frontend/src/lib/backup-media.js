@@ -101,7 +101,7 @@ export async function exportBackupZip(S, { media = mediaStore, fetchOne = null, 
 
 const isBackup = d => !!d && typeof d === 'object' && !Array.isArray(d) && Array.isArray(d.workouts) && Array.isArray(d.routines)
 
-const notBackup = () => Object.assign(new Error('not an Habcore Gym backup'), { code: 'not-backup' })
+const notBackup = () => Object.assign(new Error('not a Habcore Gym backup'), { code: 'not-backup' })
 
 /**
  * What to tell someone whose pick did not import, in their language. The thrown messages are for
@@ -109,7 +109,7 @@ const notBackup = () => Object.assign(new Error('not an Habcore Gym backup'), { 
  */
 export function backupImportError(e) {
   if (e?.code === 'compressed') return t('That zip was repacked. Import the original backup file.')
-  if (e?.code === 'not-backup' || e?.code === 'not-zip' || e?.code === 'encrypted' || e instanceof SyntaxError) return t('That file isn’t an Habcore Gym backup.')
+  if (e?.code === 'not-backup' || e?.code === 'not-zip' || e?.code === 'encrypted' || e instanceof SyntaxError) return t('That file isn’t a Habcore Gym backup.')
   return t('Couldn’t read that file.')
 }
 
@@ -117,7 +117,7 @@ export function backupImportError(e) {
  * Reads a picked backup, .json or .zip (told apart by its first bytes, not its name):
  * { state, files: [{ hash, entry }], zip }. `files` are the zip's media entries the state refers
  * to, not yet checked or stored — storeBackupMedia does that, once the import is confirmed.
- * Throws on anything that is not an Habcore Gym backup.
+ * Throws on anything that is not a Habcore Gym backup.
  */
 export async function readBackupFile(file) {
   let state, files = []
