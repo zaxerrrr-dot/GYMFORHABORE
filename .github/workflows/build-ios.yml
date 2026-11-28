@@ -131,6 +131,11 @@ jobs:
             echo "- HabcoreGym.ipa: unsigned, for SideStore (+, pick the file)."
             echo "- HabcoreGym-debug.apk: Android (debug build)."
             echo
+            echo "Collective release (kl11-kl14), owner's guide in Polish: docs/WYDANIE-ZBIORCZE.md."
+            echo "Workouts feed with cards, filters and notes threads with your trainer, day calendar in every calendar (local patch 0016)."
+            echo "Body module: weigh-ins, BMI, body composition (local patch 0015)."
+            echo "App sign-in with your password (no pairing), Registration, Lost access; Passa card (local patch 0014)."
+            echo "Terms and Privacy policy with consents; no AI coach, Zepp or extra integrations (local patch 0013, 0013b)."
             echo "Apple Watch: automatic rep counting for 30 barbell, dumbbell and cable exercises (Count reps on the set page, confirm with the Digital Crown); watch start screen > Rep counter. docs/LICZENIE-POWTORZEN.md."
             echo "Lost access: Ask your trainer, no server command (local patch 0012)."
             echo "Sign-in screen: password first, then sign in with passkey, then Registration (opens on a password); passwords need 8 characters (local patch 0011)."
