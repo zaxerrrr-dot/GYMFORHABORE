@@ -25,12 +25,13 @@ export const outlookCalUrl = url => 'https://outlook.live.com/calendar/0/addfrom
 export function CalendarSheet({ close, onChange, feed: kind = '' }) {
   const trainer = kind === 'trainer'
   const [feed, setFeed] = useState(null)
-  const [done, setDone] = useState(false)
+  // Habcore Gym (kl18): finished workouts are in a new feed unless switched off.
+  const [done, setDone] = useState(true)
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState(false)
   useEffect(() => {
     let gone = false
-    getCalendar(kind).then(f => { if (!gone) { setFeed(f || { on: false }); setDone(!!f?.done) } }).catch(() => { if (!gone) setErr(true) })
+    getCalendar(kind).then(f => { if (!gone) { setFeed(f || { on: false }); setDone(f?.on ? !!f.done : true) } }).catch(() => { if (!gone) setErr(true) })
     return () => { gone = true }
   }, [])
   const apply = async (fn, msg) => {

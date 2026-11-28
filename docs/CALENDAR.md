@@ -74,3 +74,16 @@ session that trainer leads, of every client of the gym, titled with the client's
 the plan only ("Trening: Ania · Upper – Habcore Gym"), with no note and nothing about health. It is a
 token of its own kind (`calendar-trainer`), made, shown again, renewed and turned off like the
 client's, and it stops answering once the person is no longer a trainer of the gym.
+
+## What a day shows (Habcore Gym kl18)
+
+- **Finished workouts** ("Pokaż też zakończone treningi", on by default; a feed made before kl18 and not
+  touched since shows them too): "✓ {plan name}" (the workout's plans, else the name it was saved with)
+  at its real start and end (a workout logged without a length gets an hour), described in the
+  profile's language: time, volume, sets, exercises.
+- **Sessions planned with a trainer** (kl16): timed events, as above.
+- **The plan of a day** (no time of its own): only today and the days ahead that have no workout yet,
+  titled with the plan's name. A plan's icon is never in a title (`emoji` holds an icon's name such as
+  "dumbbell" since the app's own icons). A day gone by without a workout is not shown; a planned day
+  that was trained shows only the finished workout.
+- "Today" is the profile's zone, Europe/Warsaw when it names none.

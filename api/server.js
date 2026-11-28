@@ -1398,11 +1398,14 @@ const calRow = (uid, kind = 'calendar') => (db.apiTokens || []).find(r => r && r
 // The app's own prefix (BASE_PATH, e.g. /opengym) belongs in the address: without it the feed
 // pointed at the site's root, where nothing answers (Habcore Gym kl11: the calendar did not work).
 const calUrl = token => ORIGIN.replace(/\/$/, '') + String(process.env.BASE_PATH || '').replace(/\/+$/, '') + '/api/calendar/' + token + '.ics';
+// Habcore Gym (kl18): finished workouts are in a feed unless its owner switched them off. A feed made
+// before kl18 that nobody has touched since (`doneSet` unset) shows them; every POST records the choice.
+const calDone = r => (r.doneSet ? r.scopes?.workouts === 'view' : true);
 function calView(user, kind = 'calendar') {
   const r = calRow(user.id, kind);
   if (!r || r.sv !== (user.sv || 0)) return { on: false };
   const token = CAL_KEY ? openSealed(CAL_KEY, r.seal, 'calendar:' + r.id) : null;
-  return { on: true, id: r.id, done: r.scopes?.workouts === 'view', created: r.created, used: r.used || null, ...(token ? { url: calUrl(token) } : {}) };
+  return { on: true, id: r.id, done: calDone(r), created: r.created, used: r.used || null, ...(token ? { url: calUrl(token) } : {}) };
 }
 
 // The trainer's schedule feed (kl16): gym mode on and a trainer or an admin of the gym.
@@ -3211,6 +3214,7 @@ const routes = {
       const cur = calRow(user.id, kind);
       if (cur && cur.sv === (user.sv || 0) && body.renew !== true) {
         cur.scopes = { ...cur.scopes, ...scopes };
+        cur.doneSet = true;
         saveDb();
         return json(res, 200, calView(user, kind));
       }
@@ -3220,6 +3224,7 @@ const routes = {
       try { made = createToken(db, user, { name: kind === 'calendar' ? 'Calendar feed' : 'Trainer schedule feed', scopes, days: 0, kind }); }
       catch (e) { if (e instanceof ScopeError) return json(res, e.status, { error: e.message, code: e.code }); throw e; }
       made.row.seal = sealText(CAL_KEY, made.token, 'calendar:' + made.row.id);
+      made.row.doneSet = true;
       saveDb();
       audit(req, 'auth.token.create', { user, msg: made.row.name });
       for (const r of gone) logToken(user.id, 'token.end', r);
@@ -3258,7 +3263,8 @@ const routes = {
       } else {
         const state = readStateStrict(user.id);
         if (state === UNREADABLE) return json(res, 503, { error: 'state unreadable' });
-        ics = buildIcs(state ? scopedState(state, row.scopes) : {}, { uid: user.id, done: row.scopes?.workouts === 'view', tz: state?.reminder?.tz, name: user.name || '' });
+        const done = calDone(row);
+        ics = buildIcs(state ? scopedState(state, { ...row.scopes, workouts: done ? 'view' : 'off' }) : {}, { uid: user.id, done, tz: state?.reminder?.tz, name: user.name || '' });
       }
       // A calendar asks every hour or so (REFRESH-INTERVAL / X-PUBLISHED-TTL in the feed); an
       // unchanged feed answers 304 to a fetcher that sends the ETag back. DTSTAMP moves every

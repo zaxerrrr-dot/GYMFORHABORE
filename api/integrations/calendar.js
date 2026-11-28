@@ -83,12 +83,46 @@ export function dayRoutines(S, iso, today) {
   return [first];
 }
 
+/* Habcore Gym (kl18): the feed's own words in the profile's language (Polish unless English). */
+const FEED_COPY = {
+  pl: { workout: 'Trening', planDesc: 'Plan na ten dzień · ćwiczeń: {0}', time: 'Czas: {0}', vol: 'Objętość: {0}', sets: 'Serie: {0}', ex: 'Ćwiczenia: {0}', noTime: 'bez zapisanego czasu' },
+  en: { workout: 'Workout', planDesc: 'Plan for the day · exercises: {0}', time: 'Time: {0}', vol: 'Volume: {0}', sets: 'Sets: {0}', ex: 'Exercises: {0}', noTime: 'no time logged' },
+};
+export const feedCopy = lang => (String(lang || 'pl').toLowerCase().startsWith('en') ? FEED_COPY.en : FEED_COPY.pl);
+const fillC = (s, ...a) => a.reduce((x, v, i) => x.split('{' + i + '}').join(String(v)), s);
+const doneSet = s => s && (s.done === true || s.sides?.L?.done || s.sides?.R?.done);
+/** Sets done, volume (weight × reps of done sets) and exercises of a logged workout. */
+export function workoutFacts(w) {
+  let sets = 0, vol = 0, ex = 0;
+  for (const e of list(w.entries)) {
+    const done = list(e.sets).filter(doneSet);
+    if (done.length) ex++;
+    sets += done.length;
+    for (const s of done) vol += (Number(s.w) || 0) * (Number(s.r) || 0);
+  }
+  return { sets, vol: Math.round(vol), ex };
+}
+/** The workout's real name: its plans' names, else the name it was saved with. Never an icon. */
+export function workoutTitle(w, routines, c) {
+  const ids = Array.isArray(w.routineIds) && w.routineIds.length ? w.routineIds : w.routineId ? [w.routineId] : [];
+  const names = ids.map(id => routines.get(id)?.name).filter(Boolean).map(x => String(x).trim()).filter(Boolean);
+  return (names.length ? names.join(' + ') : String(w.name || '').trim() || c.workout).slice(0, NAME_MAX);
+}
+const thin = v => String(v).replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0');
+function doneText(f, ms, timed, unit, c) {
+  const min = Math.round(ms / 60000);
+  const dur = min >= 60 ? `${Math.floor(min / 60)} h${min % 60 ? ' ' + (min % 60) + ' min' : ''}` : `${min} min`;
+  return [fillC(c.time, timed ? dur : c.noTime), ...(f.vol > 0 ? [fillC(c.vol, thin(f.vol) + ' ' + (unit === 'lb' ? 'lb' : 'kg'))] : []), fillC(c.sets, f.sets), fillC(c.ex, f.ex)].join('\n');
+}
+
 /**
  * The feed's text. `opts`: { uid, now, tz, done (with finished workouts), name (the profile's) }.
  * Every event has a stable UID, so a calendar updates an event in place instead of doubling it.
  */
 export function buildIcs(S, { uid = 'u', now = Date.now(), tz = S?.reminder?.tz, done = false, name = '' } = {}) {
-  const today = dayIn(now, tz);
+  // Habcore Gym (kl18): the gym's clock when the profile names none (a calendar's "today" was UTC's).
+  const today = dayIn(now, tz || 'Europe/Warsaw');
+  const c = feedCopy(S?.lang);
   const routines = new Map(list(S?.routines).map(r => [r.id, r]));
   const lines = [
     'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Habcore Gym//Calendar feed//EN', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH',
@@ -102,41 +136,45 @@ export function buildIcs(S, { uid = 'u', now = Date.now(), tz = S?.reminder?.tz,
     n++;
     lines.push('BEGIN:VEVENT', ...props, 'END:VEVENT');
   };
-  const doneDays = new Set();
+  // Every day with a workout logged: its plan day is done, whether finished workouts are shown or not.
+  const doneDays = new Set(list(S?.workouts).map(w => (typeof w.d === 'string' ? w.d.slice(0, 10) : '')).filter(Boolean));
   if (done) {
     const since = now - DONE_DAYS * 86400000;
     for (const w of list(S?.workouts)) {
       const at = workoutTime(w);
       if (!at || at < since || at > now + 86400000) continue;
-      const start = Number(w.start) || at, end = Number(w.end) > start ? Number(w.end) : start + 3600000;
-      const names = list(w.entries).map(e => exerciseName(e.id, S)).slice(0, 40);
-      const sets = list(w.entries).reduce((a, e) => a + list(e.sets).filter(s => s.done === true || s.sides?.L?.done || s.sides?.R?.done).length, 0);
-      if (typeof w.d === 'string') doneDays.add(w.d.slice(0, 10));
+      // Habcore Gym (kl18): the workout's real time (start-end); an entry without a length (a trainer's
+      // entry the old way: start = end) gets an hour.
+      const start = Number(w.start) || at;
+      const end = Number(w.end) > start + 60000 ? Number(w.end) : start + 3600000;
+      const f = workoutFacts(w);
       event([
         'UID:' + icsText(`done-${String(w.id).slice(0, 60)}-${uid}@opengym`),
         'DTSTAMP:' + stamp(now),
         'DTSTART:' + stamp(start), 'DTEND:' + stamp(end),
-        'SUMMARY:' + icsText('✓ ' + (String(w.name || '').slice(0, NAME_MAX) || 'Workout')),
-        'DESCRIPTION:' + icsText([`${sets} ${sets === 1 ? 'set' : 'sets'}`, ...names].join('\n')),
-        'CATEGORIES:Habcore Gym,Workout', 'TRANSP:TRANSPARENT',
+        'SUMMARY:' + icsText('✓ ' + workoutTitle(w, routines, c)),
+        'DESCRIPTION:' + icsText(doneText(f, end - start, Number(w.end) > start + 60000, S?.unit, c)),
+        'CATEGORIES:Habcore Gym', 'TRANSP:TRANSPARENT',
       ]);
     }
   }
-  for (let i = -PAST_DAYS; i <= AHEAD_DAYS; i++) {
+  // The plan of a day (no time of its own): today and the days to come that are not done yet. A day
+  // gone by without a workout is not put back in the calendar (the app's streak tells that story).
+  for (let i = 0; i <= AHEAD_DAYS; i++) {
     const iso = addDays(today, i);
-    // A past day that has its workout already shows that one, not the plan as well.
-    if (done && iso <= today && doneDays.has(iso)) continue;
+    if (doneDays.has(iso)) continue;
     for (const id of dayRoutines(S, iso, today)) {
       const r = routines.get(id);
       if (!r) continue;
-      const exNames = list(r.ex).map(e => exerciseName(e.id, S)).slice(0, 40);
+      const count = list(r.ex).length;
       event([
         'UID:' + icsText(`plan-${iso}-${String(id).slice(0, 60)}-${uid}@opengym`),
         'DTSTAMP:' + stamp(now),
         'DTSTART;VALUE=DATE:' + dateValue(iso), 'DTEND;VALUE=DATE:' + dateValue(addDays(iso, 1)),
-        'SUMMARY:' + icsText([r.emoji, String(r.name || 'Workout').slice(0, NAME_MAX)].filter(Boolean).join(' ')),
-        ...(exNames.length ? ['DESCRIPTION:' + icsText(exNames.join('\n'))] : []),
-        'CATEGORIES:Habcore Gym,Plan', 'TRANSP:TRANSPARENT',
+        // Never the plan's icon: `emoji` holds an icon's name ("dumbbell", "flame") since the glyph icons.
+        'SUMMARY:' + icsText(String(r.name || '').trim().slice(0, NAME_MAX) || c.workout),
+        'DESCRIPTION:' + icsText(fillC(c.planDesc, count)),
+        'CATEGORIES:Habcore Gym', 'TRANSP:TRANSPARENT',
       ]);
     }
   }

@@ -226,3 +226,11 @@ export function remindBefore(S) {
 }
 /** The first word of a name: the trainer's feed names a client by it. */
 export const firstName = n => String(n || '').trim().split(/\s+/)[0].slice(0, 30) || '?'
+
+/** Habcore Gym (kl17): the days with a session a trainer planned (not cancelled), for the calendars'
+    hollow dot: a planned workout, not a day off. Map iso -> [sessions]. */
+export const plannedSessionDays = S => {
+  const m = new Map()
+  for (const s of sessionsOf(S)) { if (s.cx) continue; if (!m.has(s.d)) m.set(s.d, []); m.get(s.d).push(s) }
+  return m
+}

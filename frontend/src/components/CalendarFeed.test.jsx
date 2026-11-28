@@ -36,7 +36,8 @@ describe('the calendar feed sheet', () => {
   it('makes the link, shows it, copies it', async () => {
     act(() => root.render(<CalendarSheet close={() => {}} />))
     await flush()
-    act(() => host.querySelector('[role="switch"]').click())
+    // Habcore Gym (kl18): finished workouts are on by default in a new feed.
+    expect(host.querySelector('[role="switch"]').getAttribute('aria-checked')).toBe('true')
     act(() => btn('Make my calendar link').click())
     await flush()
     expect(mocks.calls.at(-1)).toEqual(['/api/calendar', { done: true }])
