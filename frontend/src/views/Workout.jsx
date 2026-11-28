@@ -1,4 +1,5 @@
 import LiveLine from '../components/LiveLine.jsx'
+import { dayChoiceText } from '../lib/today-label-text.js'
 import { Fragment, useEffect, useId, useRef, useState } from 'react'
 import SwipeCards from '../components/SwipeCards.jsx'
 import SwipeRow from '../components/SwipeRow.jsx'
@@ -18,7 +19,6 @@ import { speedUnitOf, toSpeed, fromSpeed } from '../lib/speed.js'
 import { byDistance, withCardioBy, distUnitOf, distLabel, toDist, fromDist, distanceKmOf, settleSpeed } from '../lib/distance.js'
 import { clampIncline, inclineFrom, INCLINE_STEP, clampLevel, levelFrom, cardioCol } from '../lib/incline.js'
 import { beep, vibrate, unlock } from '../lib/sound.js'
-import { pinState } from '../lib/queue.js'
 import { t, tn, exerciseNameFor, exerciseNameClass } from '../lib/i18n.js'
 import { nameIn, said } from '../lib/a11y-name.js'
 import { api, beacon } from '../lib/api.js'
@@ -108,13 +108,14 @@ function StartChooser() {
   const todayIds = effectiveRoutineIds(S, todayISO())
   const todayRoutines = effectiveRoutines(S, todayISO())
   const todayName = todayRoutines.map(r => r.name).join(' + ')
-  const todayOvr = S.dayPlan[todayISO()] !== undefined && pinState(S, S.dayPlan[todayISO()]) !== 'done' // a fulfilled pin is no override
+  const todayNote = dayChoiceText(S) // Habcore Gym (kl15.1): no "rescheduled" for a plain pick
   const idSet = new Set(todayIds)
   const others = S.routines.filter(r => !idSet.has(r.id))
   return <div className="narrow">
     <div className="hdr"><div><h1>{t('Start workout')}</h1><div className="sub">{t(DAYN[new Date().getDay()])} · {todayRoutines.length ? t('today is {0}', todayName) : t('rest day, but no one’s stopping you')}</div></div></div>
     {todayRoutines.length > 0 && <div className="card" style={{ borderColor: 'var(--acc)' }}>
-      <h2 className="accent">{t("Today's plan")}{todayOvr ? ' · ' + t('rescheduled') : ''}</h2>
+      <h2 className="accent">{t("Today's plan")}</h2>
+      {todayNote && <div className="small dim" style={{ marginTop: -6, marginBottom: 8 }} data-testid="today-choice">{todayNote}</div>}
       <div className="row between" style={{ marginBottom: 12 }}>
         <div><div className="big">{todayName}</div><div className="muted small">{exCount(todayRoutines.reduce((n, r) => n + r.ex.length, 0))}</div></div>
         <span className="lrow-i" style={{ width: 38, height: 38, borderRadius: 9, fontSize: 'var(--fs-title2)' }}><Icon name={glyphOf(todayRoutines[0].emoji)} /></span>

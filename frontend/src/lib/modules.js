@@ -1,4 +1,4 @@
-import { HABCORE_OFF_MODULES } from './habcore-off.js'
+import { HABCORE_OFF_MODULES, HABCORE_FORCED_MODULES } from './habcore-off.js'
 // Modules (v1.4.4, Settings → Modules): whole feature areas switched on and off, so the app can
 // be just a training log or the whole thing. Discord (seals187, Shadowbyte): "it's important not
 // to overload the app with 1000 functions and settings", "like a plugin system where you can
@@ -82,6 +82,8 @@ export const moduleBuilt = id => !unavailable.has(id)
 /** Whether module `id` is on for this profile. Unknown ids are on (a newer client's module). */
 export function isOn(S, id) {
   if (unavailable.has(id)) return false
+  // Habcore Gym (kl15): always on, whatever a profile saved before (no switch on Settings → Modules).
+  if (HABCORE_FORCED_MODULES.includes(id)) return true
   const v = isMap(S?.modules) ? S.modules[id] : undefined
   if (typeof v === 'boolean') return v
   // Before 1.4.4 the check-in had its own switch in Look & Home; it decides until Modules does.
@@ -106,7 +108,8 @@ export function presetModules(presetId) {
 export function presetOf(S) {
   const now = moduleStates(S)
   // A module this build lacks is left out of the comparison: "Everything" is still everything here.
-  const ids = MODULE_IDS.filter(moduleBuilt)
+  // Habcore Gym (kl15): an always-on module (HABCORE_FORCED_MODULES) is left out too.
+  const ids = MODULE_IDS.filter(id => moduleBuilt(id) && !HABCORE_FORCED_MODULES.includes(id))
   for (const p of PRESETS) {
     const want = presetModules(p.id)
     if (ids.every(id => now[id] === want[id])) return p.id

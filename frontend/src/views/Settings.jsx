@@ -1,4 +1,5 @@
 import { showsDashboard } from '../lib/trainer-api.js'
+import ReminderInstall from '../components/ReminderInstall.jsx'
 import { g, stopLeading } from '../lib/gymv2.js'
 import { recordHintsOn } from '../lib/set-records.js'
 import { setRecoveryHint } from '../lib/recovery-hint.js'
@@ -909,6 +910,8 @@ export default function Settings({ page = null, find = null, via = null, entryKe
     },
 
     reminders: () => <>
+      {/* Habcore Gym (kl15): how reminders reach a phone (install / Home Screen), or that the app's are local. */}
+      <ReminderInstall />
       <NotificationsCard S={S} update={update} toast={toast} />
       {MOBILE && gymReminder && <Section footer={t('A nudge when you walk into your gym.')}>
         <Row icon="mapPin" iconTint="var(--green)" title={t('Gym reminder')} value={gymOn ? t('On') : t('Off')} accessory="chevron" onClick={() => nav('/settings/gym')} />

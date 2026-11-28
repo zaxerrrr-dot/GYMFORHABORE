@@ -12,6 +12,7 @@ import { DEMO } from '../lib/demo.js'
 import { platformNow } from '../lib/platform-now.js'
 import { api } from '../lib/api.js'
 import { libraryOn } from '../lib/shared-api.js'
+import { HABCORE_FORCED_MODULES } from '../lib/habcore-off.js'
 import { MODULES, GROUPS, PRESETS, isOn, presetOf, presetModules, applyPreset, setModule, turnedOff, moduleBuilt } from '../lib/modules.js'
 import { readWatchStatus, readGarminLink } from '../lib/watch-settings.js'
 import { moduleCopy, groupCopy, presetCopy } from '../lib/modules-copy.js'
@@ -99,7 +100,7 @@ export default function ModulesPage() {
   // Community only where the server has a library (LIBRARY=on): elsewhere it would switch nothing.
   const libOn = useStore(st => libraryOn(st.config, st.user))
   // Habcore Gym Offline has no Coach, Integrations or Community (lib/build-caps.js): not offered at all.
-  const shown = MODULES.filter(m => moduleBuilt(m.id) && (m.id !== 'community' || libOn))
+  const shown = MODULES.filter(m => moduleBuilt(m.id) && !HABCORE_FORCED_MODULES.includes(m.id) && (m.id !== 'community' || libOn))
   return <div className="modules">
     <p className="sect-f modules-intro">{t('Switch off what you don’t use. Nothing gets deleted: switch it back on and it’s all still there.')}</p>
     <Section footer={preset === 'custom' ? t('{0} of {1} modules on.', shown.filter(m => isOn(S, m.id)).length, shown.length) : null}>

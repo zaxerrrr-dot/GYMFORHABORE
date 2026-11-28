@@ -25,3 +25,7 @@ export const HABCORE_OFF_CARDS = [...(INTEGRATIONS_FULL ? [] : ['strava', 'webda
 export const HABCORE_OFF_SEARCH = [...(INTEGRATIONS_FULL ? [] : ['Back up to WebDAV', 'WebDAV backup', 'Webhooks', 'MCP server', 'Strava', 'openNutrition']), ...(AI_BUILT ? [] : ['AI Coach'])]
 /** Modules (lib/modules.js) this build does not have at all. */
 export const HABCORE_OFF_MODULES = [!AI_BUILT && 'coach', !CHECKIN_BUILT && 'checkin'].filter(Boolean)
+/** Habcore Gym (kl15, patch 0017): modules that are always on and have no switch on Settings → Modules
+ *  ("Integracje": the health stores, Hevy, files, CSV and the calendar feed live there). A profile
+ *  that switched one off before gets it back; the saved choice is simply not read. */
+export const HABCORE_FORCED_MODULES = INTEGRATIONS_FULL ? [] : ['integrations']

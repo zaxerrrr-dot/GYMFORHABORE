@@ -13,6 +13,7 @@ import { t, tn, dateLocale } from '../lib/i18n.js'
 import { bwSheet, goalSheet, dayOverrideSheet, calendarSheet, starterPlanSheet, bwDeltaColor, weighInsSheet, workoutDetailSheet } from '../sheets.jsx'
 import { WorkoutCard, feedNameOf } from '../components/WorkoutFeed.jsx'
 import { feedSorted } from '../lib/workout-feed.js'
+import { dayChoiceText } from '../lib/today-label-text.js'
 import { startOrPreview, startPickerSheet } from '../components/StartSheets.jsx'
 import { daySessionsStatus } from '../lib/day-sessions.js'
 import { deriveSessionName } from '../lib/session-merge.js'
@@ -21,7 +22,7 @@ import Icon from '../components/Icon.jsx'
 import CardHead from '../components/CardHead.jsx'
 import QueueRow from '../components/QueueRow.jsx'
 import MiniBodyMap from '../components/MiniBodyMap.jsx'
-import { queueOf, queueView, weekTally, pinState } from '../lib/queue.js'
+import { queueOf, queueView, weekTally } from '../lib/queue.js'
 import { workoutsLeft } from '../lib/week-left.js'
 import { WeeklySetsHomeLine } from '../components/WeeklySets.jsx'
 import { RecapHomeCard } from '../components/Recap.jsx'
@@ -66,7 +67,9 @@ export default function Home() {
   const routine = todayRoutines[0] || null
   const todayName = todayRoutines.map(r => r.name).join(' + ')
   // A fulfilled pin (a coach session pinned to today and since done) reads as no override.
-  const todayOvr = S.dayPlan[todayISO()] !== undefined && pinState(S, S.dayPlan[todayISO()]) !== 'done'
+  // Habcore Gym (kl15.1, lib/today-label.js): a session picked for today is just today's session;
+  // only one moved from an earlier day says so (and from when), a pick over a planned one says what it replaced.
+  const todayNote = dayChoiceText(S)
   // An open editor on a saved workout (lib/session-edit.js) holds S.active too, but it is not a
   // session in progress: the row takes you back to it as an edit, the way the tab bar does.
   const editingSaved = !!S.active?.editingWorkoutId
@@ -209,7 +212,8 @@ export default function Home() {
             <div className="lbl2">{t('Today')}</div>
             <div className="ttl">{S.active ? (editingSaved ? S.active.name : t('{0} (in progress)', S.active.name))
               : doneToday ? (doneToday.name ? t('{0} (done)', doneToday.name) : t('Workout done'))
-              : routine ? todayName : t('Rest day')}{todayOvr && routine && !doneToday ? ' · ' + t('rescheduled') : ''}</div>
+              : routine ? todayName : t('Rest day')}</div>
+            {todayNote && routine && !doneToday && !S.active && <div className="ss" data-testid="today-choice">{todayNote}</div>}
             {next && !doneToday && <div className="ss">{t('Next session: {0}, {1}', t(DAYN[next.weekday]), next.routine.name)}</div>}
           </div>
         </div>

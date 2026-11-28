@@ -4991,3 +4991,11 @@ button.wl-summary{width:100%;padding:0 0 10px;text-align:start;border-radius:var
 .wf-day-cal button.today{outline:2px solid #ba1a18;outline-offset:-2px}
 .wf-day-cal .h{font-size:var(--fs-caption,12px);color:var(--label-2);text-align:center}
 .wf-last{cursor:pointer}
+
+/* Habcore Gym (kl15, patch 0017): Settings → Reminders, how to get them (components/ReminderInstall.jsx). */
+.ri-card{border:1.5px solid #ba1a18;margin-bottom:14px}
+.ri-head{display:flex;gap:10px;align-items:flex-start;line-height:1.4}
+.ri-head .icn{flex:none;color:#ba1a18;font-size:20px;margin-top:1px}
+.ri-guide{border-top:1px solid var(--sep);padding-top:4px;margin-top:4px}
+.ri-toggle{display:flex;justify-content:space-between;align-items:center;width:100%;background:none;border:0;padding:10px 0;font:inherit;font-weight:600;color:inherit;cursor:pointer;text-align:start}
+.ri-guide .ih-steps{margin-bottom:8px}
